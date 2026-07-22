@@ -477,6 +477,23 @@ h1, h2, h3, .logo-text, .brand-top, .brand-bottom {
     color: var(--accent-primary);
 }
 
+.project-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 1.5rem;
+    color: var(--accent-primary);
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s ease;
+}
+
+.project-link:hover {
+    border-bottom-color: var(--accent-primary);
+}
+
 /* Leadership & Experience Section */
 .experience-section {
     padding: 100px 0;
