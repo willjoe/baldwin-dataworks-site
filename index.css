@@ -358,26 +358,19 @@ h1, h2, h3, .logo-text, .brand-top, .brand-bottom {
     border: 1px solid var(--border-color);
     border-radius: 20px;
     overflow: hidden;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    align-items: stretch;
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
 }
 
 .security-spotlight-image {
     width: 100%;
-    height: 100%;
-    min-height: 320px;
+    aspect-ratio: 16 / 9;
     object-fit: cover;
     display: block;
 }
 
 .security-spotlight-content {
     padding: 3rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
 }
 
 .security-spotlight-content h3 {
@@ -385,15 +378,9 @@ h1, h2, h3, .logo-text, .brand-top, .brand-bottom {
     margin: 0.75rem 0 1rem;
 }
 
-@media (max-width: 992px) {
-    .security-spotlight {
-        grid-template-columns: 1fr;
-    }
-    .security-spotlight-image {
-        min-height: 220px;
-    }
+@media (max-width: 768px) {
     .security-spotlight-content {
-        padding: 2.5rem;
+        padding: 2rem;
     }
 }
 
@@ -403,9 +390,9 @@ h1, h2, h3, .logo-text, .brand-top, .brand-bottom {
     border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.philosophy-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+.philosophy-stack {
+    display: flex;
+    flex-direction: column;
     gap: 2.5rem;
 }
 
@@ -413,10 +400,23 @@ h1, h2, h3, .logo-text, .brand-top, .brand-bottom {
     background: linear-gradient(180deg, rgba(255, 255, 255, 0.015) 0%, rgba(255, 255, 255, 0.005) 100%);
     border: 1px solid rgba(255, 255, 255, 0.03);
     border-radius: 16px;
-    padding: 3rem 2.5rem;
-    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: stretch;
     overflow: hidden;
     transition: var(--transition);
+}
+
+.philosophy-card:nth-child(even) {
+    grid-template-columns: 1fr 1fr;
+}
+
+.philosophy-card:nth-child(even) .philosophy-image {
+    order: 2;
+}
+
+.philosophy-card:nth-child(even) .philosophy-content {
+    order: 1;
 }
 
 .philosophy-card:hover {
@@ -427,10 +427,9 @@ h1, h2, h3, .logo-text, .brand-top, .brand-bottom {
 
 .philosophy-image {
     width: 100%;
-    height: 180px;
+    height: 100%;
+    aspect-ratio: 16 / 9;
     object-fit: cover;
-    border-radius: 12px;
-    margin-bottom: 1.5rem;
     filter: grayscale(55%) brightness(0.8) contrast(1.05);
     transition: var(--transition);
 }
@@ -439,14 +438,21 @@ h1, h2, h3, .logo-text, .brand-top, .brand-bottom {
     filter: grayscale(0%) brightness(0.95) contrast(1.05);
 }
 
+.philosophy-content {
+    padding: 3rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
 .phi-num {
     display: block;
     font-family: 'Outfit', sans-serif;
     font-size: 3rem;
     font-weight: 900;
-    color: rgba(var(--accent-primary-rgb), 0.1);
+    color: rgba(var(--accent-primary-rgb), 0.15);
     line-height: 1;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
     transition: var(--transition);
 }
 
@@ -466,6 +472,20 @@ h1, h2, h3, .logo-text, .brand-top, .brand-bottom {
     color: var(--text-secondary);
     font-size: 0.95rem;
     line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+    .philosophy-card,
+    .philosophy-card:nth-child(even) {
+        grid-template-columns: 1fr;
+    }
+    .philosophy-card:nth-child(even) .philosophy-image,
+    .philosophy-card:nth-child(even) .philosophy-content {
+        order: initial;
+    }
+    .philosophy-content {
+        padding: 2rem;
+    }
 }
 
 /* IP & Projects */
