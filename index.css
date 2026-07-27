@@ -351,6 +351,52 @@ h1, h2, h3, .logo-text, .brand-top, .brand-bottom {
     font-size: 0.95rem;
 }
 
+/* Security Spotlight */
+.security-spotlight {
+    margin-top: 2.5rem;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: stretch;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+.security-spotlight-image {
+    width: 100%;
+    height: 100%;
+    min-height: 320px;
+    object-fit: cover;
+    display: block;
+}
+
+.security-spotlight-content {
+    padding: 3rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.security-spotlight-content h3 {
+    font-size: 1.75rem;
+    margin: 0.75rem 0 1rem;
+}
+
+@media (max-width: 992px) {
+    .security-spotlight {
+        grid-template-columns: 1fr;
+    }
+    .security-spotlight-image {
+        min-height: 220px;
+    }
+    .security-spotlight-content {
+        padding: 2.5rem;
+    }
+}
+
 /* Philosophy Section */
 .philosophy-section {
     padding: 100px 0;
@@ -377,6 +423,20 @@ h1, h2, h3, .logo-text, .brand-top, .brand-bottom {
     border-color: rgba(var(--accent-primary-rgb), 0.2);
     background: rgba(255, 255, 255, 0.02);
     transform: translateY(-3px);
+}
+
+.philosophy-image {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    filter: grayscale(55%) brightness(0.8) contrast(1.05);
+    transition: var(--transition);
+}
+
+.philosophy-card:hover .philosophy-image {
+    filter: grayscale(0%) brightness(0.95) contrast(1.05);
 }
 
 .phi-num {
