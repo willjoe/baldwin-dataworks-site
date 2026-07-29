@@ -66,9 +66,9 @@ document.addEventListener('DOMContentLoaded', () => {
             navMenu.style.top = '80px';
             navMenu.style.left = '0';
             navMenu.style.width = '100%';
-            navMenu.style.background = 'rgba(8, 12, 20, 0.95)';
+            navMenu.style.background = 'rgba(255, 255, 255, 0.97)';
             navMenu.style.padding = '2rem';
-            navMenu.style.borderBottom = '1px solid rgba(0, 229, 255, 0.2)';
+            navMenu.style.borderBottom = '1px solid rgba(14, 116, 144, 0.2)';
             navMenu.style.gap = '1.5rem';
         } else {
             icon.classList.remove('fa-xmark');

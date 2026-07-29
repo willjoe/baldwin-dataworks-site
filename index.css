@@ -1,14 +1,14 @@
 /* Base Variables & Design Tokens */
 :root {
-    --bg-color: #080c14;
-    --card-bg: rgba(13, 20, 35, 0.5);
-    --border-color: rgba(0, 229, 255, 0.15);
-    --text-primary: #f1f5f9;
-    --text-secondary: #94a3b8;
-    --accent-primary: #00E5FF;
-    --accent-primary-rgb: 0, 229, 255;
-    --accent-secondary: #D500F9;
-    --accent-secondary-rgb: 213, 0, 249;
+    --bg-color: #ffffff;
+    --card-bg: #f8fafc;
+    --border-color: rgba(15, 23, 42, 0.08);
+    --text-primary: #0f172a;
+    --text-secondary: #52606d;
+    --accent-primary: #0e7490;
+    --accent-primary-rgb: 14, 116, 144;
+    --accent-secondary: #a21caf;
+    --accent-secondary-rgb: 162, 28, 175;
     --card-width: 450px;
     --card-height: 260px;
     --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
@@ -62,7 +62,7 @@ h1, h2, h3, .logo-text, .brand-top, .brand-bottom {
     position: absolute;
     border-radius: 50%;
     filter: blur(140px);
-    opacity: 0.25;
+    opacity: 0.14;
 }
 
 .sphere-1 {
@@ -90,9 +90,9 @@ h1, h2, h3, .logo-text, .brand-top, .brand-bottom {
     width: 100%;
     height: 100%;
     z-index: -1;
-    background-image: 
-        linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+    background-image:
+        linear-gradient(rgba(15, 23, 42, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(15, 23, 42, 0.035) 1px, transparent 1px);
     background-size: 50px 50px;
     pointer-events: none;
 }
@@ -109,10 +109,10 @@ h1, h2, h3, .logo-text, .brand-top, .brand-bottom {
     left: 0;
     width: 100%;
     z-index: 100;
-    background: rgba(8, 12, 20, 0.7);
+    background: rgba(255, 255, 255, 0.75);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid rgba(15, 23, 42, 0.06);
     transition: var(--transition);
 }
 
@@ -261,7 +261,7 @@ h1, h2, h3, .logo-text, .brand-top, .brand-bottom {
 
 .btn-primary {
     background: linear-gradient(135deg, var(--accent-primary) 0%, rgba(var(--accent-primary-rgb), 0.8) 100%);
-    color: #050a12;
+    color: #ffffff;
     border: none;
     box-shadow: 0 4px 20px rgba(var(--accent-primary-rgb), 0.3);
 }
@@ -272,14 +272,14 @@ h1, h2, h3, .logo-text, .brand-top, .brand-bottom {
 }
 
 .btn-secondary {
-    background: rgba(255, 255, 255, 0.03);
+    background: rgba(15, 23, 42, 0.03);
     color: var(--text-primary);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(15, 23, 42, 0.12);
 }
 
 .btn-secondary:hover {
-    background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(255, 255, 255, 0.2);
+    background: rgba(15, 23, 42, 0.06);
+    border-color: rgba(15, 23, 42, 0.2);
     transform: translateY(-2px);
 }
 
@@ -387,7 +387,7 @@ h1, h2, h3, .logo-text, .brand-top, .brand-bottom {
 /* Philosophy Section */
 .philosophy-section {
     padding: 100px 0;
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    border-top: 1px solid rgba(15, 23, 42, 0.06);
 }
 
 .philosophy-stack {
@@ -397,8 +397,8 @@ h1, h2, h3, .logo-text, .brand-top, .brand-bottom {
 }
 
 .philosophy-card {
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.015) 0%, rgba(255, 255, 255, 0.005) 100%);
-    border: 1px solid rgba(255, 255, 255, 0.03);
+    background: linear-gradient(180deg, rgba(15, 23, 42, 0.02) 0%, rgba(15, 23, 42, 0.005) 100%);
+    border: 1px solid rgba(15, 23, 42, 0.05);
     border-radius: 16px;
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -421,7 +421,7 @@ h1, h2, h3, .logo-text, .brand-top, .brand-bottom {
 
 .philosophy-card:hover {
     border-color: rgba(var(--accent-primary-rgb), 0.2);
-    background: rgba(255, 255, 255, 0.02);
+    background: rgba(15, 23, 42, 0.025);
     transform: translateY(-3px);
 }
 
@@ -497,7 +497,7 @@ h1, h2, h3, .logo-text, .brand-top, .brand-bottom {
 
 .project-item {
     background: var(--card-bg);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(15, 23, 42, 0.06);
     border-radius: 20px;
     padding: 3rem;
     backdrop-filter: blur(12px);
@@ -519,8 +519,8 @@ h1, h2, h3, .logo-text, .brand-top, .brand-bottom {
 .project-badge {
     display: inline-block;
     padding: 0.3rem 0.8rem;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(15, 23, 42, 0.04);
+    border: 1px solid rgba(15, 23, 42, 0.1);
     border-radius: 4px;
     font-size: 0.75rem;
     font-weight: 700;
@@ -577,7 +577,7 @@ h1, h2, h3, .logo-text, .brand-top, .brand-bottom {
 /* Leadership & Experience Section */
 .experience-section {
     padding: 100px 0;
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    border-top: 1px solid rgba(15, 23, 42, 0.06);
 }
 
 .experience-grid {
@@ -589,7 +589,7 @@ h1, h2, h3, .logo-text, .brand-top, .brand-bottom {
 
 .founder-bio {
     background: var(--card-bg);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(15, 23, 42, 0.06);
     border-radius: 20px;
     padding: 3rem;
     backdrop-filter: blur(12px);
@@ -630,8 +630,8 @@ h1, h2, h3, .logo-text, .brand-top, .brand-bottom {
 
 .skill-tag {
     padding: 0.4rem 0.9rem;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(15, 23, 42, 0.03);
+    border: 1px solid rgba(15, 23, 42, 0.08);
     border-radius: 50px;
     font-size: 0.85rem;
     color: var(--text-primary);
@@ -653,7 +653,7 @@ h1, h2, h3, .logo-text, .brand-top, .brand-bottom {
     left: 0;
     width: 2px;
     height: 90%;
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(15, 23, 42, 0.12);
 }
 
 .timeline-item {
@@ -743,7 +743,7 @@ h1, h2, h3, .logo-text, .brand-top, .brand-bottom {
     flex-direction: column;
     justify-content: space-between;
     overflow: hidden;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 15px 35px rgba(15, 23, 42, 0.15);
     background: #faf9f6; /* Premium Ivory/Off-white */
     color: #1a1a1a;
 }
@@ -873,8 +873,8 @@ h1, h2, h3, .logo-text, .brand-top, .brand-bottom {
 }
 
 .btn-action {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(15, 23, 42, 0.03);
+    border: 1px solid rgba(15, 23, 42, 0.08);
     color: var(--text-primary);
     padding: 0.6rem 1.5rem;
     font-size: 0.9rem;
@@ -935,8 +935,8 @@ h1, h2, h3, .logo-text, .brand-top, .brand-bottom {
 }
 
 .form-group input, .form-group textarea {
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(15, 23, 42, 0.02);
+    border: 1px solid rgba(15, 23, 42, 0.12);
     border-radius: 8px;
     padding: 0.8rem 1rem;
     color: var(--text-primary);
@@ -948,7 +948,7 @@ h1, h2, h3, .logo-text, .brand-top, .brand-bottom {
 .form-group input:focus, .form-group textarea:focus {
     outline: none;
     border-color: var(--accent-primary);
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(15, 23, 42, 0.015);
     box-shadow: 0 0 10px rgba(var(--accent-primary-rgb), 0.15);
 }
 
@@ -960,9 +960,9 @@ h1, h2, h3, .logo-text, .brand-top, .brand-bottom {
 
 /* Footer */
 footer {
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    border-top: 1px solid rgba(15, 23, 42, 0.06);
     padding: 3rem 0;
-    background: #04060b;
+    background: var(--card-bg);
 }
 
 .footer-bottom {
