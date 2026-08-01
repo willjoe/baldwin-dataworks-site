@@ -85,4 +85,18 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
+
+    // Project Slideshows: cycles each .project-slideshow's <img> children
+    // via a fading .is-active class (see index.css) — add/remove <img>
+    // tags in the markup to change what's shown, no JS changes needed.
+    document.querySelectorAll('.project-slideshow').forEach((slideshow) => {
+        const slides = slideshow.querySelectorAll('img');
+        if (slides.length < 2) return;
+        let current = 0;
+        setInterval(() => {
+            slides[current].classList.remove('is-active');
+            current = (current + 1) % slides.length;
+            slides[current].classList.add('is-active');
+        }, 3500);
+    });
 });
