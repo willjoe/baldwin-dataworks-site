@@ -992,6 +992,18 @@ h1, h2, h3, .logo-text, .brand-top, .brand-bottom {
 
 .card-footer {
     z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+}
+
+.card-avatar {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(15, 23, 42, 0.1);
+    flex: none;
 }
 
 .card-holder {
@@ -1233,6 +1245,10 @@ footer {
     .brand-bottom {
         font-size: 0.6rem;
         letter-spacing: 2px;
+    }
+    .card-avatar {
+        width: 34px;
+        height: 34px;
     }
     .card-holder {
         font-size: 0.95rem;
