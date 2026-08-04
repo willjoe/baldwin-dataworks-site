@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Geo Analytics — H3 Density Heatmap — Baldwin Data Works Inc.</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+:root {
+  --purple:       #4b286d;
+  --purple-light: #6b4d8f;
+  --purple-bg:    rgba(75,40,109,0.06);
+  --teal:         #016b6a;
+  --teal-bg:      #e0f4f4;
+  --green:        #248700;
+  --green-bg:     #e8f5e3;
+  --amber:        #f5a623;
+  --amber-bg:     #fff8ed;
+  --red:          #d32f2f;
+  --red-bg:       #fdecea;
+  --bg:           #f2f2f6;
+  --card:         #ffffff;
+  --text:         #1a1a2e;
+  --muted:        #54595f;
+  --faint:        #8a8f99;
+  --border:       #e4e5e9;
+  --border-mid:   #c8ccd4;
+  --r-sm: 4px; --r-md: 8px; --r-lg: 12px; --r-pill: 9999px;
+  --sh-xs: 0 1px 4px rgba(0,0,0,0.06);
+  --sh-sm: 0 2px 8px rgba(0,0,0,0.09);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column;height:100vh;overflow:hidden;font-size:14px;line-height:1.4}
+
+.topbar{height:56px;background:var(--card);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 22px;gap:16px;flex-shrink:0;box-shadow:var(--sh-xs)}
+.tb-module{font-size:10px;color:var(--faint);text-transform:uppercase;letter-spacing:.8px;font-weight:700}
+.tb-title{font-size:17px;font-weight:800;color:var(--purple);line-height:1.1}
+.tb-divider{width:1px;height:26px;background:var(--border);flex-shrink:0}
+.tb-note{font-size:11.5px;color:var(--faint)}
+.tb-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.badge-live{display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:var(--green);background:var(--green-bg);border:1px solid rgba(36,135,0,.25);border-radius:var(--r-pill);padding:4px 11px}
+.badge-live .dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+
+.layout{flex:1;display:flex;overflow:hidden}
+.map-pane{flex:1;position:relative;min-width:0}
+#map{position:absolute;inset:0;background:#e5e3df}
+
+.map-legend{position:absolute;left:14px;bottom:14px;z-index:500;background:var(--card);border:1px solid var(--border);border-radius:var(--r-md);padding:10px 12px;box-shadow:var(--sh-sm);font-size:11px;color:var(--muted)}
+.map-legend .lbl{font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--faint);margin-bottom:6px}
+.map-legend .scale{display:flex;height:10px;width:180px;border-radius:3px;overflow:hidden;margin-bottom:4px}
+.map-legend .scale span{flex:1}
+.map-legend .ends{display:flex;justify-content:space-between;font-size:10px;color:var(--faint)}
+
+.side-pane{width:360px;flex-shrink:0;background:var(--card);border-left:1px solid var(--border);overflow-y:auto;padding:16px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);box-shadow:var(--sh-xs);padding:14px 16px;margin-bottom:14px}
+.card h2{font-size:11.5px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--purple);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
+.card h2 .unit{font-size:9.5px;font-weight:700;color:var(--faint);text-transform:none;letter-spacing:0}
+
+.param-row{display:flex;justify-content:space-between;align-items:baseline;padding:5px 0;border-bottom:1px dashed var(--border);font-size:12px}
+.param-row:last-child{border-bottom:none}
+.param-row .k{color:var(--muted)}
+.param-row .v{font-weight:800;color:var(--text);font-variant-numeric:tabular-nums}
+.param-note{font-size:10.5px;color:var(--faint);margin-top:8px;line-height:1.55}
+
+.res-select-row{display:flex;align-items:center;gap:8px;margin:10px 0}
+.res-select-row select{flex:1;font:inherit;font-size:12.5px;padding:6px 8px;border-radius:var(--r-md);border:1px solid var(--border-mid);background:var(--bg);color:var(--text)}
+.btn{padding:8px 14px;border-radius:var(--r-pill);border:none;font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;width:100%}
+.btn-p{background:var(--purple);color:#fff}
+.btn-p:hover{background:#3a1e56}
+
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.stat-box{background:var(--bg);border-radius:var(--r-md);padding:9px 11px}
+.stat-box .n{font-size:18px;font-weight:900;color:var(--purple)}
+.stat-box .l{font-size:9.5px;color:var(--faint);text-transform:uppercase;letter-spacing:.4px;font-weight:700;margin-top:1px}
+
+.hex-list{display:flex;flex-direction:column;gap:0;max-height:220px;overflow-y:auto}
+.hex-row{display:grid;grid-template-columns:22px 1fr auto;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);font-size:11.5px}
+.hex-row:last-child{border-bottom:none}
+.hex-row .rk{color:var(--faint);font-weight:800}
+.hex-row .id{font-family:"JetBrains Mono",monospace;font-size:10.5px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hex-row .ct{font-weight:800;color:var(--text);font-variant-numeric:tabular-nums}
+
+.pts-table{width:100%;border-collapse:collapse;font-size:11px}
+.pts-table th{text-align:left;font-size:9.5px;text-transform:uppercase;letter-spacing:.4px;color:var(--faint);padding:4px 6px;border-bottom:1px solid var(--border)}
+.pts-table td{padding:4px 6px;border-bottom:1px solid var(--border);font-family:"JetBrains Mono",monospace;color:var(--muted)}
+.pts-table tr:last-child td{border-bottom:none}
+.pts-scroll{max-height:180px;overflow-y:auto}
+
+.leaflet-popup-content{font-size:12px}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div>
+    <div class="tb-module">Geo Analytics</div>
+    <div class="tb-title">H3 Density Heatmap</div>
+  </div>
+  <div class="tb-divider"></div>
+  <div class="tb-note">Synthetic store-visit density · Greater Vancouver</div>
+  <div class="tb-right">
+    <span class="badge-live"><span class="dot"></span>Live prototype</span>
+  </div>
+</header>
+
+<div class="layout">
+  <div class="map-pane">
+    <div id="map"></div>
+    <div class="map-legend">
+      <div class="lbl">Points per hex</div>
+      <div class="scale" id="legend-scale"></div>
+      <div class="ends"><span id="legend-min">0</span><span id="legend-max">—</span></div>
+    </div>
+  </div>
+
+  <aside class="side-pane">
+    <div class="card">
+      <h2>Data Pipeline</h2>
+      <div class="param-row"><span class="k">Center (Greater Vancouver)</span><span class="v" id="p-center">—</span></div>
+      <div class="param-row"><span class="k">Store count (estimate)</span><span class="v" id="p-stores">—</span></div>
+      <div class="param-row"><span class="k">Multiplier</span><span class="v" id="p-mult">× 10</span></div>
+      <div class="param-row"><span class="k">Generated points</span><span class="v" id="p-points">—</span></div>
+      <div class="param-row"><span class="k">Position noise</span><span class="v" id="p-noise">± 100 m (lat &amp; lon)</span></div>
+      <div class="param-row"><span class="k">H3 resolution</span><span class="v" id="p-res">—</span></div>
+      <div class="param-note">Store count is an approximate estimate — Statistics Canada's exact live retail-trade
+        establishment count for the Vancouver CMA sits behind an interactive data table this mock doesn't scrape.
+        Swap in a real figure by editing one constant at the top of the script.</div>
+      <div class="res-select-row">
+        <select id="res-select"></select>
+        <button class="btn btn-p" id="regen-btn" style="width:auto;flex-shrink:0">↻ Regenerate</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Density Stats</h2>
+      <div class="stat-grid">
+        <div class="stat-box"><div class="n" id="s-hexes">—</div><div class="l">Unique Hexes</div></div>
+        <div class="stat-box"><div class="n" id="s-max">—</div><div class="l">Max / Hex</div></div>
+        <div class="stat-box"><div class="n" id="s-avg">—</div><div class="l">Avg / Hex</div></div>
+        <div class="stat-box"><div class="n" id="s-edge">—</div><div class="l">Hex Edge (m)</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Top Hexes<span class="unit">by point count</span></h2>
+      <div class="hex-list" id="hex-list"></div>
+    </div>
+
+    <div class="card">
+      <h2>Sample Raw Points<span class="unit">first 12 of N</span></h2>
+      <div class="pts-scroll">
+        <table class="pts-table">
+          <thead><tr><th>#</th><th>Lat</th><th>Lon</th><th>H3 Cell</th></tr></thead>
+          <tbody id="pts-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/h3-js@4.5.0/dist/h3-js.umd.js"></script>
+<script>
+// ─────────────────────────────────────────────────────────────
+// Data generation parameters — tune these and hit Regenerate.
+// ─────────────────────────────────────────────────────────────
+const GREATER_VANCOUVER = { lat: 49.2827, lon: -123.1207 }; // Downtown Vancouver reference point
+const STORE_COUNT_ESTIMATE = 12000;  // approx. retail-trade establishments, Metro Vancouver (see note in UI)
+const POINTS_PER_STORE = 10;         // "multiply the value times 10"
+const NOISE_RADIUS_METERS = 100;     // +/- meters, applied independently to lat and lon
+const DEFAULT_H3_RESOLUTION = 10;    // closest default H3 size to ~100m width (edge ~75.9m, flat-to-flat ~131.4m)
+
+const METERS_PER_DEG_LAT = 111320;
+
+function metersToDegLat(m) { return m / METERS_PER_DEG_LAT; }
+function metersToDegLon(m, atLat) { return m / (METERS_PER_DEG_LAT * Math.cos(atLat * Math.PI / 180)); }
+function randomOffsetMeters() { return (Math.random() * 2 - 1) * NOISE_RADIUS_METERS; } // uniform [-100, 100]
+
+function generatePoints(center, count) {
+  const points = new Array(count);
+  for (let i = 0; i < count; i++) {
+    const lat = center.lat + metersToDegLat(randomOffsetMeters());
+    const lon = center.lon + metersToDegLon(randomOffsetMeters(), center.lat);
+    points[i] = { lat, lon };
+  }
+  return points;
+}
+
+function aggregateToH3(points, resolution) {
+  const counts = new Map();
+  for (const p of points) {
+    const cell = h3.latLngToCell(p.lat, p.lon, resolution);
+    counts.set(cell, (counts.get(cell) || 0) + 1);
+  }
+  return counts;
+}
+
+// Keep everything around so parameters/results can be inspected and re-tuned.
+window.GEO_DATA = { params: null, points: null, hexCounts: null };
+
+// ─────────────────────────────────────────────────────────────
+// Map + rendering
+// ─────────────────────────────────────────────────────────────
+const HEAT_STOPS = ["#ffffb2", "#fecc5c", "#fd8d3c", "#f03b20", "#bd0026"];
+function hexToRgb(hex) { const n = parseInt(hex.slice(1), 16); return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 }; }
+function lerpColor(a, b, t) {
+  const ca = hexToRgb(a), cb = hexToRgb(b);
+  return `rgb(${Math.round(ca.r + (cb.r - ca.r) * t)},${Math.round(ca.g + (cb.g - ca.g) * t)},${Math.round(ca.b + (cb.b - ca.b) * t)})`;
+}
+function colorForRatio(t) {
+  t = Math.max(0, Math.min(1, t));
+  const idx = t * (HEAT_STOPS.length - 1);
+  const i0 = Math.floor(idx), i1 = Math.min(HEAT_STOPS.length - 1, i0 + 1);
+  return lerpColor(HEAT_STOPS[i0], HEAT_STOPS[i1], idx - i0);
+}
+
+const map = L.map("map", { zoomControl: true, attributionControl: true });
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+  maxZoom: 19,
+}).addTo(map);
+map.setView([GREATER_VANCOUVER.lat, GREATER_VANCOUVER.lon], 17);
+
+let hexLayer = L.layerGroup().addTo(map);
+
+function renderLegendScale() {
+  const el = document.getElementById("legend-scale");
+  el.innerHTML = HEAT_STOPS.map(c => `<span style="background:${c}"></span>`).join("");
+}
+renderLegendScale();
+
+function renderHexLayer(hexCounts, resolution) {
+  hexLayer.clearLayers();
+  const counts = [...hexCounts.values()];
+  const maxCount = Math.max(1, ...counts);
+  const bounds = [];
+
+  const sorted = [...hexCounts.entries()].sort((a, b) => b[1] - a[1]);
+  for (const [cell, count] of sorted) {
+    const boundary = h3.cellToBoundary(cell); // [[lat,lon], ...]
+    boundary.forEach(([lat, lon]) => bounds.push([lat, lon]));
+    const color = colorForRatio(count / maxCount);
+    L.polygon(boundary, {
+      color: "#7a5230",
+      weight: 1,
+      opacity: 0.35,
+      fillColor: color,
+      fillOpacity: 0.78,
+    })
+      .bindTooltip(`${count} point${count === 1 ? "" : "s"}<br><span style="font-family:monospace;font-size:10px">${cell}</span>`)
+      .addTo(hexLayer);
+  }
+
+  document.getElementById("legend-min").textContent = "0";
+  document.getElementById("legend-max").textContent = maxCount.toLocaleString();
+
+  if (bounds.length) map.fitBounds(bounds, { padding: [40, 40] });
+
+  return { maxCount, uniqueHexes: hexCounts.size, totalPoints: counts.reduce((a, b) => a + b, 0) };
+}
+
+function renderSidePanel(points, hexCounts, resolution, stats) {
+  document.getElementById("p-center").textContent = `${GREATER_VANCOUVER.lat.toFixed(4)}, ${GREATER_VANCOUVER.lon.toFixed(4)}`;
+  document.getElementById("p-stores").textContent = STORE_COUNT_ESTIMATE.toLocaleString();
+  document.getElementById("p-points").textContent = points.length.toLocaleString();
+  document.getElementById("p-res").textContent = `${resolution} (~${h3.getHexagonEdgeLengthAvg(resolution, "m").toFixed(0)} m edge)`;
+
+  const avg = stats.totalPoints / Math.max(1, stats.uniqueHexes);
+  document.getElementById("s-hexes").textContent = stats.uniqueHexes.toLocaleString();
+  document.getElementById("s-max").textContent = stats.maxCount.toLocaleString();
+  document.getElementById("s-avg").textContent = avg.toFixed(1);
+  document.getElementById("s-edge").textContent = h3.getHexagonEdgeLengthAvg(resolution, "m").toFixed(1);
+
+  const top = [...hexCounts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 10);
+  document.getElementById("hex-list").innerHTML = top.map(([cell, count], i) => `
+    <div class="hex-row">
+      <span class="rk">#${i + 1}</span>
+      <span class="id" title="${cell}">${cell}</span>
+      <span class="ct">${count.toLocaleString()}</span>
+    </div>
+  `).join("");
+
+  document.getElementById("pts-body").innerHTML = points.slice(0, 12).map((p, i) => `
+    <tr>
+      <td>${i + 1}</td>
+      <td>${p.lat.toFixed(6)}</td>
+      <td>${p.lon.toFixed(6)}</td>
+      <td>${h3.latLngToCell(p.lat, p.lon, resolution)}</td>
+    </tr>
+  `).join("");
+}
+
+function runPipeline(resolution, regeneratePoints) {
+  const points = regeneratePoints
+    ? generatePoints(GREATER_VANCOUVER, STORE_COUNT_ESTIMATE * POINTS_PER_STORE)
+    : window.GEO_DATA.points;
+  const hexCounts = aggregateToH3(points, resolution);
+  const stats = renderHexLayer(hexCounts, resolution);
+  renderSidePanel(points, hexCounts, resolution, stats);
+
+  window.GEO_DATA = {
+    params: {
+      center: GREATER_VANCOUVER,
+      storeCountEstimate: STORE_COUNT_ESTIMATE,
+      pointsPerStore: POINTS_PER_STORE,
+      noiseRadiusMeters: NOISE_RADIUS_METERS,
+      h3Resolution: resolution,
+    },
+    points,
+    hexCounts,
+  };
+}
+
+// ─────────────────────────────────────────────────────────────
+// Controls
+// ─────────────────────────────────────────────────────────────
+const RES_OPTIONS = [8, 9, 10, 11, 12];
+const resSelect = document.getElementById("res-select");
+resSelect.innerHTML = RES_OPTIONS.map(r => {
+  const edge = h3.getHexagonEdgeLengthAvg(r, "m");
+  const label = edge >= 1000 ? `${(edge / 1000).toFixed(2)} km` : `${edge.toFixed(0)} m`;
+  return `<option value="${r}" ${r === DEFAULT_H3_RESOLUTION ? "selected" : ""}>Res ${r} — ~${label} edge</option>`;
+}).join("");
+
+resSelect.addEventListener("change", () => {
+  runPipeline(parseInt(resSelect.value, 10), false);
+});
+document.getElementById("regen-btn").addEventListener("click", () => {
+  runPipeline(parseInt(resSelect.value, 10), true);
+});
+
+runPipeline(DEFAULT_H3_RESOLUTION, true);
+</script>
+</body>
+</html>
