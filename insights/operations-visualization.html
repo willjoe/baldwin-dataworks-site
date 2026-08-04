@@ -1,0 +1,1043 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>システム分析 — ライブプロトタイプ</title>
+<meta name="robots" content="noindex, nofollow">
+<style>
+:root {
+  --surface-1:   #fcfcfb;
+  --surface-2:   #f9f9f7;
+  --surface-3:   #f0efec;
+  --text-primary:   #0b0b0b;
+  --text-secondary: #52514e;
+  --text-muted:     #898781;
+  --gridline:       #e1e0d9;
+  --border:         rgba(11,11,11,0.10);
+
+  --kind-service:   #2a78d6;
+  --kind-datastore: #1baf7a;
+  --kind-actor:     #4a3aa7;
+  --kind-infra:     #eb6834;
+  --kind-pipeline:  #eda100;
+
+  --status-good: #0ca30c;
+
+  --heat-100: #cde2fb;
+  --heat-250: #86b6ef;
+  --heat-400: #3987e5;
+  --heat-550: #1c5cab;
+  --heat-700: #0d366b;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --surface-1:   #1a1a19;
+    --surface-2:   #0d0d0d;
+    --surface-3:   #383835;
+    --text-primary:   #ffffff;
+    --text-secondary: #c3c2b7;
+    --text-muted:     #898781;
+    --gridline:       #2c2c2a;
+    --border:         rgba(255,255,255,0.10);
+
+    --kind-service:   #3987e5;
+    --kind-datastore: #199e70;
+    --kind-actor:     #9085e9;
+    --kind-infra:     #d95926;
+    --kind-pipeline:  #c98500;
+
+    --heat-100: #14314f;
+    --heat-250: #184f95;
+    --heat-400: #3987e5;
+    --heat-550: #6da7ec;
+    --heat-700: #b7d3f6;
+  }
+}
+
+:root[data-theme="dark"] {
+  --surface-1:   #1a1a19;
+  --surface-2:   #0d0d0d;
+  --surface-3:   #383835;
+  --text-primary:   #ffffff;
+  --text-secondary: #c3c2b7;
+  --text-muted:     #898781;
+  --gridline:       #2c2c2a;
+  --border:         rgba(255,255,255,0.10);
+
+  --kind-service:   #3987e5;
+  --kind-datastore: #199e70;
+  --kind-actor:     #9085e9;
+  --kind-infra:     #d95926;
+  --kind-pipeline:  #c98500;
+
+  --heat-100: #14314f;
+  --heat-250: #184f95;
+  --heat-400: #3987e5;
+  --heat-550: #6da7ec;
+  --heat-700: #b7d3f6;
+}
+
+:root[data-theme="light"] {
+  --surface-1:   #fcfcfb;
+  --surface-2:   #f9f9f7;
+  --surface-3:   #f0efec;
+  --text-primary:   #0b0b0b;
+  --text-secondary: #52514e;
+  --text-muted:     #898781;
+  --gridline:       #e1e0d9;
+  --border:         rgba(11,11,11,0.10);
+
+  --kind-service:   #2a78d6;
+  --kind-datastore: #1baf7a;
+  --kind-actor:     #4a3aa7;
+  --kind-infra:     #eb6834;
+  --kind-pipeline:  #eda100;
+
+  --heat-100: #cde2fb;
+  --heat-250: #86b6ef;
+  --heat-400: #3987e5;
+  --heat-550: #1c5cab;
+  --heat-700: #0d366b;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  background: var(--surface-2);
+  color: var(--text-primary);
+  font-family: system-ui, -apple-system, "Segoe UI", "Hiragino Kaku Gothic ProN", "Yu Gothic", "Noto Sans JP", sans-serif;
+}
+
+.muted { color: var(--text-muted); font-weight: 400; }
+
+/* ---------- Hero ---------- */
+
+.hero {
+  padding: 14px 28px;
+  background: var(--surface-1);
+  border-bottom: 1px solid var(--border);
+}
+.hero-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+.eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--status-good);
+}
+.hero-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+.tabswitch {
+  display: flex;
+  gap: 3px;
+  padding: 3px;
+  background: var(--surface-3);
+  border-radius: 9px;
+  border: 1px solid var(--border);
+}
+.tab-btn {
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 6px 13px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  background: transparent;
+  color: var(--text-secondary);
+}
+.tab-btn.active { background: var(--surface-1); color: var(--text-primary); box-shadow: 0 1px 3px rgba(0,0,0,0.12); }
+.tab-btn:hover:not(.active) { color: var(--text-primary); }
+
+.source-line { font-size: 12px; color: var(--text-muted); margin: 0; }
+.source-line a { color: var(--kind-service); text-decoration: none; }
+.source-line a:hover { text-decoration: underline; }
+
+.btn {
+  font: inherit;
+  font-size: 13px;
+  padding: 7px 14px;
+  border-radius: 7px;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  background: var(--surface-1);
+  color: var(--text-primary);
+  display: inline-block;
+  text-decoration: none;
+}
+.btn:hover { background: var(--surface-3); }
+.btn:focus-visible { outline: 2px solid var(--kind-service); outline-offset: 2px; }
+.btn-primary { background: var(--kind-service); color: #fff; border-color: transparent; }
+.btn-primary:hover { filter: brightness(1.08); }
+.btn-ghost { background: transparent; }
+
+/* ---------- Layout ---------- */
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(340px, 36%) 1fr;
+  height: calc(100vh - 90px);
+  min-height: 560px;
+}
+
+.pane { overflow-y: auto; padding: 18px 22px; }
+.pane-left { border-right: 1px solid var(--border); background: var(--surface-2); display: flex; flex-direction: column; gap: 18px; }
+.pane-right { background: var(--surface-1); display: flex; flex-direction: column; }
+
+.pane-block h2 { font-size: 12.5px; margin: 0 0 4px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); font-weight: 700; }
+.pane-sub { margin: 0 0 12px; font-size: 12px; color: var(--text-muted); }
+.pane-header-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 0 22px; padding-top: 16px; }
+#right-header { font-size: 12.5px; margin: 0 0 4px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); font-weight: 700; }
+
+.mock-app {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--surface-1);
+  flex-shrink: 0;
+}
+.mock-app-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  background: var(--kind-service);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+}
+.mock-counter { font-variant-numeric: tabular-nums; }
+.mock-app-body { padding: 14px; min-height: 56px; font-size: 13px; }
+.mock-hero { color: var(--text-secondary); }
+.mock-flash {
+  padding: 9px 11px;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--status-good) 18%, transparent);
+  border: 1px solid var(--status-good);
+  font-size: 13px;
+  animation: fadein 0.2s ease-out;
+}
+@keyframes fadein { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+
+.action-groups { display: flex; flex-direction: column; gap: 14px; }
+.action-group h3 { font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin: 0 0 8px; font-weight: 700; }
+.action-list { display: flex; flex-wrap: wrap; gap: 8px; }
+.action-btn {
+  font: inherit;
+  font-size: 13px;
+  padding: 9px 13px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface-1);
+  color: var(--text-primary);
+  cursor: pointer;
+  text-align: left;
+  transition: transform 0.08s ease;
+}
+.action-btn:hover { background: var(--surface-3); }
+.action-btn:active { transform: scale(0.97); }
+.action-btn:focus-visible { outline: 2px solid var(--kind-service); outline-offset: 1px; }
+.action-btn.platform { border-color: color-mix(in srgb, var(--kind-pipeline) 55%, var(--border)); }
+.action-btn.security { border-color: color-mix(in srgb, var(--kind-infra) 55%, var(--border)); }
+
+.log-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; max-height: 240px; overflow-y: auto; }
+.log-list li {
+  font-size: 12.5px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+}
+.log-list li .log-time { color: var(--text-muted); margin-right: 6px; font-variant-numeric: tabular-nums; }
+.log-list li .log-action { color: var(--text-primary); font-weight: 600; }
+.log-empty { font-size: 12.5px; color: var(--text-muted); }
+
+.breadcrumbs { font-size: 12.5px; color: var(--text-secondary); }
+.breadcrumbs button {
+  font: inherit;
+  background: none;
+  border: none;
+  color: var(--kind-service);
+  cursor: pointer;
+  padding: 0;
+}
+.breadcrumbs button:hover { text-decoration: underline; }
+.breadcrumbs .sep { margin: 0 6px; color: var(--text-muted); }
+.breadcrumbs .current { color: var(--text-primary); font-weight: 600; }
+
+.legend { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: flex-end; max-width: 46%; }
+.legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-secondary); }
+.legend-swatch { width: 10px; height: 10px; border-radius: 3px; display: inline-block; flex-shrink: 0; }
+
+.canvas-wrap {
+  flex: 1;
+  overflow: auto;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface-1);
+  margin: 12px 22px;
+  background-image: radial-gradient(var(--gridline) 1px, transparent 1px);
+  background-size: 18px 18px;
+}
+#chart-svg { display: block; }
+
+.node-rect { stroke-width: 1.5; cursor: default; transition: stroke-width 0.25s ease, filter 0.25s ease, fill 0.25s ease; }
+.node-rect.clickable { cursor: pointer; }
+.node-rect.container { fill: transparent; stroke-dasharray: 6 5; }
+.node-label { font-size: 11.5px; fill: var(--text-primary); pointer-events: none; text-anchor: middle; dominant-baseline: middle; }
+.node-label tspan { fill: var(--text-primary); }
+.node-kind-badge { font-size: 9px; fill: var(--text-muted); text-anchor: middle; pointer-events: none; letter-spacing: 0.03em; }
+.node-count { font-size: 9.5px; fill: var(--text-secondary); text-anchor: middle; pointer-events: none; font-variant-numeric: tabular-nums; }
+
+.node-group.active .node-rect { filter: drop-shadow(0 0 6px color-mix(in srgb, var(--status-good) 70%, transparent)); }
+.node-group.active .node-rect:not(.container) { stroke: var(--status-good); stroke-width: 3.5; }
+.node-group.unused .node-rect { opacity: 0.55; stroke-dasharray: 3 3; }
+
+.edge-line { fill: none; transition: stroke-width 0.25s ease, stroke 0.25s ease, opacity 0.25s ease; }
+.edge-line.active { stroke: var(--status-good) !important; }
+.edge-arrow { transition: fill 0.25s ease; }
+.edge-arrow.active { fill: var(--status-good) !important; }
+
+.usage-summary { border-top: 1px solid var(--border); padding: 12px 22px 18px; }
+.usage-summary-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
+.usage-summary-header span { font-size: 12px; }
+.usage-table { display: flex; flex-direction: column; gap: 5px; max-height: 150px; overflow-y: auto; }
+.usage-row { display: grid; grid-template-columns: 16px 1fr 60px 60px; align-items: center; gap: 8px; font-size: 12px; }
+.usage-row .swatch { width: 10px; height: 10px; border-radius: 3px; }
+.usage-row .bar-track { height: 6px; border-radius: 3px; background: var(--surface-3); overflow: hidden; }
+.usage-row .bar-fill { height: 100%; background: var(--heat-550); }
+.usage-row .count { text-align: right; color: var(--text-secondary); font-variant-numeric: tabular-nums; }
+.usage-row.zero { color: var(--text-muted); }
+.usage-row.zero .bar-fill { background: var(--gridline); }
+
+.modal-backdrop {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.45);
+  display: flex; align-items: center; justify-content: center; z-index: 20;
+  padding: 20px;
+}
+.modal-backdrop.hidden { display: none; }
+.modal {
+  background: var(--surface-1); border-radius: 12px; width: min(640px, 92vw);
+  max-height: 80vh; overflow-y: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+}
+.modal-header { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; border-bottom: 1px solid var(--border); }
+.modal-header h2 { font-size: 15px; margin: 0; }
+.modal-body { padding: 14px 18px; font-size: 13px; }
+.modal-body h4 { font-size: 12px; text-transform: uppercase; color: var(--text-muted); margin: 14px 0 6px; }
+.modal-body ul { margin: 0; padding-left: 18px; }
+.modal-body li { margin-bottom: 4px; }
+
+@media (max-width: 860px) {
+  .layout { grid-template-columns: 1fr; height: auto; }
+  .pane-left { border-right: none; border-bottom: 1px solid var(--border); }
+  .legend { max-width: 100%; justify-content: flex-start; }
+}
+
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="hero-top">
+    <span class="eyebrow">Live prototype</span>
+    <div class="hero-actions">
+      <div class="tabswitch" id="tabswitch" role="tablist"></div>
+      <button id="reset-btn" class="btn btn-ghost"></button>
+      <button id="report-btn" class="btn btn-primary"></button>
+    </div>
+  </div>
+  <p class="source-line">Modeled on: <a id="demo-link" href="#" target="_blank" rel="noopener"></a></p>
+</header>
+
+<main class="layout">
+  <section class="pane pane-left" aria-label="Simulated actions">
+    <div class="mock-app">
+      <div class="mock-app-bar">
+        <span id="mock-app-bar-label"></span>
+        <span class="mock-counter"><span id="mock-counter-icon"></span> <span id="mock-counter-count">0</span></span>
+      </div>
+      <div class="mock-app-body" id="mock-app-body"></div>
+    </div>
+
+    <div class="pane-block">
+      <h2 id="try-header"></h2>
+      <p class="pane-sub" id="try-sub"></p>
+      <div id="action-groups" class="action-groups"></div>
+    </div>
+
+    <div class="pane-block">
+      <h2 id="log-header"></h2>
+      <ol id="activity-log-list" class="log-list"></ol>
+    </div>
+  </section>
+
+  <section class="pane pane-right" aria-label="Flow chart">
+    <div class="pane-header-row">
+      <div>
+        <h2 id="right-header"></h2>
+        <nav id="breadcrumbs" class="breadcrumbs"></nav>
+      </div>
+      <div class="legend" id="legend"></div>
+    </div>
+    <div class="canvas-wrap" id="canvas-wrap">
+      <svg id="chart-svg" xmlns="http://www.w3.org/2000/svg"></svg>
+    </div>
+    <div class="usage-summary">
+      <div class="usage-summary-header">
+        <h2 id="usage-header"></h2>
+        <span class="muted" id="usage-total"></span>
+      </div>
+      <div id="usage-table" class="usage-table"></div>
+    </div>
+  </section>
+</main>
+
+<div id="report-modal" class="modal-backdrop hidden">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="report-title"></h2>
+      <button id="report-close" class="btn btn-ghost">✕</button>
+    </div>
+    <div id="report-body" class="modal-body"></div>
+  </div>
+</div>
+
+<script>
+const DATASETS = {
+  blea: {
+    lang: "ja",
+    tabLabel: "🇯🇵 BLEA（AWS Japan）",
+    docTitle: "システム分析 — ライブプロトタイプ",
+    demoLink: "https://github.com/aws-samples/baseline-environment-on-aws",
+    demoLinkLabel: "aws-samples/baseline-environment-on-aws（BLEA）",
+    mockAppBar: "BLEA ゲストシステム",
+    mockHero: "ようこそ — 左のボタンを試してください。",
+    counterIcon: "🛡",
+    counterLabel: "アラート",
+    kindLabel: {"service":"サービス","datastore":"データ","actor":"人","infra":"インフラ","pipeline":"パイプライン"},
+    groupOrder: ["enduser","platform","security"],
+    groupLabel: {"enduser":"利用者の操作","platform":"開発チームの操作","security":"セキュリティの動き"},
+    ui: {
+      "tryHeader": "検証",
+      "trySubtext": "各ボタンは、利用者や運用チームの実際の操作を再現します。",
+      "logHeader": "処理履歴",
+      "logEmpty": "まだ操作がありません — 上のボタンを試してください。",
+      "rightHeader": "利用処理の可視化",
+      "breadcrumbRoot": "全体図",
+      "heatLegend": "太い線ほどよく使われています",
+      "drillHint": "クリックすると詳細が見られます →",
+      "drillBadgeSuffix": "・クリックで詳細",
+      "usageSummaryHeader": "処理頻度",
+      "usageTotalTemplate": (n) => `${n} 回試しました`,
+      "resetBtn": "最初からやり直す",
+      "reportBtn": "まとめを見る",
+      "reportTitle": "まとめ",
+      "reportIntroTemplate": (n) => `このセッションで ${n} 回操作を試しました。`,
+      "reportHotHeader": "最もよく使われた場所",
+      "reportColdHeaderTemplate": (n) => `一度も使われていない場所（${n}）`,
+      "reportNoTraffic": "まだ何も試していません。",
+      "reportAllExercised": "すべての場所が少なくとも一度使われました。",
+      "usedTemplate": (n) => `${n} 回使用`
+    },
+    graph: {"meta":{"name":"BLEA（Baseline Environment on AWS）フローマップ","source":"https://github.com/aws-samples/baseline-environment-on-aws","note":"AWS Japan が公開するリファレンスアーキテクチャ。ノード/エッジは実際の CDK コードから抽出: usecases/blea-guest-ecs-app-sample/lib/construct/*.ts、usecases/blea-gov-base-standalone/lib/construct/*.ts、via-cdk-pipelines-stack.ts。"},"viewBox":"0 0 1300 1340","nodes":[{"id":"user","label":"エンドユーザー","kind":"actor","x":60,"y":90,"w":130,"h":56},{"id":"canaryBot","label":"Synthetics\nカナリア（自動監視）","kind":"actor","x":60,"y":230,"w":130,"h":56},{"id":"guestApp","label":"ゲストシステム（ECS App サンプル）\nAWS CDK: blea-guest-ecs-app-sample","kind":"infra","x":280,"y":40,"w":900,"h":270,"isContainer":true},{"id":"cloudfront","label":"CloudFront\n（CDN）","kind":"infra","x":300,"y":160,"w":150,"h":56},{"id":"alb","label":"ALB\n（ロードバランサー）","kind":"service","x":530,"y":160,"w":150,"h":56},{"id":"ecsService","label":"ECS Fargate\nサービス","kind":"service","x":760,"y":160,"w":160,"h":56,"children":"ecsapp"},{"id":"aurora","label":"Aurora PostgreSQL\n（データベース）","kind":"datastore","x":990,"y":160,"w":170,"h":56,"children":"aurora"},{"id":"developer","label":"開発者\n（git push）","kind":"actor","x":60,"y":470,"w":140,"h":56},{"id":"codepipeline","label":"CodePipeline","kind":"pipeline","x":300,"y":470,"w":150,"h":56,"children":"pipeline"},{"id":"synthStep","label":"CodeBuild\nSynthStep（cdk synth）","kind":"pipeline","x":530,"y":470,"w":170,"h":56},{"id":"deployStage","label":"Deploy Stage\n（Dev）","kind":"pipeline","x":760,"y":470,"w":160,"h":56},{"id":"cloudformation","label":"CloudFormation\n（スタック更新）","kind":"infra","x":990,"y":470,"w":170,"h":56},{"id":"govBase","label":"ガバナンスベース（Standalone）\nAWS CDK: blea-gov-base-standalone","kind":"infra","x":20,"y":620,"w":1220,"h":680,"isContainer":true},{"id":"apiCall","label":"AWS API 呼び出し\n（あらゆる操作）","kind":"actor","x":60,"y":680,"w":150,"h":56},{"id":"cloudtrail","label":"CloudTrail\n（監査ログ）","kind":"infra","x":300,"y":680,"w":150,"h":56},{"id":"s3Trail","label":"S3\n（証跡保管バケット）","kind":"datastore","x":530,"y":680,"w":160,"h":56},{"id":"guardduty","label":"GuardDuty\n（脅威検知）","kind":"infra","x":60,"y":800,"w":150,"h":56},{"id":"securityhub","label":"Security Hub\n（統合分析）","kind":"infra","x":300,"y":800,"w":160,"h":56},{"id":"iamRoles","label":"IAM ガードレール\n（ロール/グループ）","kind":"infra","x":990,"y":800,"w":170,"h":56,"children":"iam"},{"id":"awsConfig","label":"AWS Config\n（構成監視）","kind":"infra","x":60,"y":920,"w":160,"h":56,"children":"config"},{"id":"ssmRemediation","label":"SSM Automation\n（自動是正）","kind":"pipeline","x":300,"y":920,"w":170,"h":56},{"id":"snsAlarm","label":"SNS\n（アラーム通知）","kind":"datastore","x":530,"y":920,"w":160,"h":56},{"id":"opsEngineer","label":"運用担当者","kind":"actor","x":760,"y":920,"w":150,"h":56}],"edges":[{"id":"r1","from":"user","to":"cloudfront"},{"id":"r2","from":"canaryBot","to":"cloudfront"},{"id":"r3","from":"cloudfront","to":"alb"},{"id":"r4","from":"alb","to":"ecsService"},{"id":"r5","from":"ecsService","to":"aurora"},{"id":"p1","from":"developer","to":"codepipeline"},{"id":"p2","from":"codepipeline","to":"synthStep"},{"id":"p3","from":"synthStep","to":"deployStage"},{"id":"p4","from":"deployStage","to":"cloudformation"},{"id":"p5","from":"cloudformation","to":"alb","label":"更新"},{"id":"p6","from":"cloudformation","to":"ecsService","label":"更新"},{"id":"p7","from":"cloudformation","to":"aurora","label":"更新"},{"id":"p8","from":"cloudformation","to":"cloudfront","label":"更新"},{"id":"g1","from":"apiCall","to":"cloudtrail"},{"id":"g2","from":"cloudtrail","to":"s3Trail"},{"id":"g3","from":"guardduty","to":"securityhub"},{"id":"g4","from":"guardduty","to":"snsAlarm"},{"id":"g5","from":"awsConfig","to":"securityhub"},{"id":"g6","from":"awsConfig","to":"ssmRemediation"},{"id":"g7","from":"ssmRemediation","to":"alb","label":"SG是正"},{"id":"g8","from":"ssmRemediation","to":"snsAlarm"},{"id":"g9","from":"snsAlarm","to":"opsEngineer"}],"subgraphs":{"ecsapp":{"label":"ECS Fargate 内部構成（ecsapp.ts）","viewBox":"0 0 780 320","nodes":[{"id":"cluster","label":"ECS Cluster","kind":"infra","x":40,"y":20,"w":150,"h":56},{"id":"appSg","label":"App セキュリティ\nグループ","kind":"infra","x":40,"y":130,"w":150,"h":56},{"id":"taskDefinition","label":"Fargate\nTaskDefinition","kind":"service","x":280,"y":20,"w":180,"h":56},{"id":"service","label":"Fargate Service","kind":"service","x":540,"y":75,"w":170,"h":56}],"edges":[{"id":"ea1","from":"cluster","to":"taskDefinition"},{"id":"ea2","from":"taskDefinition","to":"service"},{"id":"ea3","from":"appSg","to":"service"}]},"aurora":{"label":"Aurora PostgreSQL 内部構成（datastore.ts）","viewBox":"0 0 780 300","nodes":[{"id":"auroraCluster","label":"Aurora\nDatabaseCluster","kind":"datastore","x":40,"y":110,"w":180,"h":56},{"id":"writerInstance","label":"ライター\nインスタンス","kind":"datastore","x":320,"y":30,"w":170,"h":56},{"id":"readerInstance","label":"リーダー\nインスタンス","kind":"datastore","x":320,"y":110,"w":170,"h":56},{"id":"eventSubsc","label":"RDS Event\nSubscription","kind":"infra","x":320,"y":190,"w":200,"h":56}],"edges":[{"id":"au1","from":"auroraCluster","to":"writerInstance"},{"id":"au2","from":"auroraCluster","to":"readerInstance"},{"id":"au3","from":"auroraCluster","to":"eventSubsc"}]},"config":{"label":"AWS Config 内部構成（detection.ts / logging.ts）","viewBox":"0 0 620 260","nodes":[{"id":"configRecorder","label":"Config\nConfigurationRecorder","kind":"infra","x":40,"y":40,"w":200,"h":56},{"id":"deliveryChannel","label":"Config\nDeliveryChannel","kind":"infra","x":340,"y":40,"w":220,"h":56},{"id":"defaultSgRule","label":"Managed Rule:\nDefaultSgClosedRule","kind":"infra","x":40,"y":150,"w":220,"h":56},{"id":"remediationConfig","label":"Remediation\nConfiguration","kind":"pipeline","x":340,"y":150,"w":220,"h":56}],"edges":[{"id":"cf1","from":"configRecorder","to":"deliveryChannel"},{"id":"cf2","from":"defaultSgRule","to":"remediationConfig"}]},"pipeline":{"label":"CDK Pipelines デプロイステージ内部（via-cdk-pipelines-stack.ts）","viewBox":"0 0 950 400","nodes":[{"id":"stage","label":"BLEAEcsAppStage\n（Dev）","kind":"pipeline","x":40,"y":170,"w":170,"h":56},{"id":"networkingStack","label":"Networking\nStack","kind":"infra","x":340,"y":20,"w":190,"h":50},{"id":"datastoreStack","label":"Datastore\nStack","kind":"infra","x":340,"y":90,"w":190,"h":50},{"id":"ecsappStack","label":"EcsApp\nStack","kind":"infra","x":340,"y":160,"w":190,"h":50},{"id":"frontendStack","label":"Frontend\nStack","kind":"infra","x":340,"y":230,"w":190,"h":50},{"id":"monitoringStack","label":"Monitoring\nStack","kind":"infra","x":340,"y":300,"w":190,"h":50}],"edges":[{"id":"pi1","from":"stage","to":"networkingStack"},{"id":"pi2","from":"stage","to":"datastoreStack"},{"id":"pi3","from":"stage","to":"ecsappStack"},{"id":"pi4","from":"stage","to":"frontendStack"},{"id":"pi5","from":"stage","to":"monitoringStack"}]},"iam":{"label":"IAM ガードレール 内部構成（iam.ts）","viewBox":"0 0 620 300","nodes":[{"id":"iamRoot","label":"IAM\nグループ一覧","kind":"infra","x":40,"y":120,"w":160,"h":56},{"id":"sysAdminRole","label":"SysAdminRole\n/Group","kind":"infra","x":320,"y":20,"w":200,"h":50},{"id":"iamAdminRole","label":"IamAdminRole\n/Group","kind":"infra","x":320,"y":85,"w":200,"h":50},{"id":"instanceOpsRole","label":"InstanceOpsRole\n/Group","kind":"infra","x":320,"y":150,"w":200,"h":50},{"id":"readOnlyAdminRole","label":"ReadOnlyAdminRole\n/Group","kind":"infra","x":320,"y":215,"w":200,"h":50}],"edges":[{"id":"ia1","from":"iamRoot","to":"sysAdminRole"},{"id":"ia2","from":"iamRoot","to":"iamAdminRole"},{"id":"ia3","from":"iamRoot","to":"instanceOpsRole"},{"id":"ia4","from":"iamRoot","to":"readOnlyAdminRole"}]}},"actions":[{"id":"visit-site","group":"enduser","label":"サイトにアクセスする","description":"エンドユーザーが CloudFront 経由でアクセス → ALB → ECS Fargate → Aurora PostgreSQL","flowNodes":["user","cloudfront","alb","ecsService","aurora"],"flowEdges":["r1","r3","r4","r5"],"mockMessage":"エンドユーザーがサイトを訪れました。"},{"id":"canary-check","group":"enduser","label":"自動ヘルスチェックを実行","description":"Synthetics Canary が定期的にヘルスチェックを実行（canary.ts）","flowNodes":["canaryBot","cloudfront","alb","ecsService"],"flowEdges":["r2","r3","r4"],"mockMessage":"自動監視が正常性を確認しました。"},{"id":"deploy-code","group":"platform","label":"新しいコードを公開する","description":"開発者が push → CodePipeline → CodeBuild(SynthStep) → Deploy Stage → CloudFormation がゲストシステムを更新（via-cdk-pipelines-stack.ts）","flowNodes":["developer","codepipeline","synthStep","deployStage","cloudformation","alb","ecsService","aurora","cloudfront","stage","networkingStack","datastoreStack","ecsappStack","frontendStack","monitoringStack"],"flowEdges":["p1","p2","p3","p4","p5","p6","p7","p8","pi1","pi2","pi3","pi4","pi5"],"mockMessage":"新しいコードをデプロイしました。"},{"id":"threat-detected","group":"security","label":"脅威を検知（GuardDuty）","description":"GuardDuty が異常な通信を検知 → Security Hub に集約 → SNS 経由で運用担当者へメール通知（detection.ts）","flowNodes":["guardduty","securityhub","snsAlarm","opsEngineer"],"flowEdges":["g3","g4","g9"],"mockMessage":"⚠️ 不審な通信を検知し、担当者に通知しました。","counterDelta":1},{"id":"sg-violation","group":"security","label":"セキュリティグループ違反を自動是正","description":"SG が 0.0.0.0/0 に開放される → AWS Config（DefaultSgClosedRule）が検知 → SSM Automation が自動修復 → 運用担当者に通知（detection.ts）","flowNodes":["awsConfig","securityhub","ssmRemediation","alb","snsAlarm","opsEngineer","defaultSgRule","remediationConfig"],"flowEdges":["g5","g6","g7","g8","g9","cf2"],"mockMessage":"⚠️ 設定ミスを自動的に修正しました。","counterDelta":1},{"id":"audit-log","group":"security","label":"監査ログを記録","description":"すべての AWS API 呼び出しを CloudTrail が記録し、S3 に証跡として保管（logging.ts）","flowNodes":["apiCall","cloudtrail","s3Trail"],"flowEdges":["g1","g2"],"mockMessage":"すべての操作を記録しました。"}]}
+  },
+  boutique: {
+    lang: "en",
+    tabLabel: "🛒 Online Boutique",
+    docTitle: "System Analytics — Live Prototype",
+    demoLink: "https://github.com/GoogleCloudPlatform/microservices-demo",
+    demoLinkLabel: "GoogleCloudPlatform/microservices-demo",
+    mockAppBar: "Online Boutique",
+    mockHero: "Welcome — try an action on the left.",
+    counterIcon: "🛒",
+    counterLabel: "Cart",
+    kindLabel: {"service":"Service","datastore":"Data","actor":"Person","infra":"Infra","pipeline":"Pipeline"},
+    groupOrder: ["shopper","platform"],
+    groupLabel: {"shopper":"Customer actions","platform":"Engineering actions"},
+    ui: {
+      "tryHeader": "Try it",
+      "trySubtext": "Each button simulates a real action a customer or engineer would take.",
+      "logHeader": "What just happened",
+      "logEmpty": "Nothing yet — try a button above.",
+      "rightHeader": "What's actually running",
+      "breadcrumbRoot": "Full system",
+      "heatLegend": "Thicker line = used more often",
+      "drillHint": "Click to look inside →",
+      "drillBadgeSuffix": " · click to expand",
+      "usageSummaryHeader": "What's been used",
+      "usageTotalTemplate": (n) => `${n} action${n === 1 ? "" : "s"} tried`,
+      "resetBtn": "Start over",
+      "reportBtn": "See summary",
+      "reportTitle": "Summary",
+      "reportIntroTemplate": (n) => `You tried ${n} action${n === 1 ? "" : "s"} in this session.`,
+      "reportHotHeader": "Busiest parts of the system",
+      "reportColdHeaderTemplate": (n) => `Never used (${n})`,
+      "reportNoTraffic": "Nothing tried yet.",
+      "reportAllExercised": "Everything has been used at least once.",
+      "usedTemplate": (n) => `used ${n}×`
+    },
+    graph: {"meta":{"name":"Online Boutique — System Flow Map","source":"https://github.com/GoogleCloudPlatform/microservices-demo","note":"Node/edge topology traced from real source: src/frontend/handlers.go, src/checkoutservice/main.go, terraform/main.tf + memorystore.tf, cloudbuild.yaml + skaffold.yaml."},"viewBox":"0 0 1200 1300","nodes":[{"id":"shopper","label":"Shopper","kind":"actor","x":70,"y":490,"w":120,"h":56},{"id":"frontend","label":"frontend\n(Go, HTTP)","kind":"service","x":290,"y":490,"w":140,"h":56,"children":"frontend"},{"id":"productcatalogservice","label":"Product Catalog\nService","kind":"service","x":600,"y":60,"w":160,"h":56},{"id":"cartservice","label":"Cart Service","kind":"service","x":600,"y":155,"w":160,"h":56},{"id":"recommendationservice","label":"Recommendation\nService","kind":"service","x":600,"y":250,"w":160,"h":56},{"id":"adservice","label":"Ad Service","kind":"service","x":600,"y":345,"w":160,"h":56},{"id":"currencyservice","label":"Currency Service","kind":"service","x":600,"y":440,"w":160,"h":56},{"id":"shippingservice","label":"Shipping Service","kind":"service","x":600,"y":535,"w":160,"h":56},{"id":"checkoutservice","label":"Checkout Service","kind":"service","x":600,"y":630,"w":160,"h":56},{"id":"paymentservice","label":"Payment Service","kind":"service","x":600,"y":725,"w":160,"h":56},{"id":"emailservice","label":"Email Service","kind":"service","x":600,"y":820,"w":160,"h":56},{"id":"shoppingassistantservice","label":"Shopping Assistant\nService","kind":"service","x":600,"y":915,"w":160,"h":56},{"id":"productjson","label":"products.json\n(static catalog)","kind":"datastore","x":940,"y":60,"w":170,"h":56},{"id":"redis","label":"Redis Cart Store\n(Memorystore)","kind":"datastore","x":940,"y":155,"w":170,"h":56,"children":"redis"},{"id":"vertexai","label":"Vertex AI / Gemini\n(external)","kind":"datastore","x":940,"y":915,"w":170,"h":56},{"id":"gke","label":"GKE Autopilot Cluster\n(Terraform-provisioned)","kind":"infra","x":210,"y":20,"w":500,"h":955,"isContainer":true,"children":"gke"},{"id":"gitpush","label":"git push","kind":"actor","x":70,"y":1050,"w":120,"h":56},{"id":"cloudbuild","label":"Cloud Build\nTrigger","kind":"pipeline","x":290,"y":1050,"w":140,"h":56},{"id":"buildstep","label":"Skaffold Build\n(11 images)","kind":"pipeline","x":600,"y":1050,"w":160,"h":56,"children":"buildstep"},{"id":"deploystep","label":"Skaffold Deploy\n(kubectl apply -k)","kind":"pipeline","x":940,"y":1050,"w":170,"h":56},{"id":"terraformcli","label":"terraform apply","kind":"actor","x":70,"y":1180,"w":140,"h":56}],"edges":[{"id":"e1","from":"shopper","to":"frontend"},{"id":"e2","from":"frontend","to":"productcatalogservice","label":"ListProducts/GetProduct"},{"id":"e3","from":"frontend","to":"cartservice","label":"AddItem/GetCart/EmptyCart"},{"id":"e4","from":"cartservice","to":"redis"},{"id":"e5","from":"frontend","to":"recommendationservice","label":"ListRecommendations"},{"id":"e6","from":"recommendationservice","to":"productcatalogservice"},{"id":"e7","from":"frontend","to":"adservice","label":"GetAds"},{"id":"e8","from":"frontend","to":"currencyservice","label":"GetSupportedCurrencies/Convert"},{"id":"e9","from":"frontend","to":"shippingservice","label":"GetQuote (cart estimate)"},{"id":"e10","from":"frontend","to":"checkoutservice","label":"PlaceOrder"},{"id":"e11","from":"checkoutservice","to":"cartservice","label":"GetCart/EmptyCart"},{"id":"e12","from":"checkoutservice","to":"productcatalogservice","label":"GetProduct"},{"id":"e13","from":"checkoutservice","to":"currencyservice","label":"Convert"},{"id":"e14","from":"checkoutservice","to":"shippingservice","label":"GetQuote/ShipOrder"},{"id":"e15","from":"checkoutservice","to":"paymentservice","label":"Charge"},{"id":"e16","from":"checkoutservice","to":"emailservice","label":"SendOrderConfirmation"},{"id":"e17","from":"frontend","to":"shoppingassistantservice","label":"chatBotHandler"},{"id":"e18","from":"shoppingassistantservice","to":"vertexai"},{"id":"e19","from":"shoppingassistantservice","to":"productcatalogservice"},{"id":"e20","from":"productcatalogservice","to":"productjson"},{"id":"e21","from":"gitpush","to":"cloudbuild"},{"id":"e22","from":"cloudbuild","to":"buildstep"},{"id":"e23","from":"buildstep","to":"deploystep"},{"id":"e24","from":"deploystep","to":"gke","label":"kubectl apply"},{"id":"e25","from":"terraformcli","to":"gke","label":"provision cluster"},{"id":"e26","from":"terraformcli","to":"redis","label":"provision memorystore"}],"subgraphs":{"frontend":{"label":"frontend — HTTP route handlers (handlers.go)","viewBox":"0 0 760 590","nodes":[{"id":"router","label":"HTTP Router\n(main.go)","kind":"service","x":40,"y":260,"w":140,"h":56},{"id":"homeHandler","label":"homeHandler\nGET /","kind":"service","x":380,"y":20,"w":180,"h":50},{"id":"productHandler","label":"productHandler\nGET /product/{id}","kind":"service","x":380,"y":90,"w":180,"h":50},{"id":"addToCartHandler","label":"addToCartHandler\nPOST /cart","kind":"service","x":380,"y":160,"w":180,"h":50},{"id":"viewCartHandler","label":"viewCartHandler\nGET /cart","kind":"service","x":380,"y":230,"w":180,"h":50},{"id":"emptyCartHandler","label":"emptyCartHandler\nPOST /cart/empty","kind":"service","x":380,"y":300,"w":180,"h":50},{"id":"setCurrencyHandler","label":"setCurrencyHandler\nPOST /setCurrency","kind":"service","x":380,"y":370,"w":180,"h":50},{"id":"placeOrderHandler","label":"placeOrderHandler\nPOST /cart/checkout","kind":"service","x":380,"y":440,"w":180,"h":50},{"id":"chatBotHandler","label":"chatBotHandler\nPOST /bot","kind":"service","x":380,"y":510,"w":180,"h":50}],"edges":[{"id":"f1","from":"router","to":"homeHandler"},{"id":"f2","from":"router","to":"productHandler"},{"id":"f3","from":"router","to":"addToCartHandler"},{"id":"f4","from":"router","to":"viewCartHandler"},{"id":"f5","from":"router","to":"emptyCartHandler"},{"id":"f6","from":"router","to":"setCurrencyHandler"},{"id":"f7","from":"router","to":"placeOrderHandler"},{"id":"f8","from":"router","to":"chatBotHandler"}]},"gke":{"label":"GKE Autopilot Cluster — Terraform resources (terraform/main.tf, memorystore.tf)","viewBox":"0 0 1020 500","nodes":[{"id":"enableApis","label":"module\nenable_google_apis","kind":"infra","x":40,"y":220,"w":190,"h":60},{"id":"cluster","label":"google_container_cluster\n\"my_cluster\" (Autopilot)","kind":"infra","x":320,"y":60,"w":220,"h":60},{"id":"redisInstance","label":"google_redis_instance\n(memorystore.tf)","kind":"infra","x":320,"y":380,"w":220,"h":60},{"id":"gcloudCreds","label":"module.gcloud\nget-credentials","kind":"infra","x":620,"y":60,"w":190,"h":60},{"id":"applyDeploy","label":"null_resource\nkubectl apply -k","kind":"infra","x":860,"y":220,"w":150,"h":60}],"edges":[{"id":"g1","from":"enableApis","to":"cluster"},{"id":"g2","from":"enableApis","to":"redisInstance"},{"id":"g3","from":"cluster","to":"gcloudCreds"},{"id":"g4","from":"gcloudCreds","to":"applyDeploy"}]},"redis":{"label":"Redis Cart Store — access pattern (cartservice)","viewBox":"0 0 700 260","nodes":[{"id":"redisGetCart","label":"GetCart(userId)\nHGETALL","kind":"datastore","x":60,"y":40,"w":190,"h":56},{"id":"redisAddItem","label":"AddItem(userId,item)\nHSET","kind":"datastore","x":60,"y":120,"w":190,"h":56},{"id":"redisEmptyCart","label":"EmptyCart(userId)\nDEL","kind":"datastore","x":60,"y":200,"w":190,"h":56},{"id":"redisNode","label":"Redis instance","kind":"datastore","x":420,"y":120,"w":170,"h":56}],"edges":[{"id":"r1","from":"redisGetCart","to":"redisNode"},{"id":"r2","from":"redisAddItem","to":"redisNode"},{"id":"r3","from":"redisEmptyCart","to":"redisNode"}]},"buildstep":{"label":"Skaffold parallel image build (skaffold.yaml artifacts)","viewBox":"0 0 920 540","nodes":[{"id":"skaffoldBuild","label":"skaffold build\n(parallel)","kind":"pipeline","x":30,"y":240,"w":150,"h":60},{"id":"build-frontend","label":"build: frontend","kind":"pipeline","x":320,"y":10,"w":170,"h":44},{"id":"build-cart","label":"build: cartservice","kind":"pipeline","x":320,"y":62,"w":170,"h":44},{"id":"build-productcatalog","label":"build: productcatalogservice","kind":"pipeline","x":320,"y":114,"w":170,"h":44},{"id":"build-checkout","label":"build: checkoutservice","kind":"pipeline","x":320,"y":166,"w":170,"h":44},{"id":"build-currency","label":"build: currencyservice","kind":"pipeline","x":320,"y":218,"w":170,"h":44},{"id":"build-shipping","label":"build: shippingservice","kind":"pipeline","x":320,"y":270,"w":170,"h":44},{"id":"build-payment","label":"build: paymentservice","kind":"pipeline","x":320,"y":322,"w":170,"h":44},{"id":"build-email","label":"build: emailservice","kind":"pipeline","x":320,"y":374,"w":170,"h":44},{"id":"build-recommendation","label":"build: recommendationservice","kind":"pipeline","x":320,"y":426,"w":170,"h":44},{"id":"build-ad","label":"build: adservice","kind":"pipeline","x":320,"y":478,"w":170,"h":44},{"id":"build-shoppingassistant","label":"build: shoppingassistantservice","kind":"pipeline","x":600,"y":10,"w":200,"h":44}],"edges":[{"id":"b1","from":"skaffoldBuild","to":"build-frontend"},{"id":"b2","from":"skaffoldBuild","to":"build-cart"},{"id":"b3","from":"skaffoldBuild","to":"build-productcatalog"},{"id":"b4","from":"skaffoldBuild","to":"build-checkout"},{"id":"b5","from":"skaffoldBuild","to":"build-currency"},{"id":"b6","from":"skaffoldBuild","to":"build-shipping"},{"id":"b7","from":"skaffoldBuild","to":"build-payment"},{"id":"b8","from":"skaffoldBuild","to":"build-email"},{"id":"b9","from":"skaffoldBuild","to":"build-recommendation"},{"id":"b10","from":"skaffoldBuild","to":"build-ad"},{"id":"b11","from":"skaffoldBuild","to":"build-shoppingassistant"}]}},"actions":[{"id":"browse-home","group":"shopper","label":"Browse Home Page","description":"GET / → homeHandler: ListProducts + GetAds","flowNodes":["shopper","frontend","productcatalogservice","productjson","adservice"],"flowEdges":["e1","e2","e20","e7"],"mockMessage":"Loaded the homepage — pulled in products and an ad."},{"id":"view-product","group":"shopper","label":"View Product","description":"GET /product/{id} → productHandler: GetProduct + ListRecommendations + GetAds","flowNodes":["shopper","frontend","productcatalogservice","productjson","recommendationservice","adservice"],"flowEdges":["e1","e2","e20","e5","e6","e7"],"mockMessage":"Opened a product page — pulled details, recommendations, and an ad."},{"id":"add-to-cart","group":"shopper","label":"Add to Cart","description":"POST /cart → addToCartHandler: cartservice.AddItem → Redis HSET","flowNodes":["shopper","frontend","cartservice","redis"],"flowEdges":["e1","e3","e4"],"mockMessage":"Added an item to the cart.","counterDelta":1},{"id":"view-cart","group":"shopper","label":"View Cart","description":"GET /cart → viewCartHandler: GetCart, GetProduct per item, shipping estimate, currency conversion","flowNodes":["shopper","frontend","cartservice","redis","productcatalogservice","productjson","shippingservice","currencyservice"],"flowEdges":["e1","e3","e4","e2","e20","e9","e8"],"mockMessage":"Opened the cart — checked items, shipping cost, and currency."},{"id":"empty-cart","group":"shopper","label":"Empty Cart","description":"POST /cart/empty → emptyCartHandler: cartservice.EmptyCart → Redis DEL","flowNodes":["shopper","frontend","cartservice","redis"],"flowEdges":["e1","e3","e4"],"mockMessage":"Cleared the cart.","resetCounter":true},{"id":"change-currency","group":"shopper","label":"Change Currency","description":"POST /setCurrency → setCurrencyHandler: currencyservice.GetSupportedCurrencies","flowNodes":["shopper","frontend","currencyservice"],"flowEdges":["e1","e8"],"mockCycle":{"values":["USD","EUR","JPY","GBP","CAD"],"template":"Currency switched to {v}."}},{"id":"place-order","group":"shopper","label":"Place Order (Checkout)","description":"POST /cart/checkout → placeOrderHandler → checkoutservice.PlaceOrder orchestrates cart, catalog, currency, shipping, payment, email","flowNodes":["shopper","frontend","checkoutservice","cartservice","redis","productcatalogservice","productjson","currencyservice","shippingservice","paymentservice","emailservice"],"flowEdges":["e1","e10","e11","e4","e12","e20","e13","e14","e15","e16"],"mockMessage":"Order placed — payment charged, shipping booked, confirmation emailed.","resetCounter":true},{"id":"ask-assistant","group":"shopper","label":"Ask Shopping Assistant","description":"POST /bot → chatBotHandler → shoppingassistantservice → Vertex AI/Gemini + product catalog lookup","flowNodes":["shopper","frontend","shoppingassistantservice","vertexai","productcatalogservice","productjson"],"flowEdges":["e1","e17","e18","e19","e20"],"mockMessage":"Asked the shopping assistant for help."},{"id":"run-pipeline","group":"platform","label":"Ship New Code","description":"git push → Cloud Build trigger → skaffold build (11 images) → skaffold deploy → kubectl apply on GKE","flowNodes":["gitpush","cloudbuild","buildstep","deploystep","gke","build-frontend","build-cart","build-productcatalog","build-checkout","build-currency","build-shipping","build-payment","build-email","build-recommendation","build-ad","build-shoppingassistant"],"flowEdges":["e21","e22","e23","e24","b1","b2","b3","b4","b5","b6","b7","b8","b9","b10","b11"],"mockMessage":"Shipped new code — built all 11 services and deployed them."},{"id":"provision-infra","group":"platform","label":"Set Up the Cloud","description":"terraform apply → creates GKE Autopilot cluster + Memorystore Redis instance","flowNodes":["terraformcli","gke","redis","enableApis","cluster","redisInstance","gcloudCreds","applyDeploy"],"flowEdges":["e25","e26","g1","g2","g3","g4"],"mockMessage":"Provisioned the cloud infrastructure from scratch."}]}
+  }
+};
+(() => {
+  "use strict";
+
+  const SVG_NS = "http://www.w3.org/2000/svg";
+  const KIND_ORDER = ["service", "datastore", "actor", "infra", "pipeline"];
+
+  let activeKey = "blea";
+  const els = {};
+
+  document.addEventListener("DOMContentLoaded", init);
+
+  function init() {
+    cacheEls();
+    for (const key of Object.keys(DATASETS)) initRuntime(DATASETS[key]);
+    renderTabs();
+    switchTo(activeKey);
+    wireGlobalButtons();
+  }
+
+  function cacheEls() {
+    els.tabswitch = document.getElementById("tabswitch");
+    els.demoLink = document.getElementById("demo-link");
+    els.mockAppBarLabel = document.getElementById("mock-app-bar-label");
+    els.mockCounterIcon = document.getElementById("mock-counter-icon");
+    els.mockCounterCount = document.getElementById("mock-counter-count");
+    els.mockBody = document.getElementById("mock-app-body");
+    els.tryHeader = document.getElementById("try-header");
+    els.trySub = document.getElementById("try-sub");
+    els.actionGroups = document.getElementById("action-groups");
+    els.logHeader = document.getElementById("log-header");
+    els.logList = document.getElementById("activity-log-list");
+    els.rightHeader = document.getElementById("right-header");
+    els.breadcrumbs = document.getElementById("breadcrumbs");
+    els.legend = document.getElementById("legend");
+    els.svg = document.getElementById("chart-svg");
+    els.usageHeader = document.getElementById("usage-header");
+    els.usageTotal = document.getElementById("usage-total");
+    els.usageTable = document.getElementById("usage-table");
+    els.resetBtn = document.getElementById("reset-btn");
+    els.reportBtn = document.getElementById("report-btn");
+    els.reportModal = document.getElementById("report-modal");
+    els.reportTitle = document.getElementById("report-title");
+    els.reportBody = document.getElementById("report-body");
+    els.reportClose = document.getElementById("report-close");
+  }
+
+  function initRuntime(ds) {
+    const nodeIndex = new Map();
+    const edgeIndex = new Map();
+    const nodeUsage = new Map();
+    const edgeUsage = new Map();
+    for (const n of ds.graph.nodes) { nodeIndex.set(n.id, n); nodeUsage.set(n.id, 0); }
+    for (const e of ds.graph.edges) { edgeIndex.set(e.id, e); edgeUsage.set(e.id, 0); }
+    for (const key of Object.keys(ds.graph.subgraphs)) {
+      const sg = ds.graph.subgraphs[key];
+      for (const n of sg.nodes) { nodeIndex.set(n.id, n); nodeUsage.set(n.id, 0); }
+      for (const e of sg.edges) { edgeIndex.set(e.id, e); edgeUsage.set(e.id, 0); }
+    }
+    ds.runtime = {
+      nodeIndex, edgeIndex, nodeUsage, edgeUsage,
+      viewStack: [{ key: "root", label: ds.ui.breadcrumbRoot }],
+      activityLog: [],
+      counter: 0,
+      cycleIdx: {},
+    };
+  }
+
+  function current() { return DATASETS[activeKey]; }
+
+  // ---------- Tabs ----------
+
+  function renderTabs() {
+    els.tabswitch.innerHTML = "";
+    for (const key of Object.keys(DATASETS)) {
+      const ds = DATASETS[key];
+      const btn = document.createElement("button");
+      btn.className = "tab-btn" + (key === activeKey ? " active" : "");
+      btn.textContent = ds.tabLabel;
+      btn.setAttribute("role", "tab");
+      btn.dataset.key = key;
+      btn.addEventListener("click", () => switchTo(key));
+      els.tabswitch.appendChild(btn);
+    }
+  }
+
+  function switchTo(key) {
+    activeKey = key;
+    document.documentElement.lang = current().lang;
+    document.title = current().docTitle;
+    els.tabswitch.querySelectorAll(".tab-btn").forEach(b => b.classList.toggle("active", b.dataset.key === key));
+    renderStaticText();
+    renderActionButtons();
+    renderMockBody(null);
+    render();
+  }
+
+  function renderStaticText() {
+    const ds = current();
+    els.demoLink.href = ds.demoLink;
+    els.demoLink.textContent = ds.demoLinkLabel;
+    els.mockAppBarLabel.textContent = ds.mockAppBar;
+    els.mockCounterIcon.textContent = ds.counterIcon;
+    els.mockCounterCount.textContent = String(ds.runtime.counter);
+    els.tryHeader.textContent = ds.ui.tryHeader;
+    els.trySub.textContent = ds.ui.trySubtext;
+    els.logHeader.textContent = ds.ui.logHeader;
+    els.rightHeader.textContent = ds.ui.rightHeader;
+    els.usageHeader.textContent = ds.ui.usageSummaryHeader;
+    els.resetBtn.textContent = ds.ui.resetBtn;
+    els.reportBtn.textContent = ds.ui.reportBtn;
+    els.reportTitle.textContent = ds.ui.reportTitle;
+  }
+
+  // ---------- Actions (left panel) ----------
+
+  function renderActionButtons() {
+    const ds = current();
+    els.actionGroups.innerHTML = "";
+    for (const group of ds.groupOrder) {
+      const actions = ds.graph.actions.filter(a => a.group === group);
+      if (!actions.length) continue;
+      const wrap = document.createElement("div");
+      wrap.className = "action-group";
+      const h3 = document.createElement("h3");
+      h3.textContent = ds.groupLabel[group] || group;
+      wrap.appendChild(h3);
+      const list = document.createElement("div");
+      list.className = "action-list";
+      for (const a of actions) list.appendChild(actionButton(a, group));
+      wrap.appendChild(list);
+      els.actionGroups.appendChild(wrap);
+    }
+  }
+
+  function actionButton(action, group) {
+    const btn = document.createElement("button");
+    const extraClass = group === "platform" ? " platform" : (group === "security" ? " security" : "");
+    btn.className = "action-btn" + extraClass;
+    btn.textContent = action.label;
+    btn.title = action.description;
+    btn.addEventListener("click", () => triggerAction(action));
+    return btn;
+  }
+
+  function triggerAction(action) {
+    const ds = current();
+    const rt = ds.runtime;
+    rt.viewStack = [{ key: "root", label: ds.ui.breadcrumbRoot }];
+
+    for (const id of action.flowNodes) rt.nodeUsage.set(id, (rt.nodeUsage.get(id) || 0) + 1);
+    for (const id of action.flowEdges) rt.edgeUsage.set(id, (rt.edgeUsage.get(id) || 0) + 1);
+
+    const locale = ds.lang === "ja" ? "ja-JP" : "en-US";
+    const time = new Date().toLocaleTimeString(locale, { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+    rt.activityLog.unshift({ time, label: action.label, description: action.description });
+    if (rt.activityLog.length > 40) rt.activityLog.pop();
+
+    if (typeof action.counterDelta === "number") rt.counter += action.counterDelta;
+    if (action.resetCounter) rt.counter = 0;
+
+    renderMockBody(action);
+    render();
+    flashActive(action);
+  }
+
+  function renderMockBody(action) {
+    const ds = current();
+    els.mockCounterCount.textContent = String(ds.runtime.counter);
+    if (!action) {
+      els.mockBody.innerHTML = "";
+      const hero = document.createElement("div");
+      hero.className = "mock-hero";
+      hero.textContent = ds.mockHero;
+      els.mockBody.appendChild(hero);
+      return;
+    }
+    let msg = action.mockMessage || action.description;
+    if (action.mockCycle) {
+      const idx = ds.runtime.cycleIdx[action.id] || 0;
+      const v = action.mockCycle.values[idx % action.mockCycle.values.length];
+      ds.runtime.cycleIdx[action.id] = idx + 1;
+      msg = action.mockCycle.template.replace("{v}", v);
+    }
+    els.mockBody.innerHTML = "";
+    const flash = document.createElement("div");
+    flash.className = "mock-flash";
+    flash.textContent = msg;
+    els.mockBody.appendChild(flash);
+  }
+
+  function flashActive(action) {
+    const activeNodes = new Set(action.flowNodes);
+    const activeEdges = new Set(action.flowEdges);
+    els.svg.querySelectorAll(".node-group").forEach(g => {
+      if (activeNodes.has(g.dataset.id)) g.classList.add("active");
+    });
+    els.svg.querySelectorAll(".edge-line, .edge-arrow").forEach(el => {
+      if (activeEdges.has(el.dataset.id)) el.classList.add("active");
+    });
+    window.clearTimeout(flashActive._t);
+    flashActive._t = window.setTimeout(() => {
+      els.svg.querySelectorAll(".active").forEach(el => el.classList.remove("active"));
+    }, 1400);
+  }
+
+  // ---------- Rendering ----------
+
+  function currentLevel() {
+    const ds = current();
+    const top = ds.runtime.viewStack[ds.runtime.viewStack.length - 1];
+    if (top.key === "root") return { nodes: ds.graph.nodes, edges: ds.graph.edges, viewBox: ds.graph.viewBox };
+    const sg = ds.graph.subgraphs[top.key];
+    return { nodes: sg.nodes, edges: sg.edges, viewBox: sg.viewBox };
+  }
+
+  function render() {
+    renderBreadcrumbs();
+    renderLegend();
+    renderSVG();
+    renderUsageTable();
+    renderActivityLog();
+  }
+
+  function renderBreadcrumbs() {
+    const ds = current();
+    els.breadcrumbs.innerHTML = "";
+    ds.runtime.viewStack.forEach((v, i) => {
+      if (i > 0) {
+        const sep = document.createElement("span");
+        sep.className = "sep";
+        sep.textContent = "›";
+        els.breadcrumbs.appendChild(sep);
+      }
+      if (i === ds.runtime.viewStack.length - 1) {
+        const span = document.createElement("span");
+        span.className = "current";
+        span.textContent = v.label;
+        els.breadcrumbs.appendChild(span);
+      } else {
+        const btn = document.createElement("button");
+        btn.textContent = v.label;
+        btn.addEventListener("click", () => { ds.runtime.viewStack = ds.runtime.viewStack.slice(0, i + 1); render(); });
+        els.breadcrumbs.appendChild(btn);
+      }
+    });
+  }
+
+  function renderLegend() {
+    const ds = current();
+    els.legend.innerHTML = "";
+    for (const kind of KIND_ORDER) {
+      const item = document.createElement("div");
+      item.className = "legend-item";
+      const sw = document.createElement("span");
+      sw.className = "legend-swatch";
+      sw.style.background = `var(--kind-${kind})`;
+      item.appendChild(sw);
+      item.append(ds.kindLabel[kind]);
+      els.legend.appendChild(item);
+    }
+    const heat = document.createElement("div");
+    heat.className = "legend-item";
+    heat.innerHTML = `<span class="legend-swatch" style="background:var(--heat-550)"></span>${ds.ui.heatLegend}`;
+    els.legend.appendChild(heat);
+  }
+
+  function rectOf(n) {
+    return { cx: n.x + n.w / 2, cy: n.y + n.h / 2, hw: n.w / 2, hh: n.h / 2 };
+  }
+
+  function rectIntersection(n, towardX, towardY) {
+    const r = rectOf(n);
+    const dx = towardX - r.cx, dy = towardY - r.cy;
+    if (dx === 0 && dy === 0) return { x: r.cx, y: r.cy };
+    const sx = dx !== 0 ? r.hw / Math.abs(dx) : Infinity;
+    const sy = dy !== 0 ? r.hh / Math.abs(dy) : Infinity;
+    const s = Math.min(sx, sy);
+    return { x: r.cx + dx * s, y: r.cy + dy * s };
+  }
+
+  function edgeGeometry(from, to, seed) {
+    const rf = rectOf(from), rt = rectOf(to);
+    const sameColumn = !from.isContainer && !to.isContainer && Math.abs(rf.cx - rt.cx) < 8;
+    if (sameColumn) {
+      const bulge = 60 + (hash(seed) % 90);
+      const start = { x: from.x + from.w, y: rf.cy };
+      const end = { x: to.x + to.w, y: rt.cy };
+      const cx = Math.max(start.x, end.x) + bulge;
+      const cy = (start.y + end.y) / 2;
+      const path = `M ${start.x},${start.y} Q ${cx},${cy} ${end.x},${end.y}`;
+      const tangent = norm(end.x - cx, end.y - cy);
+      return { path, end, tangent };
+    }
+    const start = rectIntersection(from, rt.cx, rt.cy);
+    const end = rectIntersection(to, rf.cx, rf.cy);
+    const path = `M ${start.x},${start.y} L ${end.x},${end.y}`;
+    const tangent = norm(end.x - start.x, end.y - start.y);
+    return { path, end, tangent };
+  }
+
+  function norm(x, y) { const m = Math.hypot(x, y) || 1; return { x: x / m, y: y / m }; }
+  function hash(s) { let h = 0; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0; return h; }
+
+  function edgeHeat(count, max) {
+    if (count === 0) return { color: "var(--gridline)", width: 1.4, dash: "3 4", opacity: 0.7 };
+    const ratio = count / Math.max(max, 1);
+    if (ratio > 0.8) return { color: "var(--heat-700)", width: 7 };
+    if (ratio > 0.55) return { color: "var(--heat-550)", width: 5.4 };
+    if (ratio > 0.3) return { color: "var(--heat-400)", width: 3.8 };
+    if (ratio > 0.1) return { color: "var(--heat-250)", width: 2.6 };
+    return { color: "var(--heat-100)", width: 1.8 };
+  }
+
+  function nodeBorderWidth(count, max) {
+    if (count === 0) return 1.4;
+    const ratio = count / Math.max(max, 1);
+    return 1.6 + ratio * 4.4;
+  }
+
+  function renderSVG() {
+    const ds = current();
+    const level = currentLevel();
+    els.svg.setAttribute("viewBox", level.viewBox);
+    const [, , vbWidth, vbHeight] = level.viewBox.split(" ").map(Number);
+    els.svg.setAttribute("width", vbWidth);
+    els.svg.setAttribute("height", vbHeight);
+    els.svg.innerHTML = "";
+
+    const maxNodeUsage = Math.max(1, ...level.nodes.map(n => ds.runtime.nodeUsage.get(n.id) || 0));
+    const maxEdgeUsage = Math.max(1, ...level.edges.map(e => ds.runtime.edgeUsage.get(e.id) || 0));
+
+    for (const n of level.nodes.filter(n => n.isContainer)) drawNode(n, maxNodeUsage, true);
+    for (const e of level.edges) drawEdge(e, maxEdgeUsage);
+    for (const n of level.nodes.filter(n => !n.isContainer)) drawNode(n, maxNodeUsage, false);
+  }
+
+  function drawNode(n, maxNodeUsage, isContainer) {
+    const ds = current();
+    const count = ds.runtime.nodeUsage.get(n.id) || 0;
+    const g = document.createElementNS(SVG_NS, "g");
+    g.setAttribute("class", "node-group" + (count === 0 ? " unused" : ""));
+    g.dataset.id = n.id;
+
+    const rect = document.createElementNS(SVG_NS, "rect");
+    rect.setAttribute("x", n.x);
+    rect.setAttribute("y", n.y);
+    rect.setAttribute("width", n.w);
+    rect.setAttribute("height", n.h);
+    rect.setAttribute("rx", isContainer ? 16 : 9);
+    const kindVar = `var(--kind-${n.kind})`;
+    rect.setAttribute("class", "node-rect" + (isContainer ? " container" : "") + (n.children ? " clickable" : ""));
+    if (isContainer) {
+      rect.setAttribute("stroke", kindVar);
+      rect.setAttribute("stroke-width", 2);
+    } else {
+      rect.setAttribute("fill", kindVar);
+      rect.setAttribute("fill-opacity", 0.12);
+      rect.setAttribute("stroke", kindVar);
+      rect.setAttribute("stroke-width", nodeBorderWidth(count, maxNodeUsage));
+    }
+    g.appendChild(rect);
+
+    if (n.children) {
+      g.style.cursor = "pointer";
+      g.addEventListener("click", () => drillInto(n));
+    }
+
+    const labelX = isContainer ? n.x + 14 : n.x + n.w / 2;
+    const labelY = isContainer ? n.y + 22 : n.y + n.h / 2 - (String(n.label).includes("\n") ? 6 : 0);
+    const lines = String(n.label).split("\n");
+    const text = document.createElementNS(SVG_NS, "text");
+    text.setAttribute("x", labelX);
+    text.setAttribute("y", labelY);
+    text.setAttribute("class", "node-label");
+    if (isContainer) text.setAttribute("text-anchor", "start");
+    lines.forEach((line, i) => {
+      const tspan = document.createElementNS(SVG_NS, "tspan");
+      tspan.setAttribute("x", labelX);
+      tspan.setAttribute("dy", i === 0 ? 0 : 13);
+      tspan.textContent = line;
+      text.appendChild(tspan);
+    });
+    g.appendChild(text);
+
+    if (!isContainer) {
+      const badge = document.createElementNS(SVG_NS, "text");
+      badge.setAttribute("x", n.x + n.w / 2);
+      badge.setAttribute("y", n.y + n.h - 6);
+      badge.setAttribute("class", "node-kind-badge");
+      badge.textContent = n.children ? `${ds.kindLabel[n.kind]}${ds.ui.drillBadgeSuffix}` : ds.kindLabel[n.kind];
+      g.appendChild(badge);
+
+      if (count > 0) {
+        const cbadge = document.createElementNS(SVG_NS, "text");
+        cbadge.setAttribute("x", n.x + n.w - 10);
+        cbadge.setAttribute("y", n.y + 12);
+        cbadge.setAttribute("class", "node-count");
+        cbadge.setAttribute("text-anchor", "end");
+        cbadge.textContent = `×${count}`;
+        g.appendChild(cbadge);
+      }
+    } else if (n.children) {
+      const hint = document.createElementNS(SVG_NS, "text");
+      hint.setAttribute("x", n.x + 14);
+      hint.setAttribute("y", n.y + 58);
+      hint.setAttribute("class", "node-kind-badge");
+      hint.setAttribute("text-anchor", "start");
+      hint.textContent = ds.ui.drillHint;
+      g.appendChild(hint);
+    }
+
+    els.svg.appendChild(g);
+  }
+
+  function drawEdge(e, maxEdgeUsage) {
+    const ds = current();
+    const from = ds.runtime.nodeIndex.get(e.from);
+    const to = ds.runtime.nodeIndex.get(e.to);
+    if (!from || !to) return;
+    const count = ds.runtime.edgeUsage.get(e.id) || 0;
+    const heat = edgeHeat(count, maxEdgeUsage);
+    const geo = edgeGeometry(from, to, e.id);
+
+    const path = document.createElementNS(SVG_NS, "path");
+    path.setAttribute("d", geo.path);
+    path.setAttribute("class", "edge-line");
+    path.setAttribute("stroke", heat.color);
+    path.setAttribute("stroke-width", heat.width);
+    if (heat.dash) path.setAttribute("stroke-dasharray", heat.dash);
+    if (heat.opacity) path.setAttribute("stroke-opacity", heat.opacity);
+    path.dataset.id = e.id;
+    els.svg.appendChild(path);
+
+    const arrow = document.createElementNS(SVG_NS, "polygon");
+    arrow.setAttribute("points", arrowPoints(geo.end, geo.tangent));
+    arrow.setAttribute("class", "edge-arrow");
+    arrow.setAttribute("fill", heat.color);
+    arrow.dataset.id = e.id;
+    els.svg.appendChild(arrow);
+  }
+
+  function arrowPoints(end, t) {
+    const back = { x: end.x - t.x * 9, y: end.y - t.y * 9 };
+    const perp = { x: -t.y, y: t.x };
+    const p1 = { x: back.x + perp.x * 4, y: back.y + perp.y * 4 };
+    const p2 = { x: back.x - perp.x * 4, y: back.y - perp.y * 4 };
+    return `${end.x},${end.y} ${p1.x},${p1.y} ${p2.x},${p2.y}`;
+  }
+
+  function drillInto(n) {
+    const ds = current();
+    if (!n.children || !ds.graph.subgraphs[n.children]) return;
+    ds.runtime.viewStack.push({ key: n.children, label: ds.graph.subgraphs[n.children].label || n.label });
+    render();
+  }
+
+  // ---------- Usage summary ----------
+
+  function renderUsageTable() {
+    const ds = current();
+    const rows = [];
+    for (const [id, n] of ds.runtime.nodeIndex) rows.push({ id, label: n.label.split("\n")[0], kind: n.kind, count: ds.runtime.nodeUsage.get(id) || 0 });
+    rows.sort((a, b) => b.count - a.count || a.label.localeCompare(b.label));
+    const max = Math.max(1, ...rows.map(r => r.count));
+
+    els.usageTable.innerHTML = "";
+    for (const r of rows) {
+      const row = document.createElement("div");
+      row.className = "usage-row" + (r.count === 0 ? " zero" : "");
+      const sw = document.createElement("span");
+      sw.className = "swatch";
+      sw.style.background = `var(--kind-${r.kind})`;
+      const label = document.createElement("span");
+      label.textContent = r.label;
+      label.title = r.id;
+      const track = document.createElement("span");
+      track.className = "bar-track";
+      const fill = document.createElement("span");
+      fill.className = "bar-fill";
+      fill.style.width = `${(r.count / max) * 100}%`;
+      track.appendChild(fill);
+      const count = document.createElement("span");
+      count.className = "count";
+      count.textContent = r.count === 0 ? "—" : ds.ui.usedTemplate(r.count);
+      row.append(sw, label, track, count);
+      els.usageTable.appendChild(row);
+    }
+
+    els.usageTotal.textContent = ds.ui.usageTotalTemplate(ds.runtime.activityLog.length);
+  }
+
+  function renderActivityLog() {
+    const ds = current();
+    els.logList.innerHTML = "";
+    if (ds.runtime.activityLog.length === 0) {
+      const li = document.createElement("li");
+      li.className = "log-empty";
+      li.textContent = ds.ui.logEmpty;
+      els.logList.appendChild(li);
+      return;
+    }
+    for (const entry of ds.runtime.activityLog) {
+      const li = document.createElement("li");
+      const time = document.createElement("span");
+      time.className = "log-time";
+      time.textContent = entry.time;
+      const label = document.createElement("span");
+      label.className = "log-action";
+      label.textContent = entry.label;
+      li.append(time, label);
+      els.logList.appendChild(li);
+    }
+  }
+
+  // ---------- Global controls ----------
+
+  function wireGlobalButtons() {
+    els.resetBtn.addEventListener("click", () => {
+      const ds = current();
+      initRuntime(ds);
+      renderStaticText();
+      renderMockBody(null);
+      render();
+    });
+
+    els.reportBtn.addEventListener("click", openReport);
+    els.reportClose.addEventListener("click", () => els.reportModal.classList.add("hidden"));
+    els.reportModal.addEventListener("click", (ev) => { if (ev.target === els.reportModal) els.reportModal.classList.add("hidden"); });
+  }
+
+  function openReport() {
+    const ds = current();
+    const rows = [];
+    for (const [id, n] of ds.runtime.nodeIndex) rows.push({ id, label: n.label.split("\n")[0], count: ds.runtime.nodeUsage.get(id) || 0 });
+    rows.sort((a, b) => b.count - a.count);
+    const hot = rows.filter(r => r.count > 0).slice(0, 5);
+    const cold = rows.filter(r => r.count === 0);
+
+    els.reportBody.innerHTML = `
+      <p>${ds.ui.reportIntroTemplate(ds.runtime.activityLog.length)}</p>
+      <h4>${ds.ui.reportHotHeader}</h4>
+      <ul>${hot.length ? hot.map(r => `<li>${r.label} — ${ds.ui.usedTemplate(r.count)}</li>`).join("") : `<li>${ds.ui.reportNoTraffic}</li>`}</ul>
+      <h4>${ds.ui.reportColdHeaderTemplate(cold.length)}</h4>
+      <ul>${cold.length ? cold.slice(0, 20).map(r => `<li>${r.label}</li>`).join("") : `<li>${ds.ui.reportAllExercised}</li>`}</ul>
+    `;
+    els.reportModal.classList.remove("hidden");
+  }
+})();
+
+</script>
+</body>
+</html>

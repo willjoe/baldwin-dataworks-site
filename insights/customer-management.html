@@ -1,0 +1,1999 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Account Cockpit — Baldwin Data Works Inc.</title>
+<meta name="robots" content="noindex, nofollow">
+<style>
+:root {
+  --purple:       #4b286d;
+  --purple-light: #6b4d8f;
+  --purple-bg:    rgba(75,40,109,0.06);
+  --green:        #248700;
+  --green-bg:     #e8f5e3;
+  --teal:         #016b6a;
+  --teal-bg:      #e0f4f4;
+  --plum:         #7c1366;
+  --plum-bg:      #fae6f4;
+  --red:          #d32f2f;
+  --red-bg:       #fdecea;
+  --amber:        #f5a623;
+  --amber-bg:     #fff8ed;
+  --sidebar-dark: #1e1235;
+  --bg:           #f2f2f6;
+  --card:         #ffffff;
+  --text:         #1a1a2e;
+  --muted:        #54595f;
+  --faint:        #8a8f99;
+  --border:       #e4e5e9;
+  --border-mid:   #c8ccd4;
+  --r-sm: 4px; --r-md: 8px; --r-lg: 12px; --r-xl: 16px; --r-pill: 9999px;
+  --sh-xs: 0 1px 4px rgba(0,0,0,0.06);
+  --sh-sm: 0 2px 8px rgba(0,0,0,0.09);
+  --sh-md: 0 4px 16px rgba(0,0,0,0.13);
+  --sh-lg: 0 8px 32px rgba(0,0,0,0.18);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);display:flex;height:100vh;overflow:hidden;font-size:14px;line-height:1.4}
+
+/* ── SIDEBAR ── */
+.sidebar{width:68px;background:var(--sidebar-dark);display:flex;flex-direction:column;align-items:center;padding:14px 0;flex-shrink:0;z-index:100}
+.sb-logo{width:38px;height:38px;background:var(--purple);border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;margin-bottom:20px;flex-shrink:0}
+.sb-logo svg{width:24px;height:24px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round}
+.sb-nav{display:flex;flex-direction:column;gap:4px;flex:1;width:100%;padding:0 8px}
+.sb-item{display:flex;flex-direction:column;align-items:center;padding:9px 4px;border-radius:var(--r-md);cursor:pointer;color:rgba(255,255,255,0.45);font-size:9px;font-weight:600;gap:5px;letter-spacing:0.3px;transition:all .15s;text-transform:uppercase;position:relative}
+.sb-item:hover{background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.8)}
+.sb-item.active{background:rgba(255,255,255,0.15);color:#fff}
+.sb-item svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.sb-badge{position:absolute;top:6px;right:6px;background:var(--red);color:#fff;font-size:9px;font-weight:800;width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.sb-bottom{padding:0 8px;margin-top:auto}
+.sb-avatar{width:36px;height:36px;background:var(--teal);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:13px;cursor:pointer;margin:0 auto}
+
+/* ── MAIN ── */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+
+/* ── TOPBAR ── */
+.topbar{height:60px;background:var(--card);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;gap:16px;flex-shrink:0;box-shadow:var(--sh-xs)}
+.tb-brand{display:flex;flex-direction:column}
+.tb-module{font-size:10px;color:var(--faint);text-transform:uppercase;letter-spacing:.8px;font-weight:700}
+.tb-title{font-size:19px;font-weight:800;color:var(--purple);line-height:1.1}
+.tb-divider{width:1px;height:28px;background:var(--border);flex-shrink:0}
+.tb-search{position:relative;flex:1;max-width:320px}
+.tb-search input{width:100%;padding:7px 12px 7px 34px;border:1px solid var(--border);border-radius:var(--r-pill);font-size:13px;color:var(--text);background:var(--bg);outline:none;transition:border-color .15s}
+.tb-search input:focus{border-color:var(--purple)}
+.tb-search-ic{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--faint)}
+.tb-search-ic svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2}
+.search-dropdown{position:absolute;top:calc(100% + 6px);left:0;width:100%;background:var(--card);border:1px solid var(--border);border-radius:var(--r-md);box-shadow:var(--sh-md);z-index:200;display:none;flex-direction:column;max-height:300px;overflow-y:auto}
+.search-dropdown.open{display:flex}
+.search-item{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;cursor:pointer;border-bottom:1px solid var(--border);transition:background .1s}
+.search-item:last-child{border-bottom:none}
+.search-item.highlighted, .search-item:hover{background:var(--bg)}
+.search-item-name{font-size:13px;font-weight:700;color:var(--text)}
+.search-item-impact{font-size:11px;font-weight:800;padding:2px 8px;border-radius:var(--r-pill)}
+.search-item-impact.r{background:var(--red-bg);color:var(--red)}
+.search-item-impact.a{background:var(--amber-bg);color:#996500}
+.search-item-impact.g{background:var(--green-bg);color:var(--green)}
+.tb-right{margin-left:auto;display:flex;align-items:center;gap:14px}
+.severity-pill{display:flex;align-items:center;gap:7px;padding:5px 14px;border-radius:var(--r-pill);font-size:12px;font-weight:800;cursor:pointer}
+.severity-pill.amber{background:var(--amber-bg);border:1px solid var(--amber);color:#996500}
+.severity-pill.red{background:var(--red-bg);border:1px solid var(--red);color:var(--red)}
+.severity-pill.green{background:var(--green-bg);border:1px solid var(--green);color:var(--green)}
+.sev-dot{width:8px;height:8px;border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.sev-dot.amber{background:var(--amber)}
+.sev-dot.red{background:var(--red)}
+.tb-agent{display:flex;align-items:center;gap:10px;cursor:pointer}
+.tb-agent-info{text-align:right}
+.tb-agent-name{font-weight:700;font-size:13px}
+.tb-agent-role{font-size:11px;color:var(--faint)}
+.tb-avatar{width:34px;height:34px;background:var(--teal);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:12px}
+
+/* ── VIEW AREA ── */
+.view-area{flex:1;overflow-y:auto;padding:22px 24px}
+.view{display:none}.view.active{display:block}
+
+/* ── VITALS STRIP ── */
+.vitals-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+.vcard{background:var(--card);border-radius:var(--r-lg);padding:14px 18px;box-shadow:var(--sh-xs);border:1px solid var(--border);position:relative;overflow:hidden}
+.vcard::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%;border-radius:var(--r-lg) 0 0 var(--r-lg)}
+.vcard.g::before{background:var(--green)}.vcard.a::before{background:var(--amber)}.vcard.r::before{background:var(--red)}
+.vcard-label{font-size:10px;color:var(--faint);text-transform:uppercase;letter-spacing:.6px;font-weight:700;margin-bottom:6px}
+.vcard-val{font-size:22px;font-weight:800;color:var(--text);display:flex;align-items:center;gap:8px;margin-bottom:3px}
+.vcard-sub{font-size:11px;color:var(--faint)}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:var(--r-pill);font-size:11px;font-weight:700}
+.badge.g{background:var(--green-bg);color:var(--green)}
+.badge.a{background:var(--amber-bg);color:#996500}
+.badge.r{background:var(--red-bg);color:var(--red)}
+.badge.p{background:var(--purple-bg);color:var(--purple)}
+.dot{width:7px;height:7px;border-radius:50%;display:inline-block}
+.dot.g{background:var(--green)}.dot.a{background:var(--amber)}.dot.r{background:var(--red)}
+
+/* ── HEALTH PILLARS ── */
+.pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px}
+.pillar{background:var(--card);border-radius:var(--r-lg);border:1px solid var(--border);box-shadow:var(--sh-xs);padding:14px 16px;display:flex;gap:12px;align-items:flex-start}
+.pillar-icon{width:34px;height:34px;border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.pillar-icon.g{background:var(--green-bg)}.pillar-icon.a{background:var(--amber-bg)}.pillar-icon.r{background:var(--red-bg)}
+.pillar-tag{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--faint);margin-bottom:3px}
+.pillar-status{font-size:13px;font-weight:800;margin-bottom:3px}
+.pillar-status.g{color:var(--green)}.pillar-status.a{color:#996500}.pillar-status.r{color:var(--red)}
+.pillar-detail{font-size:11px;color:var(--muted);line-height:1.55}
+
+/* ── DASHBOARD GRID ── */
+.dash-grid{display:grid;grid-template-columns:1fr 340px;gap:20px;align-items:start}
+
+/* ── SECTION HEAD ── */
+.sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.sec-title{font-size:15px;font-weight:800;color:var(--purple);display:flex;align-items:center;gap:6px}
+.sec-title-line{display:inline-block;width:20px;height:3px;background:var(--green);border-radius:2px;margin-left:4px}
+.sec-sub{font-size:11px;color:var(--faint)}
+
+/* ── NBA CARDS ── */
+.nba-stack{display:flex;flex-direction:column;gap:14px}
+.nba{background:var(--card);border-radius:var(--r-lg);border:1px solid var(--border);box-shadow:var(--sh-xs);overflow:hidden;transition:box-shadow .2s,transform .2s,opacity .35s,max-height .35s ease,padding .35s,margin .35s}
+.nba:hover{box-shadow:var(--sh-md);transform:translateY(-1px)}
+.nba.dismissing{opacity:0;max-height:0!important;padding:0;margin:0;border:none;overflow:hidden}
+.nba-bar{height:4px}.nba-bar.u{background:var(--green)}.nba-bar.ret{background:var(--plum)}.nba-bar.risk{background:var(--red)}
+.nba-body{padding:18px 20px 0}
+.nba-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px}
+.nba-title{font-size:15px;font-weight:800;color:var(--text);line-height:1.3}
+.nba-scores{display:block;font-size:10.5px;font-weight:600;color:var(--faint);margin-top:3px;letter-spacing:.1px}
+.nba-tag{display:inline-flex;align-items:center;gap:4px;padding:3px 11px;border-radius:var(--r-pill);font-size:10px;font-weight:800;white-space:nowrap;flex-shrink:0;letter-spacing:.3px}
+.nba-tag.u{background:var(--green-bg);color:var(--green)}
+.nba-tag.ret{background:var(--plum-bg);color:var(--plum)}
+.nba-tag.risk{background:var(--red-bg);color:var(--red)}
+
+/* AI reasoning box */
+.ai-box{background:#fafafa;border:1px solid var(--border);border-radius:var(--r-md);padding:13px 15px;font-size:12.5px;line-height:1.7;color:var(--muted);margin-bottom:13px;position:relative;display:flex;gap:0;align-items:stretch}
+.ai-box::before{content:'✦ AI Reasoning';position:absolute;top:0;left:12px;transform:translateY(-50%);background:#fafafa;padding:1px 8px;font-size:9px;font-weight:800;color:var(--purple);border:1px solid var(--border);border-radius:var(--r-pill);letter-spacing:.4px}
+.ai-box b{color:var(--text)}
+.ai-box-left{flex:1;min-width:0;padding-right:14px;display:flex;align-items:center}
+.ai-reasons{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:7px;width:100%}
+.ai-reason{display:flex;align-items:baseline;gap:8px;font-size:12.5px;line-height:1.55;color:var(--muted)}
+.ai-reason::before{content:'•';color:var(--purple);font-weight:900;font-size:16px;flex-shrink:0;line-height:1;margin-top:1px}
+.ai-reason b{color:var(--text)}
+.ai-box-sep{width:1px;background:var(--border);flex-shrink:0;align-self:stretch}
+.ai-box-right{flex:0 0 272px;padding-left:14px;display:flex;flex-direction:column;justify-content:center}
+.cite{display:inline-flex;align-items:center;background:var(--teal-bg);color:var(--teal);border:1px solid rgba(1,107,106,.3);padding:1px 6px;border-radius:3px;font-size:10px;font-weight:800;cursor:pointer;margin-left:2px;transition:background .12s}
+.cite:hover{background:rgba(1,107,106,.18)}
+
+/* EBM bullet + diverging bar list */
+.ebm-lbl{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--faint);margin-bottom:8px}
+.ebm-row{display:flex;align-items:center;gap:5px;margin-bottom:7px}
+.ebm-row:last-child{margin-bottom:0}
+.ebm-bullet{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.ebm-bullet.pos{background:var(--red)}.ebm-bullet.neg{background:var(--green)}
+.ebm-text{flex:1;font-size:11px;color:var(--muted);line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* diverging SHAP-style bar */
+.ebm-bar{display:flex;width:72px;height:7px;gap:1px;flex-shrink:0;border-radius:2px;overflow:hidden}
+.ebm-bar-half{flex:1;position:relative;background:var(--bg)}
+.ebm-bar-fill{position:absolute;top:0;height:100%}
+/* positive fill: left edge of right half, grows right */
+.ebm-bar-half.right .ebm-bar-fill{left:0;background:var(--red)}
+.ebm-bar-half.right .ebm-bar-fill.g{background:var(--green)}
+/* negative fill: right edge of left half, grows left */
+.ebm-bar-half.left .ebm-bar-fill{right:0;background:var(--green)}
+.ebm-delta{font-size:10px;font-weight:800;flex-shrink:0;white-space:nowrap;width:34px;text-align:right}
+.ebm-delta.pos{color:var(--red)}.ebm-delta.neg{color:var(--green)}
+
+/* NBA footer */
+.nba-foot{display:flex;align-items:center;justify-content:space-between;padding:13px 20px;border-top:1px solid var(--border);margin-top:13px}
+.btn-row{display:flex;gap:8px}
+.btn{padding:7px 16px;border-radius:var(--r-pill);border:none;font-size:12px;font-weight:700;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:5px;letter-spacing:.1px}
+.btn-p{background:var(--green);color:#fff}.btn-p:hover{background:#1e7000}
+.btn-s{background:transparent;border:1px solid var(--border-mid);color:var(--muted)}.btn-s:hover{background:var(--bg)}
+.btn-warn{background:transparent;border:1px solid var(--red);color:var(--red)}.btn-warn:hover{background:var(--red-bg)}
+.btn-plum{background:var(--plum);color:#fff}.btn-plum:hover{background:#6a0f58}
+.hitl{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--faint)}
+.hitl-btn{background:none;border:1px solid var(--border);border-radius:var(--r-pill);width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;transition:all .15s;color:var(--faint)}
+.hitl-btn:hover{border-color:var(--purple);color:var(--purple);background:var(--purple-bg)}
+.hitl-btn.up.on{border-color:var(--green);color:var(--green);background:var(--green-bg)}
+.hitl-btn.down.on{border-color:var(--red);color:var(--red);background:var(--red-bg)}
+
+/* Dismiss dropdown */
+.dd-wrap{position:relative;display:inline-block}
+.dd-menu{display:none;position:absolute;bottom:calc(100% + 7px);left:0;background:var(--card);border:1px solid var(--border);border-radius:var(--r-md);box-shadow:var(--sh-md);min-width:210px;z-index:80;overflow:hidden}
+.dd-menu.open{display:block}
+.dd-opt{padding:10px 14px;cursor:pointer;font-size:12px;color:var(--muted);transition:background .1s}
+.dd-opt:hover{background:var(--bg);color:var(--text)}
+.dd-opt small{display:block;font-size:10px;color:var(--faint);margin-top:1px}
+
+/* ── RIGHT PANEL ── */
+.panel{background:var(--card);border-radius:var(--r-lg);border:1px solid var(--border);box-shadow:var(--sh-xs);overflow:hidden;margin-bottom:16px}
+.panel-head{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.panel-head-title{font-size:12px;font-weight:800;color:var(--purple);display:flex;align-items:center;gap:6px;text-transform:uppercase;letter-spacing:.4px}
+.panel-head-title svg{width:14px;height:14px;stroke:var(--purple);fill:none;stroke-width:2}
+.panel-body{padding:14px 16px}
+
+/* Linear Serviceability Gauge */
+.gauge-ttr-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.gauge-ttr-item{background:var(--bg);border-radius:var(--r-md);padding:8px 10px}
+.gauge-ttr-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--faint);margin-bottom:3px}
+.gauge-ttr-val{font-size:12px;font-weight:700;color:var(--text)}
+.gauge-ttr-val.green{color:var(--green)}.gauge-ttr-val.amber{color:var(--amber)}.gauge-ttr-val.red{color:#c75c2e}
+.gauge-loc{margin-bottom:14px}
+.gauge-loc-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.gauge-loc-name{font-size:10.5px;font-weight:700;color:var(--text)}
+.gauge-wrap{position:relative;cursor:pointer}
+.gauge-wrap:hover .gauge-track{filter:brightness(.96)}
+.gauge-svc-row{position:relative;height:26px;margin-bottom:1px}
+.gauge-svc-pin{position:absolute;top:3px;font-size:12px;line-height:1;transform:translateX(-50%);cursor:help;transition:transform .12s;user-select:none;background:#fff;border:1px solid var(--border);border-radius:var(--r-pill);padding:2px 3px;box-shadow:var(--sh-xs)}
+.gauge-svc-pin:hover{transform:translateX(-50%) translateY(-3px);box-shadow:var(--sh-sm)}
+.gauge-svc-pin::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:#1a1a2e;color:#fff;font-size:9.5px;font-weight:500;padding:4px 9px;border-radius:var(--r-md);white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .15s;z-index:20;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif}
+.gauge-svc-pin:hover::after{opacity:1}
+.gauge-future-pin{opacity:.55;filter:grayscale(.35)}
+.gauge-track{display:flex;height:18px;border-radius:var(--r-pill);overflow:hidden;border:1px solid var(--border-mid)}
+.gauge-zone{display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:800;letter-spacing:.25px;color:rgba(255,255,255,.88);text-transform:uppercase}
+.gauge-zone.on-net{background:var(--green)}
+.gauge-zone.near-net{background:var(--amber)}
+.gauge-zone.off-net{background:#c75c2e}
+.gauge-zone.future{background:#8a8f99;border-left:2px dashed rgba(255,255,255,.35)}
+.gauge-legend{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding-top:8px;border-top:1px solid var(--border);margin-top:2px}
+.gauge-leg-item{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--muted)}
+.gauge-leg-swatch{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+.gauge-leg-swatch.on-net{background:var(--green)}.gauge-leg-swatch.near-net{background:var(--amber)}.gauge-leg-swatch.off-net{background:#c75c2e}.gauge-leg-swatch.future{background:#8a8f99}
+.gauge-map-link{margin-left:auto;font-size:11px;color:var(--teal);font-weight:700;cursor:pointer;white-space:nowrap}
+/* Mini gauge (Growth Explorer whitespace panel) */
+.gauge-mini-wrap{margin:14px 0 10px}
+.gauge-mini-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--faint);margin-bottom:7px}
+.gauge-mini-track{display:flex;height:12px;border-radius:var(--r-pill);overflow:hidden;border:1px solid var(--border-mid)}
+.gauge-ttr-badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:4px 10px;border-radius:var(--r-pill);margin-top:4px}
+.gauge-ttr-badge.green{background:var(--green-bg);color:var(--green)}
+.gauge-ttr-badge.amber{background:var(--amber-bg);color:#b57800}
+.gauge-ttr-badge.red{background:var(--red-bg);color:#c75c2e}
+
+/* Timeline */
+/* RAG Account Summary Paragraph */
+.rag-summary{background:#fafafa;border:1px solid var(--border-mid);border-radius:var(--r-md);padding:11px 14px;margin-bottom:12px}
+.rag-label{font-size:9.5px;text-transform:uppercase;letter-spacing:.65px;color:var(--purple);font-weight:800;margin-bottom:6px;display:flex;align-items:center;gap:5px}
+.rag-text{font-size:12px;color:var(--muted);line-height:1.7}
+.tl-section-lbl{font-size:9.5px;text-transform:uppercase;letter-spacing:.5px;color:var(--faint);padding:4px 0 8px;border-top:1px solid var(--border);margin-bottom:2px}
+.tl{display:flex;flex-direction:column}
+.tl-item{display:flex;gap:10px;padding-bottom:14px;position:relative}
+.tl-item:not(:last-child)::after{content:'';position:absolute;left:13px;top:22px;bottom:0;width:2px;background:var(--border)}
+.tl-icon{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;z-index:1;margin-top:1px}
+.tl-icon.ticket{background:var(--red-bg)}.tl-icon.billing{background:var(--amber-bg)}.tl-icon.call{background:var(--teal-bg)}.tl-icon.win{background:var(--green-bg)}
+.tl-date{font-size:10px;color:var(--faint);margin-bottom:2px}
+.tl-title{font-size:12px;font-weight:700;color:var(--text);margin-bottom:2px}
+.tl-body{font-size:11px;color:var(--muted)}
+
+/* ── GROWTH VIEW ── */
+.growth-layout{display:grid;grid-template-columns:1fr 340px;gap:20px;align-items:start}
+.filter-bar{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;align-items:center}
+.chip{padding:6px 16px;border-radius:var(--r-pill);border:1px solid var(--border-mid);font-size:12px;font-weight:700;cursor:pointer;color:var(--muted);background:var(--card);transition:all .15s}
+.chip:hover{border-color:var(--purple);color:var(--purple)}
+.chip.on{background:var(--purple);color:#fff;border-color:var(--purple)}
+.fs-wrap{margin-left:auto;position:relative}
+.fs-wrap input{padding:6px 13px 6px 30px;border:1px solid var(--border);border-radius:var(--r-pill);font-size:12px;background:var(--card);outline:none;width:200px}
+.fs-wrap input:focus{border-color:var(--purple)}
+.fs-ic{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--faint)}
+.fs-ic svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2}
+
+.g-table{background:var(--card);border-radius:var(--r-lg);border:1px solid var(--border);box-shadow:var(--sh-xs);overflow:hidden}
+.g-thead{display:grid;grid-template-columns:1.4fr 1fr .9fr .7fr .8fr;gap:10px;padding:10px 18px;background:var(--bg);border-bottom:1px solid var(--border);font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--faint)}
+.g-row{display:grid;grid-template-columns:1.4fr 1fr .9fr .7fr .8fr;gap:10px;padding:13px 18px;border-bottom:1px solid var(--border);align-items:center;cursor:pointer;transition:background .1s}
+.g-row:hover{background:rgba(75,40,109,.03)}
+.g-row.sel{background:rgba(75,40,109,.06)}
+.g-row:last-child{border-bottom:none}
+.g-name{font-weight:700;font-size:13px}.g-tier{font-size:10px;color:var(--faint)}
+.g-product{font-size:12px;color:var(--purple);font-weight:700}
+.trigger{display:inline-flex;align-items:center;gap:3px;padding:3px 9px;border-radius:var(--r-pill);font-size:10px;font-weight:700}
+.trigger.fi{background:var(--green-bg);color:var(--green)}
+.trigger.us{background:var(--amber-bg);color:#996500}
+.trigger.po{background:var(--teal-bg);color:var(--teal)}
+.trigger.co{background:var(--red-bg);color:var(--red)}
+.trigger.br{background:var(--plum-bg);color:var(--plum)}
+.g-mrr{font-size:13px;font-weight:800;color:var(--green)}
+.g-score{font-size:12px;font-weight:800;color:var(--purple)}
+.score-bar-wrap{height:5px;background:var(--bg);border-radius:3px;margin-top:3px}
+.score-bar{height:100%;border-radius:3px;background:var(--purple);opacity:.55}
+
+/* Whitespace matrix */
+.wm-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:50px 20px;text-align:center;color:var(--faint);font-size:12px}
+.wm-empty svg{width:40px;height:40px;stroke:var(--border-mid);fill:none;stroke-width:1.5;margin-bottom:10px}
+.wm-sec-lbl{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--faint);margin:14px 0 8px}
+.wm-sec-lbl:first-child{margin-top:0}
+.product-row{display:flex;align-items:center;gap:9px;padding:9px 12px;border-radius:var(--r-md);border:1px solid var(--border);margin-bottom:6px;font-size:12px}
+.product-row.owned{background:var(--bg)}
+.product-row.gap{opacity:.5;border-style:dashed;background:none}
+.product-row.hot{background:var(--green-bg);border-color:var(--green);opacity:1}
+.product-row.warm{background:var(--teal-bg);border-color:var(--teal);opacity:1}
+.pr-icon{font-size:16px;flex-shrink:0}
+.pr-name{font-weight:700;flex:1}
+.pr-status{font-size:10px;color:var(--faint)}
+.pr-nbo{font-size:10px;font-weight:800;padding:2px 8px;border-radius:var(--r-pill)}
+.pr-nbo.hot{background:var(--green-bg);color:var(--green)}
+.pr-nbo.warm{background:var(--teal-bg);color:var(--teal)}
+.pr-nbo.cold{background:var(--bg);color:var(--faint);border:1px solid var(--border)}
+
+/* Sales hold banner */
+.sales-hold{display:none;background:var(--red-bg);border:1px solid var(--red);border-radius:var(--r-md);padding:10px 14px;font-size:12px;font-weight:600;color:var(--red);margin-bottom:12px;align-items:center;gap:8px}
+.sales-hold.show{display:flex}
+
+/* ── PORTFOLIO VIEW ── */
+.pstats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+.pstat{background:var(--card);border-radius:var(--r-lg);border:1px solid var(--border);box-shadow:var(--sh-xs);padding:14px 18px;text-align:center;cursor:pointer;transition:box-shadow .15s,transform .15s,border-color .15s}
+.pstat:hover{box-shadow:var(--sh-md);transform:translateY(-2px);border-color:var(--border-mid)}
+.pstat-num{font-size:30px;font-weight:900;margin-bottom:3px}
+.pstat-num.green{color:var(--green)}.pstat-num.amber{color:var(--amber)}.pstat-num.red{color:var(--red)}.pstat-num.purple{color:var(--purple)}
+.pstat-lbl{font-size:11px;color:var(--faint)}
+.port-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:20px;margin-bottom:20px}
+
+/* Treemap */
+.treemap-card{background:var(--card);border-radius:var(--r-lg);border:1px solid var(--border);box-shadow:var(--sh-xs);overflow:hidden}
+.treemap-head{padding:12px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.treemap-title{font-size:13px;font-weight:800;color:var(--purple)}
+.treemap-body{padding:14px;display:flex;flex-wrap:wrap;gap:5px;min-height:230px;align-content:flex-start}
+.tile{border-radius:var(--r-sm);display:flex;flex-direction:column;justify-content:flex-end;padding:5px 7px;cursor:pointer;transition:transform .15s,box-shadow .15s;overflow:hidden}
+.tile:hover{transform:scale(1.04);z-index:2;box-shadow:var(--sh-sm)}
+.tile.g{background:rgba(36,135,0,.65)}.tile.a{background:rgba(245,166,35,.75)}.tile.r{background:rgba(211,47,47,.8)}.tile.dr{background:rgba(180,0,0,.9)}
+.tile-name{font-size:10px;font-weight:800;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.3);line-height:1.2}
+.tile-val{font-size:9px;color:rgba(255,255,255,.75)}
+.treemap-legend{display:flex;gap:14px;padding:9px 14px;border-top:1px solid var(--border);font-size:10px}
+.tl-item-legend{display:flex;align-items:center;gap:5px;color:var(--muted)}
+.tl-swatch{width:10px;height:10px;border-radius:2px}
+
+/* Friction card */
+.friction-card{background:var(--card);border-radius:var(--r-lg);border:1px solid var(--border);box-shadow:var(--sh-xs);overflow:hidden}
+.friction-head{padding:12px 18px;border-bottom:1px solid var(--border)}
+.friction-title{font-size:13px;font-weight:800;color:var(--purple)}
+.friction-item{display:flex;align-items:center;gap:12px;padding:12px 18px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .1s}
+.friction-item:last-child{border-bottom:none}
+.friction-item:hover{background:var(--bg)}
+.f-rank{font-size:18px;font-weight:900;color:var(--red);width:24px;text-align:center;flex-shrink:0}
+.f-info{flex:1}
+.f-topic{font-size:13px;font-weight:700;color:var(--text)}
+.f-count{font-size:11px;color:var(--faint);margin-top:1px}
+.f-bar-wrap{width:80px;height:5px;background:var(--bg);border-radius:3px;overflow:hidden;flex-shrink:0}
+.f-bar{height:100%;background:var(--red);border-radius:3px;opacity:.65}
+.f-cta{font-size:11px;color:var(--teal);font-weight:700;white-space:nowrap}
+
+/* Wins card */
+.wins-card{background:var(--card);border-radius:var(--r-lg);border:1px solid var(--border);box-shadow:var(--sh-xs);overflow:hidden}
+.wins-head{padding:12px 18px;border-bottom:1px solid var(--border)}
+.wins-title{font-size:13px;font-weight:800;color:var(--purple)}
+.wins-body{padding:14px 18px}
+.win-item{display:flex;align-items:flex-start;gap:11px;margin-bottom:13px;padding-bottom:13px;border-bottom:1px solid var(--border)}
+.win-item:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+.win-ico{font-size:20px;flex-shrink:0}
+.win-title{font-size:12px;font-weight:700;color:var(--text)}
+.win-sub{font-size:11px;color:var(--muted);margin-top:2px;line-height:1.5}
+.win-action{font-size:11px;color:var(--teal);font-weight:700;cursor:pointer;margin-top:4px}
+
+/* Time Series Charts */
+.ts-section-head{display:flex;align-items:baseline;justify-content:space-between;margin:24px 0 14px}
+.ts-section-title{font-size:13px;font-weight:800;color:var(--purple);text-transform:uppercase;letter-spacing:.6px}
+.ts-section-sub{font-size:11px;color:var(--faint)}
+.ts-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;margin-bottom:24px}
+.ts-card{background:var(--card);border-radius:var(--r-lg);border:1px solid var(--border);box-shadow:var(--sh-xs);overflow:hidden}
+.ts-head{padding:12px 18px 8px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between}
+.ts-title{font-size:12.5px;font-weight:800;color:var(--text)}
+.ts-meta{font-size:10px;color:var(--faint);margin-top:2px}
+.ts-kpi{text-align:right;flex-shrink:0}
+.ts-kpi-num{font-size:20px;font-weight:900}
+.ts-kpi-delta{font-size:10px;font-weight:700;margin-top:1px}
+.ts-kpi-delta.up{color:var(--green)}.ts-kpi-delta.dn{color:var(--red)}.ts-kpi-delta.neu{color:var(--faint)}
+.ts-body{padding:12px 14px 8px;position:relative}
+.ts-axis-labels{display:flex;justify-content:space-between;padding:0 0 0 30px;margin-top:4px}
+.ts-axis-lbl{font-size:9px;color:var(--faint)}
+.ts-y-labels{position:absolute;left:4px;top:12px;display:flex;flex-direction:column;justify-content:space-between;height:90px}
+.ts-y-lbl{font-size:9px;color:var(--faint);line-height:1}
+
+/* ── CITATION MODAL ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:300;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:var(--card);border-radius:var(--r-xl);box-shadow:var(--sh-lg);width:560px;max-width:90vw;max-height:82vh;display:flex;flex-direction:column;overflow:hidden}
+.modal-head{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.modal-title{font-size:13px;font-weight:800;color:var(--purple)}
+.modal-close{background:none;border:none;font-size:20px;cursor:pointer;color:var(--faint);line-height:1}
+.modal-body{padding:20px;overflow-y:auto}
+.modal-meta{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.meta-chip{padding:4px 11px;background:var(--bg);border:1px solid var(--border);border-radius:var(--r-pill);font-size:11px;color:var(--muted);font-weight:600}
+.modal-text{font-size:13px;line-height:1.75;color:var(--muted);background:var(--bg);padding:14px 16px;border-radius:var(--r-md);border-left:4px solid var(--teal)}
+.hl{background:rgba(1,107,106,.15);border-bottom:2px solid var(--teal);padding:1px 2px;border-radius:2px;color:var(--text)}
+
+/* ── GLOBAL FILTER PANEL ── */
+.gf-panel{background:var(--card);border-bottom:1px solid var(--border);flex-shrink:0;overflow:hidden;max-height:0;transition:max-height .28s ease}
+.gf-panel.open{max-height:260px}
+.gf-inner{padding:14px 24px 16px}
+.gf-row{display:flex;gap:0;flex-direction:column;gap:9px}
+.gf-group{display:flex;align-items:center;gap:0;flex-wrap:wrap;row-gap:5px}
+.gf-label{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--faint);white-space:nowrap;width:72px;flex-shrink:0}
+.gf-chips{display:flex;gap:5px;flex-wrap:wrap}
+.gf-chip{padding:4px 12px;border-radius:var(--r-pill);border:1px solid var(--border);font-size:12px;font-weight:600;cursor:pointer;color:var(--muted);background:var(--bg);transition:all .12s;white-space:nowrap;user-select:none}
+.gf-chip:hover{border-color:var(--purple);color:var(--purple)}
+.gf-chip.on{color:#fff;border-color:transparent}
+.gf-chip.on[data-group="region"]{background:var(--teal)}
+.gf-chip.on[data-group="industry"]{background:var(--plum)}
+.gf-chip.on[data-group="tier"]{background:var(--purple)}
+.gf-chip.on[data-group="status"]{background:#996500;border-color:#996500}
+.gf-chip.on[data-value="all"]{background:var(--border-mid);color:var(--text)}
+.gf-divider{height:1px;background:var(--border);margin:10px 0 10px}
+.gf-footer{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.gf-active-row{display:flex;align-items:center;gap:7px;flex:1;flex-wrap:wrap;font-size:12px;color:var(--faint)}
+.gf-active-chip{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:var(--r-pill);font-size:11px;font-weight:700;background:var(--purple-bg);color:var(--purple);border:1px solid rgba(75,40,109,.2)}
+.gf-active-chip .rm{cursor:pointer;opacity:.65;margin-left:1px}.gf-active-chip .rm:hover{opacity:1}
+.gf-clear{font-size:12px;color:var(--red);font-weight:700;cursor:pointer;padding:4px 12px;border-radius:var(--r-pill);border:1px solid var(--red);background:transparent;transition:all .12s;flex-shrink:0}
+.gf-clear:hover{background:var(--red);color:#fff}
+
+/* filter toggle btn in topbar */
+.tb-filter-btn{display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:var(--r-pill);border:1px solid var(--border);background:var(--card);font-size:12px;font-weight:700;cursor:pointer;color:var(--muted);transition:all .15s;flex-shrink:0}
+.tb-filter-btn:hover,.tb-filter-btn.active{border-color:var(--purple);color:var(--purple);background:var(--purple-bg)}
+.tb-filter-btn svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.tb-filter-count{background:var(--purple);color:#fff;font-size:9px;font-weight:800;min-width:16px;height:16px;border-radius:var(--r-pill);padding:0 3px;display:none;align-items:center;justify-content:center}
+
+/* ── ACCOUNT LIST ── */
+.al-table{background:var(--card);border-radius:var(--r-lg);border:1px solid var(--border);box-shadow:var(--sh-xs);overflow:hidden}
+.al-thead{display:grid;grid-template-columns:5px 1.8fr .8fr .8fr 110px 90px 110px 1fr 90px;gap:12px;padding:10px 20px;background:var(--bg);border-bottom:1px solid var(--border);font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--faint);align-items:center}
+.al-row{display:grid;grid-template-columns:5px 1.8fr .8fr .8fr 110px 90px 110px 1fr 90px;gap:12px;padding:0 20px;border-bottom:1px solid var(--border);align-items:center;cursor:pointer;transition:background .1s;min-height:60px}
+.al-row:hover{background:rgba(75,40,109,.03)}
+.al-row:last-child{border-bottom:none}
+.al-health-bar{width:5px;height:40px;border-radius:3px;flex-shrink:0}
+.al-health-bar.g{background:var(--green)}.al-health-bar.a{background:var(--amber)}.al-health-bar.r{background:var(--red)}
+.al-name{font-weight:700;font-size:13px;color:var(--text)}
+.al-meta{font-size:10px;color:var(--faint);margin-top:2px}
+.al-region{font-size:12px;color:var(--muted)}
+.al-industry{font-size:11px;padding:3px 9px;border-radius:var(--r-pill);background:var(--bg);border:1px solid var(--border);color:var(--muted);font-weight:600;white-space:nowrap}
+.al-sev{text-align:center}
+.al-sev-num{font-size:15px;font-weight:900;margin-bottom:3px}
+.al-sev-num.r{color:var(--red)}.al-sev-num.a{color:#996500}.al-sev-num.g{color:var(--faint)}
+.al-sev-bar{height:4px;background:var(--bg);border-radius:2px;overflow:hidden}
+.al-sev-fill{height:100%;border-radius:2px}
+.al-sev-fill.r{background:var(--red)}.al-sev-fill.a{background:var(--amber)}.al-sev-fill.g{background:var(--green)}
+.al-tcv{font-size:13px;font-weight:700;color:var(--text)}
+.al-tcv-sub{font-size:10px;color:var(--faint)}
+.al-contact{font-size:12px;color:var(--muted)}
+.al-contact.overdue{color:var(--red);font-weight:600}
+.al-nba{font-size:11px;color:var(--muted);line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.al-nba-tag{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px;vertical-align:middle;flex-shrink:0}
+.al-action-btn{padding:6px 14px;border-radius:var(--r-pill);border:1px solid var(--border-mid);background:transparent;font-size:11px;font-weight:700;cursor:pointer;color:var(--purple);transition:all .15s;white-space:nowrap}
+.al-action-btn:hover{background:var(--purple);color:#fff;border-color:var(--purple)}
+
+/* back button in topbar */
+.tb-back{display:none;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--muted);cursor:pointer;padding:5px 10px;border-radius:var(--r-pill);transition:all .15s;border:1px solid transparent;flex-shrink:0}
+.tb-back:hover{color:var(--purple);border-color:var(--border)}
+.tb-back svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round}
+.tb-crumb-sep{color:var(--border-mid);font-size:14px;font-weight:300}
+.tb-crumb-leaf{color:var(--purple);font-weight:800}
+
+/* ── Brand mark in topbar ── */
+.tb-logo-wrap{display:flex;align-items:center;gap:8px;padding:6px 10px 6px 4px;flex-shrink:0}
+.tb-logo-mark{width:26px;height:26px;background:var(--purple);border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:12px;flex-shrink:0}
+.tb-logo-wordmark{font-size:12px;font-weight:800;color:var(--text);letter-spacing:.2px}
+
+/* severity pill hidden on list view */
+.severity-pill{transition:opacity .2s}
+.severity-pill.hidden{opacity:0;pointer-events:none}
+
+/* ── TOAST ── */
+.toast-wrap{position:fixed;bottom:24px;right:24px;z-index:400;display:flex;flex-direction:column;gap:9px}
+.toast{background:var(--purple);color:#fff;padding:11px 18px;border-radius:var(--r-md);font-size:12px;font-weight:600;box-shadow:var(--sh-md);display:flex;align-items:center;gap:9px;max-width:340px;animation:slideUp .25s ease-out}
+.toast.ok{background:var(--green)}.toast.warn{background:var(--amber)}
+@keyframes slideUp{from{transform:translateY(16px);opacity:0}to{transform:translateY(0);opacity:1}}
+</style>
+</head>
+<body>
+
+<!-- ─────────────── SIDEBAR ─────────────── -->
+<nav class="sidebar">
+  <div class="sb-nav">
+    <div class="sb-item active" onclick="portfolioHealthFilter=null;renderAccountList();if(document.getElementById('al-filter-sub'))document.getElementById('al-filter-sub').textContent='';showView('accounts-list')" id="nav-account">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="8" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/><rect x="13" y="13" width="8" height="8" rx="1"/></svg>
+      Account
+      <span class="sb-badge">2</span>
+    </div>
+    <div class="sb-item" onclick="showView('growth')" id="nav-growth">
+      <svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+      Growth
+    </div>
+    <div class="sb-item" onclick="showView('portfolio')" id="nav-portfolio">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="12" y1="3" x2="12" y2="21"/></svg>
+      Portfolio
+    </div>
+  </div>
+</nav>
+
+<!-- ─────────────── MAIN ─────────────── -->
+<div class="main">
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="tb-logo-wrap">
+      <div class="tb-logo-mark">BDW</div>
+      <div class="tb-logo-wordmark">Baldwin Data Works</div>
+    </div>
+    <div class="tb-divider"></div>
+    <div class="tb-back" id="tb-back" onclick="backToList()">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+      My Accounts
+    </div>
+    <div class="tb-brand">
+      <div class="tb-module" id="topbar-module">Account Cockpit</div>
+      <div class="tb-title" id="topbar-title">My Accounts</div>
+    </div>
+    <div class="tb-divider"></div>
+    <div class="tb-search" id="tb-search-container">
+      <span class="tb-search-ic"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg></span>
+      <input type="text" placeholder="Search accounts…" id="search-input" autocomplete="off">
+      <div class="search-dropdown" id="search-dropdown"></div>
+    </div>
+    <div class="tb-right">
+      <button class="tb-filter-btn" id="filter-toggle" onclick="toggleFilters()">
+        <svg viewBox="0 0 24 24"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
+        Filters
+        <span class="tb-filter-count" id="filter-count">0</span>
+      </button>
+      <div class="severity-pill amber" title="Account Impact Score — AI-weighted by TCV, SLA risk, brand prominence & mission-criticality">
+        <span class="sev-dot amber"></span>
+        Impact Score 72 — At Risk
+      </div>
+      <div class="tb-agent">
+        <div class="tb-agent-info">
+          <div class="tb-agent-name">Sarah Jenkins</div>
+          <div class="tb-agent-role">Account Manager</div>
+        </div>
+        <div class="tb-avatar">SJ</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- GLOBAL FILTER PANEL -->
+  <div class="gf-panel" id="gf-panel">
+    <div class="gf-inner">
+      <div class="gf-row">
+
+        <div class="gf-group">
+          <div class="gf-label">Region</div>
+          <div class="gf-chips">
+            <div class="gf-chip on" data-group="region" data-value="all" onclick="toggleFilter(this,'region','all')">All Regions</div>
+            <div class="gf-chip" data-group="region" data-value="BC" onclick="toggleFilter(this,'region','BC')">BC</div>
+            <div class="gf-chip" data-group="region" data-value="Alberta" onclick="toggleFilter(this,'region','Alberta')">Alberta</div>
+            <div class="gf-chip" data-group="region" data-value="Ontario" onclick="toggleFilter(this,'region','Ontario')">Ontario</div>
+            <div class="gf-chip" data-group="region" data-value="Prairies" onclick="toggleFilter(this,'region','Prairies')">Prairies</div>
+            <div class="gf-chip" data-group="region" data-value="Atlantic" onclick="toggleFilter(this,'region','Atlantic')">Atlantic</div>
+            <div class="gf-chip" data-group="region" data-value="National" onclick="toggleFilter(this,'region','National')">National</div>
+          </div>
+        </div>
+
+        <div class="gf-group">
+          <div class="gf-label">Industry</div>
+          <div class="gf-chips">
+            <div class="gf-chip on" data-group="industry" data-value="all" onclick="toggleFilter(this,'industry','all')">All Industries</div>
+            <div class="gf-chip" data-group="industry" data-value="Healthcare" onclick="toggleFilter(this,'industry','Healthcare')">Healthcare</div>
+            <div class="gf-chip" data-group="industry" data-value="Mining" onclick="toggleFilter(this,'industry','Mining')">Mining &amp; Resources</div>
+            <div class="gf-chip" data-group="industry" data-value="Retail" onclick="toggleFilter(this,'industry','Retail')">Retail</div>
+            <div class="gf-chip" data-group="industry" data-value="Finance" onclick="toggleFilter(this,'industry','Finance')">Finance</div>
+            <div class="gf-chip" data-group="industry" data-value="Technology" onclick="toggleFilter(this,'industry','Technology')">Technology</div>
+            <div class="gf-chip" data-group="industry" data-value="Manufacturing" onclick="toggleFilter(this,'industry','Manufacturing')">Manufacturing</div>
+            <div class="gf-chip" data-group="industry" data-value="Hospitality" onclick="toggleFilter(this,'industry','Hospitality')">Hospitality</div>
+          </div>
+        </div>
+
+        <div class="gf-group">
+          <div class="gf-label">Tier</div>
+          <div class="gf-chips">
+            <div class="gf-chip on" data-group="tier" data-value="all" onclick="toggleFilter(this,'tier','all')">All Tiers</div>
+            <div class="gf-chip" data-group="tier" data-value="Platinum" onclick="toggleFilter(this,'tier','Platinum')">Platinum</div>
+            <div class="gf-chip" data-group="tier" data-value="Gold" onclick="toggleFilter(this,'tier','Gold')">Gold</div>
+            <div class="gf-chip" data-group="tier" data-value="Silver" onclick="toggleFilter(this,'tier','Silver')">Silver</div>
+          </div>
+        </div>
+
+        <div class="gf-group">
+          <div class="gf-label">Status</div>
+          <div class="gf-chips">
+            <div class="gf-chip on" data-group="status" data-value="all" onclick="toggleFilter(this,'status','all')">All</div>
+            <div class="gf-chip" data-group="status" data-value="At Risk" onclick="toggleFilter(this,'status','At Risk')">⚠ At Risk</div>
+            <div class="gf-chip" data-group="status" data-value="Expiring &lt;90d" onclick="toggleFilter(this,'status','Expiring &lt;90d')">⏳ Expiring &lt;90d</div>
+            <div class="gf-chip" data-group="status" data-value="High TCV" onclick="toggleFilter(this,'status','High TCV')">💰 High TCV (&gt;$5K)</div>
+            <div class="gf-chip" data-group="status" data-value="Upsell Ready" onclick="toggleFilter(this,'status','Upsell Ready')">📈 Upsell Ready</div>
+            <div class="gf-chip" data-group="status" data-value="Healthy Only" onclick="toggleFilter(this,'status','Healthy Only')">✅ Healthy Only</div>
+          </div>
+        </div>
+
+      </div>
+      <div class="gf-divider"></div>
+      <div class="gf-footer">
+        <div class="gf-active-row" id="gf-active-row">
+          <span style="color:var(--faint)">No filters active — showing all 347 accounts</span>
+        </div>
+        <button class="gf-clear" onclick="clearFilters()">Clear All</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- VIEW AREA -->
+  <div class="view-area">
+
+    <!-- ══════════════════════════════════════
+         VIEW 0 · ACCOUNT LIST (entry point)
+    ══════════════════════════════════════ -->
+    <div class="view active" id="view-accounts-list">
+      <div class="sec-head" style="margin-bottom:16px">
+        <div class="sec-title">My Accounts <span class="sec-title-line"></span></div>
+        <div class="sec-sub" id="al-count-label">347 accounts · sorted by Account Impact Score <span id="al-filter-sub" style="margin-left:8px;font-weight:700;color:var(--purple)"></span></div>
+      </div>
+      <div class="al-table">
+        <div class="al-thead">
+          <div></div>
+          <div>Account</div>
+          <div>Region</div>
+          <div>Industry</div>
+          <div style="text-align:center">Impact Score</div>
+          <div>MRR</div>
+          <div>Last Contact</div>
+          <div>Next Best Action</div>
+          <div></div>
+        </div>
+        <!-- rows rendered by JS -->
+        <div id="al-rows"></div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════
+         VIEW 1 · ACCOUNT DASHBOARD
+    ══════════════════════════════════════ -->
+    <div class="view" id="view-account">
+
+      <!-- Vitals Strip -->
+      <div class="vitals-strip">
+        <div class="vcard a">
+          <div class="vcard-label">Overall Health</div>
+          <div class="vcard-val"><span class="badge a"><span class="dot a"></span>At Risk</span></div>
+          <div class="vcard-sub">2 signals require attention</div>
+        </div>
+        <div class="vcard g">
+          <div class="vcard-label">Tenure &amp; Tier</div>
+          <div class="vcard-val">4 Yrs</div>
+          <div class="vcard-sub"><span class="badge p">Platinum</span></div>
+        </div>
+        <div class="vcard a">
+          <div class="vcard-label">Billing Status</div>
+          <div class="vcard-val"><span class="badge a">⚠ Past Due</span></div>
+          <div class="vcard-sub">2 invoices · 45 days overdue</div>
+        </div>
+        <div class="vcard g">
+          <div class="vcard-label">Open Tickets</div>
+          <div class="vcard-val" style="font-size:18px">0 Critical</div>
+          <div class="vcard-sub">1 Low priority · SLA: OK</div>
+        </div>
+      </div>
+
+      <!-- Health Pillars -->
+      <div class="pillars">
+        <div class="pillar">
+          <div class="pillar-icon a">💰</div>
+          <div>
+            <div class="pillar-tag">Financial Health</div>
+            <div class="pillar-status a">At Risk</div>
+            <div class="pillar-detail">2 invoices ($2,240 total) 45 days past due. Contract expires in <b>65 days</b>. TCV: $8,400/mo.</div>
+          </div>
+        </div>
+        <div class="pillar">
+          <div class="pillar-icon g">📡</div>
+          <div>
+            <div class="pillar-tag">Service Delivery</div>
+            <div class="pillar-status g">Healthy</div>
+            <div class="pillar-detail">No critical tickets. VPN issue resolved yesterday. Bandwidth: 68% utilization. No SLA breaches.</div>
+          </div>
+        </div>
+        <div class="pillar">
+          <div class="pillar-icon a">💬</div>
+          <div>
+            <div class="pillar-tag">Relationship &amp; Sentiment</div>
+            <div class="pillar-status a">Declining</div>
+            <div class="pillar-detail">Sentiment: Neutral → Negative (−12 pts). CSAT: 3.2/5. Last meaningful contact: <b>22 days ago</b>.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dashboard Grid -->
+      <div class="dash-grid">
+        <!-- LEFT: Action Intelligence -->
+        <div>
+          <div class="sec-head">
+            <div class="sec-title">Action Intelligence Hub <span class="sec-title-line"></span></div>
+            <div class="sec-sub">3 active · sorted by Account Impact Score</div>
+          </div>
+          <div class="nba-stack">
+
+            <!-- ── NBA 1: RETENTION ── -->
+            <div class="nba" id="nba-1" style="max-height:600px">
+              <div class="nba-bar ret"></div>
+              <div class="nba-body">
+                <div class="nba-head">
+                  <div class="nba-title">Schedule Contract Renewal &amp; Competitor Response<span class="nba-scores">Churn Score 0.89 · Severity Score 92</span></div>
+                  <span class="nba-tag ret">⚡ AI Proactive · Retention</span>
+                </div>
+                <div class="ai-box">
+                  <div class="ai-box-left">
+                    <ul class="ai-reasons">
+                      <li class="ai-reason">Contract expires in <b>65 days</b> — renewal window is actively closing <a class="cite" onclick="showCitation('c1')">Src 1</a></li>
+                      <li class="ai-reason"><b>"Rogers"</b> mentioned twice in recent email exchanges — competitor is actively engaged <a class="cite" onclick="showCitation('c2')">Src 2</a></li>
+                      <li class="ai-reason">CTO David Lim attended our security webinar last week — high-intent signal before budget cycle closes <a class="cite" onclick="showCitation('c3')">Src 3</a></li>
+                    </ul>
+                  </div>
+                  <div class="ai-box-sep"></div>
+                  <div class="ai-box-right">
+                    <div class="ebm-lbl">Churn Risk Factors</div>
+                    <div class="ebm-row">
+                      <span class="ebm-bullet pos"></span>
+                      <span class="ebm-text">Contract expiring &lt;90d</span>
+                      <div class="ebm-bar"><div class="ebm-bar-half left"></div><div class="ebm-bar-half right"><div class="ebm-bar-fill" style="width:89%"></div></div></div>
+                      <span class="ebm-delta pos">+0.31</span>
+                    </div>
+                    <div class="ebm-row">
+                      <span class="ebm-bullet pos"></span>
+                      <span class="ebm-text">Competitor mention</span>
+                      <div class="ebm-bar"><div class="ebm-bar-half left"></div><div class="ebm-bar-half right"><div class="ebm-bar-fill" style="width:63%"></div></div></div>
+                      <span class="ebm-delta pos">+0.22</span>
+                    </div>
+                    <div class="ebm-row">
+                      <span class="ebm-bullet pos"></span>
+                      <span class="ebm-text">Sentiment declining</span>
+                      <div class="ebm-bar"><div class="ebm-bar-half left"></div><div class="ebm-bar-half right"><div class="ebm-bar-fill" style="width:51%"></div></div></div>
+                      <span class="ebm-delta pos">+0.18</span>
+                    </div>
+                    <div class="ebm-row">
+                      <span class="ebm-bullet neg"></span>
+                      <span class="ebm-text">Platinum tenure, 4 yrs</span>
+                      <div class="ebm-bar"><div class="ebm-bar-half left"><div class="ebm-bar-fill" style="width:46%"></div></div><div class="ebm-bar-half right"></div></div>
+                      <span class="ebm-delta neg">−0.16</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="nba-foot">
+                  <div class="btn-row">
+                    <button class="btn btn-plum" onclick="toast('📧 Email draft opened in your inbox (via Microsoft Graph)', 'ok')">Draft Email</button>
+                    <button class="btn btn-s" onclick="toast('📅 Snoozed 7 days — NBA will resurface on May 2', '')">Snooze 1 Week</button>
+                    <div class="dd-wrap">
+                      <button class="btn btn-s" onclick="toggleDD('dd1')">Dismiss ▾</button>
+                      <div class="dd-menu" id="dd1">
+                        <div class="dd-opt" onclick="dismiss('nba-1','dd1','Already in negotiation')">Already in negotiation<small>Remove — I am handling this</small></div>
+                        <div class="dd-opt" onclick="dismiss('nba-1','dd1','Not the right timing')">Not the right timing<small>Resurface in 30 days</small></div>
+                        <div class="dd-opt" onclick="dismiss('nba-1','dd1','Bad AI signal')">AI signal is wrong<small>Flag for model retraining</small></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="hitl">
+                    Helpful?
+                    <button class="hitl-btn up" onclick="hitl(this,'up')">👍</button>
+                    <button class="hitl-btn down" onclick="hitl(this,'down')">👎</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ── NBA 2: RISK ── -->
+            <div class="nba" id="nba-2" style="max-height:600px">
+              <div class="nba-bar risk"></div>
+              <div class="nba-body">
+                <div class="nba-head">
+                  <div class="nba-title">Resolve Outstanding Billing Dispute — 2 Invoices<span class="nba-scores">Risk Score 0.73 · Severity Score 85</span></div>
+                  <span class="nba-tag risk">🔴 AI Alert · Risk Mitigation</span>
+                </div>
+                <div class="ai-box">
+                  <div class="ai-box-left">
+                    <ul class="ai-reasons">
+                      <li class="ai-reason"><b>2 invoices ($2,240)</b> are 45 days past due — auto-reminders have gone unanswered <a class="cite" onclick="showCitation('c4')">Src 4</a></li>
+                      <li class="ai-reason">Billing friction precedes churn in <b>73%</b> of EBM-flagged accounts at this overdue stage</li>
+                      <li class="ai-reason">At <b>$100,800 ARR</b>, a proactive courtesy credit now costs far less than losing the account</li>
+                    </ul>
+                  </div>
+                  <div class="ai-box-sep"></div>
+                  <div class="ai-box-right">
+                    <div class="ebm-lbl">Billing Risk Factors</div>
+                    <div class="ebm-row">
+                      <span class="ebm-bullet pos"></span>
+                      <span class="ebm-text">Invoices overdue &gt;30d</span>
+                      <div class="ebm-bar"><div class="ebm-bar-half left"></div><div class="ebm-bar-half right"><div class="ebm-bar-fill" style="width:80%"></div></div></div>
+                      <span class="ebm-delta pos">+0.28</span>
+                    </div>
+                    <div class="ebm-row">
+                      <span class="ebm-bullet pos"></span>
+                      <span class="ebm-text">2 unpaid invoices</span>
+                      <div class="ebm-bar"><div class="ebm-bar-half left"></div><div class="ebm-bar-half right"><div class="ebm-bar-fill" style="width:57%"></div></div></div>
+                      <span class="ebm-delta pos">+0.20</span>
+                    </div>
+                    <div class="ebm-row">
+                      <span class="ebm-bullet neg"></span>
+                      <span class="ebm-text">High TCV (retention)</span>
+                      <div class="ebm-bar"><div class="ebm-bar-half left"><div class="ebm-bar-fill" style="width:66%"></div></div><div class="ebm-bar-half right"></div></div>
+                      <span class="ebm-delta neg">−0.23</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="nba-foot">
+                  <div class="btn-row">
+                    <button class="btn btn-warn" onclick="toast('💳 Loyalty credit of $250 applied via Amdocs Billing API', 'ok')">Apply Credit</button>
+                    <button class="btn btn-s" onclick="toast('🎫 P2 ticket escalated in ServiceNow — Ref: INC0094812', 'ok')">Escalate (ServiceNow)</button>
+                    <div class="dd-wrap">
+                      <button class="btn btn-s" onclick="toggleDD('dd2')">Dismiss ▾</button>
+                      <div class="dd-menu" id="dd2">
+                        <div class="dd-opt" onclick="dismiss('nba-2','dd2','Payment received')">Payment received<small>Mark resolved</small></div>
+                        <div class="dd-opt" onclick="dismiss('nba-2','dd2','Dispute in progress')">Dispute in progress<small>Finance team handling</small></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="hitl">
+                    Helpful?
+                    <button class="hitl-btn up" onclick="hitl(this,'up')">👍</button>
+                    <button class="hitl-btn down" onclick="hitl(this,'down')">👎</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ── NBA 3: UPSELL ── -->
+            <div class="nba" id="nba-3" style="max-height:600px">
+              <div class="nba-bar u"></div>
+              <div class="nba-body">
+                <div class="nba-head">
+                  <div class="nba-title">Recommend SD-WAN Enterprise — Multi-Site Expansion<span class="nba-scores">NBO Score 0.84 · Severity Score 68</span></div>
+                  <span class="nba-tag u">📈 AI Proactive · Upsell</span>
+                </div>
+                <div class="ai-box">
+                  <div class="ai-box-left">
+                    <ul class="ai-reasons">
+                      <li class="ai-reason">NBO model score: <b>84%</b> — highest SD-WAN propensity across the entire portfolio</li>
+                      <li class="ai-reason"><b>2 new branch offices</b> opened last quarter (Calgary + Mississauga) — multi-site infrastructure now needed <a class="cite" onclick="showCitation('c5')">Src 5</a></li>
+                      <li class="ai-reason">Fiber confirmed active at all 3 locations — ideal window for a no-commitment trial</li>
+                    </ul>
+                  </div>
+                  <div class="ai-box-sep"></div>
+                  <div class="ai-box-right">
+                    <div class="ebm-lbl">NBO Propensity Drivers</div>
+                    <div class="ebm-row">
+                      <span class="ebm-bullet neg"></span>
+                      <span class="ebm-text">New branches ×2</span>
+                      <div class="ebm-bar"><div class="ebm-bar-half left"></div><div class="ebm-bar-half right"><div class="ebm-bar-fill g" style="width:83%"></div></div></div>
+                      <span class="ebm-delta neg">+0.29</span>
+                    </div>
+                    <div class="ebm-row">
+                      <span class="ebm-bullet neg"></span>
+                      <span class="ebm-text">Fiber at all 3 locations</span>
+                      <div class="ebm-bar"><div class="ebm-bar-half left"></div><div class="ebm-bar-half right"><div class="ebm-bar-fill g" style="width:71%"></div></div></div>
+                      <span class="ebm-delta neg">+0.25</span>
+                    </div>
+                    <div class="ebm-row">
+                      <span class="ebm-bullet neg"></span>
+                      <span class="ebm-text">SD-WAN whitespace gap</span>
+                      <div class="ebm-bar"><div class="ebm-bar-half left"></div><div class="ebm-bar-half right"><div class="ebm-bar-fill g" style="width:49%"></div></div></div>
+                      <span class="ebm-delta neg">+0.17</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="nba-foot">
+                  <div class="btn-row">
+                    <button class="btn btn-p" onclick="toast('📋 Salesforce CPQ quote generated — Draft #Q-2026-0491', 'ok')">Create Quote (CPQ)</button>
+                    <div class="dd-wrap">
+                      <button class="btn btn-s" onclick="toggleDD('dd3')">Dismiss ▾</button>
+                      <div class="dd-menu" id="dd3">
+                        <div class="dd-opt" onclick="dismiss('nba-3','dd3','Not interested')">Not interested<small>Suppress for 90 days</small></div>
+                        <div class="dd-opt" onclick="dismiss('nba-3','dd3','Already quoted')">Already quoted<small>Remove — quote in progress</small></div>
+                        <div class="dd-opt" onclick="dismiss('nba-3','dd3','Bad AI signal')">AI signal is wrong<small>Flag for retraining</small></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="hitl">
+                    Helpful?
+                    <button class="hitl-btn up" onclick="hitl(this,'up')">👍</button>
+                    <button class="hitl-btn down" onclick="hitl(this,'down')">👎</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div><!-- /nba-stack -->
+        </div><!-- /col-left -->
+
+        <!-- RIGHT: Context Panel -->
+        <div>
+          <!-- Serviceability Gauge -->
+          <div class="panel" id="serviceability-panel">
+            <div class="panel-head">
+              <div class="panel-head-title">
+                <svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:var(--purple);fill:none;stroke-width:2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                Serviceability Gauge
+              </div>
+              <span class="badge g">1 Site On-Net</span>
+            </div>
+            <div class="panel-body">
+              <div class="gauge-ttr-row">
+                <div class="gauge-ttr-item">
+                  <div class="gauge-ttr-lbl">Fastest Site</div>
+                  <div class="gauge-ttr-val green">On-Net · HQ</div>
+                </div>
+                <div class="gauge-ttr-item">
+                  <div class="gauge-ttr-lbl">Revenue-Ready</div>
+                  <div class="gauge-ttr-val">~2 weeks</div>
+                </div>
+                <div class="gauge-ttr-item">
+                  <div class="gauge-ttr-lbl">Sites Covered</div>
+                  <div class="gauge-ttr-val">1 of 3 On-Net</div>
+                </div>
+              </div>
+
+              <!-- Location 1 -->
+              <div class="gauge-loc">
+                <div class="gauge-loc-head">
+                  <span class="gauge-loc-name">Location 1: Vancouver, V6B 2W3, BC</span>
+                  <span class="badge g" style="font-size:9px;padding:2px 8px">On-Net</span>
+                </div>
+                <div class="gauge-wrap" onclick="toast('📍 Full map opened — Vancouver HQ: Fiber 80m On-Net, 5G 40m On-Net. Q3 VoIP expansion planned.','ok')" title="Click to open full interactive map">
+                  <div class="gauge-svc-row">
+                    <div class="gauge-svc-pin" style="left:8%" data-tip="📱 5G — 40m · On-Net · Deploy now">📱</div>
+                    <div class="gauge-svc-pin" style="left:17%" data-tip="🌐 Fiber — 80m · On-Net · Deploy now">🌐</div>
+                    <div class="gauge-svc-pin gauge-future-pin" style="left:27%" data-tip="☎️ Q3 2026 Planned: VoIP node — gap closing to 120m">☎️</div>
+                  </div>
+                  <div class="gauge-track">
+                    <div class="gauge-zone on-net" style="width:30%">On-Net</div>
+                    <div class="gauge-zone near-net" style="width:28%">Near-Net</div>
+                    <div class="gauge-zone off-net" style="width:27%">Off-Net</div>
+                    <div class="gauge-zone future" style="width:15%">Future</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Location 2 -->
+              <div class="gauge-loc">
+                <div class="gauge-loc-head">
+                  <span class="gauge-loc-name">Location 2: Calgary, T2P 1J9, AB</span>
+                  <span class="badge a" style="font-size:9px;padding:2px 8px">Near-Net</span>
+                </div>
+                <div class="gauge-wrap" onclick="toast('📍 Full map opened — Calgary: 5G 180m Near-Net (3–4 wks), Fiber 320m Near-Net (6–8 wks).','')" title="Click to open full interactive map">
+                  <div class="gauge-svc-row">
+                    <div class="gauge-svc-pin" style="left:41%" data-tip="📱 5G — 180m · Near-Net · 3–4 weeks to deploy">📱</div>
+                    <div class="gauge-svc-pin" style="left:53%" data-tip="🌐 Fiber — 320m · Near-Net · 6–8 weeks to deploy">🌐</div>
+                  </div>
+                  <div class="gauge-track">
+                    <div class="gauge-zone on-net" style="width:30%">On-Net</div>
+                    <div class="gauge-zone near-net" style="width:28%">Near-Net</div>
+                    <div class="gauge-zone off-net" style="width:27%">Off-Net</div>
+                    <div class="gauge-zone future" style="width:15%">Future</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Location 3 -->
+              <div class="gauge-loc" style="margin-bottom:0">
+                <div class="gauge-loc-head">
+                  <span class="gauge-loc-name">Location 3: Mississauga, L5B 3A1, ON</span>
+                  <span class="badge r" style="font-size:9px;padding:2px 8px;background:var(--red-bg);color:var(--red)">Off-Net</span>
+                </div>
+                <div class="gauge-wrap" onclick="toast('📍 Full map opened — Mississauga: 5G 480m (10–12 wks), Fiber 950m Off-Net. Q4 Fiber expansion planned.','warn')" title="Click to open full interactive map">
+                  <div class="gauge-svc-row">
+                    <div class="gauge-svc-pin" style="left:62%" data-tip="📱 5G — 480m · Near-Net edge · 10–12 weeks">📱</div>
+                    <div class="gauge-svc-pin" style="left:76%" data-tip="🌐 Fiber — 950m · Off-Net · 16–20 weeks (major capex)">🌐</div>
+                    <div class="gauge-svc-pin gauge-future-pin" style="left:86%" data-tip="🌐 Q4 2026 Planned: Fiber expansion — gap closing to ~400m">🌐</div>
+                  </div>
+                  <div class="gauge-track">
+                    <div class="gauge-zone on-net" style="width:30%">On-Net</div>
+                    <div class="gauge-zone near-net" style="width:28%">Near-Net</div>
+                    <div class="gauge-zone off-net" style="width:27%">Off-Net</div>
+                    <div class="gauge-zone future" style="width:15%">Future</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="gauge-legend">
+                <div class="gauge-leg-item"><span class="gauge-leg-swatch on-net"></span>On-Net (0m)</div>
+                <div class="gauge-leg-item"><span class="gauge-leg-swatch near-net"></span>Near-Net (&lt;500m)</div>
+                <div class="gauge-leg-item"><span class="gauge-leg-swatch off-net"></span>Off-Net (500m+)</div>
+                <div class="gauge-leg-item" style="color:var(--faint)">· 🌐 Fiber · 📱 5G · ☎️ VoIP · faded = planned</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent Interactions -->
+          <div class="panel">
+            <div class="panel-head">
+              <div class="panel-head-title">
+                <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                Interaction Summary
+              </div>
+              <a style="font-size:11px;color:var(--teal);font-weight:700;cursor:pointer">View all 47</a>
+            </div>
+            <div class="panel-body">
+              <!-- RAG-generated paragraph summary -->
+              <div class="rag-summary">
+                <div class="rag-label">✦ AI Relationship Summary — RAG-Powered</div>
+                <div class="rag-text">
+                  Over the past 60 days, TechCorp Global's relationship sentiment has drifted from neutral to <b>declining</b> (−12 pts), driven by unresolved billing friction and a lack of proactive outreach <a class="cite" onclick="showCitation('c4')">Src 1</a>. The pivotal risk signal is CTO David Lim's Apr 18 email, where <b>Rogers was explicitly cited</b> as an alternative for international roaming — indicating the account is in active competitor evaluation <a class="cite" onclick="showCitation('c2')">Src 2</a>. A positive counter-signal emerged on Apr 10 when Lim attended the full Enterprise Security Webinar (4.5/5 rating), flagging interest in Zero-Trust architecture and suggesting he remains strategically engaged with our account team <a class="cite" onclick="showCitation('c3')">Src 3</a>. Critically, two invoices totalling <b>$2,240 remain 45 days overdue</b> and must be resolved before any renewal conversation can proceed <a class="cite" onclick="showCitation('c4')">Src 4</a>.
+                </div>
+              </div>
+              <div class="tl-section-lbl">Raw Interaction Log — 47 Events</div>
+              <div class="tl">
+                <div class="tl-item">
+                  <div class="tl-icon call">📞</div>
+                  <div>
+                    <div class="tl-date">Yesterday · 2:14 PM</div>
+                    <div class="tl-title">VPN Support Ticket Resolved</div>
+                    <div class="tl-body">Configuration issue fixed remotely. CSAT: 3/5 — customer noted "faster response needed."</div>
+                  </div>
+                </div>
+                <div class="tl-item">
+                  <div class="tl-icon billing">📧</div>
+                  <div>
+                    <div class="tl-date">Apr 18 · Email</div>
+                    <div class="tl-title">Billing Inquiry — Roaming</div>
+                    <div class="tl-body">CTO David Lim emailed about European team roaming charges. <span style="color:var(--red);font-weight:600">Competitor Rogers mentioned.</span></div>
+                  </div>
+                </div>
+                <div class="tl-item">
+                  <div class="tl-icon win">🏆</div>
+                  <div>
+                    <div class="tl-date">Apr 10 · Webinar</div>
+                    <div class="tl-title">Enterprise Security Webinar Attended</div>
+                    <div class="tl-body">David Lim (CTO) registered and attended the full 90-min session.</div>
+                  </div>
+                </div>
+                <div class="tl-item">
+                  <div class="tl-icon billing">📄</div>
+                  <div>
+                    <div class="tl-date">Mar 15 · Billing</div>
+                    <div class="tl-title">Invoice #INV-2026-0812 Overdue</div>
+                    <div class="tl-body">$1,120 outstanding — 45 days past due. Auto-reminder sent.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /view-account -->
+
+
+    <!-- ══════════════════════════════════════
+         VIEW 2 · GROWTH EXPLORER
+    ══════════════════════════════════════ -->
+    <div class="view" id="view-growth">
+      <div class="sec-head" style="margin-bottom:16px">
+        <div class="sec-title">Growth &amp; Whitespace Explorer <span class="sec-title-line"></span></div>
+        <div class="sec-sub">47 upsell opportunities · sorted by Urgency &amp; Propensity Score</div>
+      </div>
+
+      <div class="filter-bar">
+        <div class="chip on" onclick="filterGrowth(this,'all')">All Opportunities</div>
+        <div class="chip" onclick="filterGrowth(this,'infrastructure')">Infrastructure</div>
+        <div class="chip" onclick="filterGrowth(this,'security')">Security</div>
+        <div class="chip" onclick="filterGrowth(this,'mobility')">Mobility</div>
+        <div class="chip" onclick="filterGrowth(this,'healthy')">Healthy Accounts Only</div>
+        <div class="fs-wrap">
+          <span class="fs-ic"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg></span>
+          <input type="text" placeholder="Filter by name…">
+        </div>
+      </div>
+
+      <div class="growth-layout">
+        <div>
+          <div class="g-table">
+            <div class="g-thead">
+              <div>Account</div>
+              <div>Recommended Product</div>
+              <div>Why Now</div>
+              <div>MRR Lift</div>
+              <div>NBO Score</div>
+            </div>
+            <!-- Row 1 -->
+            <div class="g-row" onclick="selectGrowth(this,'g1')" id="g-row-g1">
+              <div><div class="g-name">Northern Star Mining</div><div class="g-tier">Gold · 6 Years</div></div>
+              <div class="g-product">SD-WAN Enterprise</div>
+              <div><span class="trigger fi">⚡ New Fiber Live</span></div>
+              <div class="g-mrr">+$2,800/mo</div>
+              <div><div class="g-score">92%</div><div class="score-bar-wrap"><div class="score-bar" style="width:92%"></div></div></div>
+            </div>
+            <!-- Row 2 -->
+            <div class="g-row" onclick="selectGrowth(this,'g2')" id="g-row-g2">
+              <div><div class="g-name">Cascade Health Systems</div><div class="g-tier">Platinum · 9 Years</div></div>
+              <div class="g-product">Advanced Security Suite</div>
+              <div><span class="trigger po">🔍 Portal Intent ×5</span></div>
+              <div class="g-mrr">+$1,500/mo</div>
+              <div><div class="g-score">88%</div><div class="score-bar-wrap"><div class="score-bar" style="width:88%"></div></div></div>
+            </div>
+            <!-- Row 3 -->
+            <div class="g-row" onclick="selectGrowth(this,'g3')" id="g-row-g3">
+              <div><div class="g-name">Pacific Retail Group</div><div class="g-tier">Gold · 3 Years</div></div>
+              <div class="g-product">Dedicated Fiber Upgrade</div>
+              <div><span class="trigger us">📈 Bandwidth 94%</span></div>
+              <div class="g-mrr">+$3,200/mo</div>
+              <div><div class="g-score">81%</div><div class="score-bar-wrap"><div class="score-bar" style="width:81%"></div></div></div>
+            </div>
+            <!-- Row 4 - TechCorp (has open tickets = sales hold) -->
+            <div class="g-row" onclick="selectGrowth(this,'g4')" id="g-row-g4">
+              <div><div class="g-name">TechCorp Global Inc.</div><div class="g-tier">Platinum · 4 Years</div></div>
+              <div class="g-product">SD-WAN Enterprise</div>
+              <div><span class="trigger br">🏢 New Branches ×2</span></div>
+              <div class="g-mrr">+$2,100/mo</div>
+              <div><div class="g-score">84%</div><div class="score-bar-wrap"><div class="score-bar" style="width:84%"></div></div></div>
+            </div>
+            <!-- Row 5 -->
+            <div class="g-row" onclick="selectGrowth(this,'g5')" id="g-row-g5">
+              <div><div class="g-name">Metro Foods Inc.</div><div class="g-tier">Silver · 2 Years</div></div>
+              <div class="g-product">LTE Failover Backup</div>
+              <div><span class="trigger br">🏢 New Branch</span></div>
+              <div class="g-mrr">+$450/mo</div>
+              <div><div class="g-score">71%</div><div class="score-bar-wrap"><div class="score-bar" style="width:71%"></div></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Whitespace Matrix Panel -->
+        <div>
+          <div class="panel" style="min-height:420px">
+            <div class="panel-head">
+              <div class="panel-head-title" id="wm-title">
+                <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+                Whitespace Matrix
+              </div>
+            </div>
+            <div class="panel-body" id="wm-body">
+              <div class="wm-empty">
+                <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+                Select an account to view their product matrix and AI upsell recommendations.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /view-growth -->
+
+
+    <!-- ══════════════════════════════════════
+         VIEW 3 · PORTFOLIO
+    ══════════════════════════════════════ -->
+    <div class="view" id="view-portfolio">
+      <div class="sec-head" style="margin-bottom:16px">
+        <div class="sec-title">Portfolio — Weekly Summary <span class="sec-title-line"></span></div>
+        <div class="sec-sub">347 accounts · updated daily at 6:00 AM · Looker Semantic Layer · Apr 25, 2026</div>
+      </div>
+
+      <!-- Portfolio Stats -->
+      <div class="pstats">
+        <div class="pstat" onclick="goToAccountsFiltered(null)"><div class="pstat-num purple">347</div><div class="pstat-lbl">Total Accounts</div></div>
+        <div class="pstat" onclick="goToAccountsFiltered('g')"><div class="pstat-num green">277</div><div class="pstat-lbl">Healthy (Green)</div></div>
+        <div class="pstat" onclick="goToAccountsFiltered('a')"><div class="pstat-num amber">47</div><div class="pstat-lbl">At Risk (Amber)</div></div>
+        <div class="pstat" onclick="goToAccountsFiltered('r')"><div class="pstat-num red">23</div><div class="pstat-lbl">Critical (Red)</div></div>
+      </div>
+
+      <!-- Time Series Charts -->
+      <div class="ts-section-head">
+        <div class="ts-section-title">Portfolio Trend Analytics</div>
+        <div class="ts-section-sub">Rolling 12-month view · sourced from CRM + billing data nightly</div>
+      </div>
+      <div class="ts-grid">
+
+        <!-- Chart 1: Portfolio MRR Trend -->
+        <div class="ts-card">
+          <div class="ts-head">
+            <div>
+              <div class="ts-title">Portfolio MRR</div>
+              <div class="ts-meta">Monthly Recurring Revenue · 12 months</div>
+            </div>
+            <div class="ts-kpi">
+              <div class="ts-kpi-num purple" style="color:var(--purple)">$2.41M</div>
+              <div class="ts-kpi-delta up">↑ +14.2% YoY</div>
+            </div>
+          </div>
+          <div class="ts-body">
+            <div class="ts-y-labels">
+              <div class="ts-y-lbl">$2.5M</div>
+              <div class="ts-y-lbl">$2.0M</div>
+              <div class="ts-y-lbl">$1.5M</div>
+            </div>
+            <svg viewBox="0 0 420 90" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:90px;overflow:visible">
+              <defs>
+                <linearGradient id="grad-mrr" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#4b286d" stop-opacity=".18"/>
+                  <stop offset="100%" stop-color="#4b286d" stop-opacity="0"/>
+                </linearGradient>
+              </defs>
+              <!-- Grid lines -->
+              <line x1="30" y1="0" x2="420" y2="0" stroke="#e4e5e9" stroke-width="1"/>
+              <line x1="30" y1="45" x2="420" y2="45" stroke="#e4e5e9" stroke-width="1"/>
+              <line x1="30" y1="90" x2="420" y2="90" stroke="#e4e5e9" stroke-width="1"/>
+              <!-- Area fill -->
+              <polygon points="30,78 62,72 95,68 127,63 160,57 192,50 225,47 257,42 290,36 322,30 355,24 387,18 420,12 420,90 30,90" fill="url(#grad-mrr)"/>
+              <!-- Line -->
+              <polyline points="30,78 62,72 95,68 127,63 160,57 192,50 225,47 257,42 290,36 322,30 355,24 387,18 420,12" fill="none" stroke="#4b286d" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+              <!-- Dots -->
+              <circle cx="420" cy="12" r="4" fill="#4b286d"/>
+              <circle cx="30" cy="78" r="3" fill="#4b286d" opacity=".45"/>
+            </svg>
+            <div class="ts-axis-labels">
+              <div class="ts-axis-lbl">May</div><div class="ts-axis-lbl">Jun</div><div class="ts-axis-lbl">Jul</div>
+              <div class="ts-axis-lbl">Aug</div><div class="ts-axis-lbl">Sep</div><div class="ts-axis-lbl">Oct</div>
+              <div class="ts-axis-lbl">Nov</div><div class="ts-axis-lbl">Dec</div><div class="ts-axis-lbl">Jan</div>
+              <div class="ts-axis-lbl">Feb</div><div class="ts-axis-lbl">Mar</div><div class="ts-axis-lbl">Apr</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chart 2: At-Risk Account Count -->
+        <div class="ts-card">
+          <div class="ts-head">
+            <div>
+              <div class="ts-title">At-Risk Accounts</div>
+              <div class="ts-meta">Amber + Critical accounts combined · 12 months</div>
+            </div>
+            <div class="ts-kpi">
+              <div class="ts-kpi-num" style="color:var(--amber)">70</div>
+              <div class="ts-kpi-delta dn">↓ −18 vs. peak</div>
+            </div>
+          </div>
+          <div class="ts-body">
+            <div class="ts-y-labels">
+              <div class="ts-y-lbl">100</div>
+              <div class="ts-y-lbl">55</div>
+              <div class="ts-y-lbl">10</div>
+            </div>
+            <svg viewBox="0 0 420 90" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:90px;overflow:visible">
+              <defs>
+                <linearGradient id="grad-risk" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#f5a623" stop-opacity=".2"/>
+                  <stop offset="100%" stop-color="#f5a623" stop-opacity="0"/>
+                </linearGradient>
+              </defs>
+              <line x1="30" y1="0" x2="420" y2="0" stroke="#e4e5e9" stroke-width="1"/>
+              <line x1="30" y1="45" x2="420" y2="45" stroke="#e4e5e9" stroke-width="1"/>
+              <line x1="30" y1="90" x2="420" y2="90" stroke="#e4e5e9" stroke-width="1"/>
+              <polygon points="30,36 62,28 95,22 127,18 160,22 192,28 225,18 257,25 290,32 322,38 355,42 387,48 420,37 420,90 30,90" fill="url(#grad-risk)"/>
+              <polyline points="30,36 62,28 95,22 127,18 160,22 192,28 225,18 257,25 290,32 322,38 355,42 387,48 420,37" fill="none" stroke="#f5a623" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+              <!-- Peak annotation -->
+              <circle cx="225" cy="18" r="4" fill="#d32f2f"/>
+              <text x="230" y="15" font-size="8" fill="#d32f2f" font-weight="700">Peak: 88</text>
+              <circle cx="420" cy="37" r="4" fill="#f5a623"/>
+            </svg>
+            <div class="ts-axis-labels">
+              <div class="ts-axis-lbl">May</div><div class="ts-axis-lbl">Jun</div><div class="ts-axis-lbl">Jul</div>
+              <div class="ts-axis-lbl">Aug</div><div class="ts-axis-lbl">Sep</div><div class="ts-axis-lbl">Oct</div>
+              <div class="ts-axis-lbl">Nov</div><div class="ts-axis-lbl">Dec</div><div class="ts-axis-lbl">Jan</div>
+              <div class="ts-axis-lbl">Feb</div><div class="ts-axis-lbl">Mar</div><div class="ts-axis-lbl">Apr</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chart 3: NBA Acceptance Rate -->
+        <div class="ts-card">
+          <div class="ts-head">
+            <div>
+              <div class="ts-title">NBA Acceptance Rate</div>
+              <div class="ts-meta">% of recommended actions acted on · 6 months</div>
+            </div>
+            <div class="ts-kpi">
+              <div class="ts-kpi-num" style="color:var(--teal)">68%</div>
+              <div class="ts-kpi-delta up">↑ +19pp vs. baseline</div>
+            </div>
+          </div>
+          <div class="ts-body">
+            <div class="ts-y-labels">
+              <div class="ts-y-lbl">80%</div>
+              <div class="ts-y-lbl">50%</div>
+              <div class="ts-y-lbl">20%</div>
+            </div>
+            <svg viewBox="0 0 420 90" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:90px;overflow:visible">
+              <defs>
+                <linearGradient id="grad-nba" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#016b6a" stop-opacity=".18"/>
+                  <stop offset="100%" stop-color="#016b6a" stop-opacity="0"/>
+                </linearGradient>
+              </defs>
+              <line x1="30" y1="0" x2="420" y2="0" stroke="#e4e5e9" stroke-width="1"/>
+              <line x1="30" y1="45" x2="420" y2="45" stroke="#e4e5e9" stroke-width="1"/>
+              <line x1="30" y1="90" x2="420" y2="90" stroke="#e4e5e9" stroke-width="1"/>
+              <!-- 6 months only, so fewer data points, spaced wider -->
+              <polygon points="30,72 96,63 162,54 228,45 324,36 420,22 420,90 30,90" fill="url(#grad-nba)"/>
+              <polyline points="30,72 96,63 162,54 228,45 324,36 420,22" fill="none" stroke="#016b6a" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="0"/>
+              <!-- Baseline dashed reference -->
+              <line x1="30" y1="71" x2="420" y2="71" stroke="#8a8f99" stroke-width="1" stroke-dasharray="4,4"/>
+              <text x="32" y="68" font-size="8" fill="#8a8f99">Baseline 49%</text>
+              <circle cx="420" cy="22" r="4" fill="#016b6a"/>
+            </svg>
+            <div class="ts-axis-labels" style="padding-left:30px">
+              <div class="ts-axis-lbl">Nov</div><div class="ts-axis-lbl">Dec</div>
+              <div class="ts-axis-lbl">Jan</div><div class="ts-axis-lbl">Feb</div>
+              <div class="ts-axis-lbl">Mar</div><div class="ts-axis-lbl">Apr</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chart 4: Average Portfolio Sentiment -->
+        <div class="ts-card">
+          <div class="ts-head">
+            <div>
+              <div class="ts-title">Avg. Portfolio Sentiment</div>
+              <div class="ts-meta">NLP-derived score (0 = negative, 100 = positive) · 12 weeks</div>
+            </div>
+            <div class="ts-kpi">
+              <div class="ts-kpi-num" style="color:var(--green)">71</div>
+              <div class="ts-kpi-delta up">↑ +8 pts vs. 12w ago</div>
+            </div>
+          </div>
+          <div class="ts-body">
+            <div class="ts-y-labels">
+              <div class="ts-y-lbl">90</div>
+              <div class="ts-y-lbl">60</div>
+              <div class="ts-y-lbl">30</div>
+            </div>
+            <svg viewBox="0 0 420 90" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:90px;overflow:visible">
+              <defs>
+                <linearGradient id="grad-sent" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#248700" stop-opacity=".18"/>
+                  <stop offset="100%" stop-color="#248700" stop-opacity="0"/>
+                </linearGradient>
+              </defs>
+              <line x1="30" y1="0" x2="420" y2="0" stroke="#e4e5e9" stroke-width="1"/>
+              <line x1="30" y1="45" x2="420" y2="45" stroke="#e4e5e9" stroke-width="1"/>
+              <line x1="30" y1="90" x2="420" y2="90" stroke="#e4e5e9" stroke-width="1"/>
+              <polygon points="30,62 62,57 95,60 127,65 160,70 192,58 225,50 257,44 290,42 322,38 355,32 387,28 420,22 420,90 30,90" fill="url(#grad-sent)"/>
+              <polyline points="30,62 62,57 95,60 127,65 160,70 192,58 225,50 257,44 290,42 322,38 355,32 387,28 420,22" fill="none" stroke="#248700" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+              <!-- Anomaly dip annotation -->
+              <circle cx="160" cy="70" r="3.5" fill="#f5a623"/>
+              <text x="108" y="84" font-size="8" fill="#f5a623" font-weight="700">Roaming issue spike</text>
+              <circle cx="420" cy="22" r="4" fill="#248700"/>
+            </svg>
+            <div class="ts-axis-labels">
+              <div class="ts-axis-lbl">W1</div><div class="ts-axis-lbl">W2</div><div class="ts-axis-lbl">W3</div>
+              <div class="ts-axis-lbl">W4</div><div class="ts-axis-lbl">W5</div><div class="ts-axis-lbl">W6</div>
+              <div class="ts-axis-lbl">W7</div><div class="ts-axis-lbl">W8</div><div class="ts-axis-lbl">W9</div>
+              <div class="ts-axis-lbl">W10</div><div class="ts-axis-lbl">W11</div><div class="ts-axis-lbl">W12</div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /ts-grid -->
+
+      <div class="port-grid">
+        <!-- Sentiment Treemap -->
+        <div class="treemap-card">
+          <div class="treemap-head">
+            <div class="treemap-title">Portfolio Sentiment Heatmap</div>
+            <span class="badge a">47 Need Attention</span>
+          </div>
+          <div class="treemap-body">
+            <!-- Large accounts -->
+            <div class="tile g" style="width:110px;height:70px" title="Cascade Health – $18K/mo"><div class="tile-name">Cascade Health</div><div class="tile-val">$18K/mo</div></div>
+            <div class="tile g" style="width:90px;height:70px" title="NovaTech Corp – $14K/mo"><div class="tile-name">NovaTech Corp</div><div class="tile-val">$14K/mo</div></div>
+            <div class="tile a" style="width:96px;height:70px" title="TechCorp Global – $8.4K/mo"><div class="tile-name">TechCorp Global</div><div class="tile-val">$8.4K/mo</div></div>
+            <div class="tile dr" style="width:72px;height:70px" title="WestPac Logistics – $7K/mo"><div class="tile-name">WestPac Logistics</div><div class="tile-val">$7K/mo</div></div>
+            <!-- Medium -->
+            <div class="tile g" style="width:85px;height:55px"><div class="tile-name">Northern Star</div><div class="tile-val">$6.2K/mo</div></div>
+            <div class="tile r" style="width:70px;height:55px"><div class="tile-name">Apex Pharma</div><div class="tile-val">$5.8K/mo</div></div>
+            <div class="tile g" style="width:78px;height:55px"><div class="tile-name">Pacific Retail</div><div class="tile-val">$5.5K/mo</div></div>
+            <div class="tile a" style="width:62px;height:55px"><div class="tile-name">Horizon Group</div><div class="tile-val">$4.2K/mo</div></div>
+            <div class="tile g" style="width:68px;height:55px"><div class="tile-name">Metro Foods</div><div class="tile-val">$3.8K/mo</div></div>
+            <div class="tile r" style="width:58px;height:55px"><div class="tile-name">SkyView Media</div><div class="tile-val">$3.1K/mo</div></div>
+            <!-- Small -->
+            <div class="tile g" style="width:50px;height:40px"><div class="tile-name">Elmwood Co</div></div>
+            <div class="tile a" style="width:44px;height:40px"><div class="tile-name">Triton Ltd</div></div>
+            <div class="tile g" style="width:55px;height:40px"><div class="tile-name">BluePeak Inc</div></div>
+            <div class="tile r" style="width:42px;height:40px"><div class="tile-name">Redline</div></div>
+            <div class="tile g" style="width:48px;height:40px"><div class="tile-name">Fairview</div></div>
+          </div>
+          <div class="treemap-legend">
+            <div class="tl-item-legend"><div class="tl-swatch" style="background:rgba(36,135,0,.65)"></div>Positive</div>
+            <div class="tl-item-legend"><div class="tl-swatch" style="background:rgba(245,166,35,.75)"></div>At Risk</div>
+            <div class="tl-item-legend"><div class="tl-swatch" style="background:rgba(211,47,47,.8)"></div>Critical</div>
+            <div class="tl-item-legend"><div class="tl-swatch" style="background:rgba(180,0,0,.9)"></div>Severe</div>
+            <div class="tl-item-legend" style="margin-left:auto;font-style:italic;color:var(--faint)">Tile size = TCV</div>
+          </div>
+        </div>
+
+        <!-- Trending Friction Topics -->
+        <div class="friction-card">
+          <div class="friction-head">
+            <div class="friction-title">🚨 Trending Friction Topics This Week</div>
+          </div>
+          <div class="friction-item" onclick="toast('Filtered to 42 accounts: International Roaming Charges. Bulk email campaign ready.','ok')">
+            <div class="f-rank">#1</div>
+            <div class="f-info">
+              <div class="f-topic">International Roaming Charges</div>
+              <div class="f-count">42 accounts · NLP cluster confidence 94%</div>
+            </div>
+            <div class="f-bar-wrap"><div class="f-bar" style="width:100%"></div></div>
+            <div class="f-cta">Bulk Campaign →</div>
+          </div>
+          <div class="friction-item" onclick="toast('Filtered to 18 accounts: SD-WAN installation delays (Alberta). Internal escalation suggested.','warn')">
+            <div class="f-rank">#2</div>
+            <div class="f-info">
+              <div class="f-topic">SD-WAN Install Delays · Alberta</div>
+              <div class="f-count">18 accounts · Operations issue flagged</div>
+            </div>
+            <div class="f-bar-wrap"><div class="f-bar" style="width:43%"></div></div>
+            <div class="f-cta">Escalate Ops →</div>
+          </div>
+          <div class="friction-item" onclick="toast('Filtered to 12 accounts: Portal login issues. IT ticket #INC-009211 created.','ok')">
+            <div class="f-rank">#3</div>
+            <div class="f-info">
+              <div class="f-topic">Self-Serve Portal Login Failures</div>
+              <div class="f-count">12 accounts · Likely auth provider issue</div>
+            </div>
+            <div class="f-bar-wrap"><div class="f-bar" style="width:29%"></div></div>
+            <div class="f-cta">View Ticket →</div>
+          </div>
+          <div class="friction-item" onclick="toast('Filtered to 8 accounts with active billing disputes.','')">
+            <div class="f-rank">#4</div>
+            <div class="f-info">
+              <div class="f-topic">Billing Disputes — Overcharges</div>
+              <div class="f-count">8 accounts · Finance review in progress</div>
+            </div>
+            <div class="f-bar-wrap"><div class="f-bar" style="width:19%"></div></div>
+            <div class="f-cta">Review →</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Wins -->
+      <div class="wins-card">
+        <div class="wins-head">
+          <div class="wins-title">🏆 Positive Signals &amp; Recent Wins</div>
+        </div>
+        <div class="wins-body" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0">
+          <div class="win-item">
+            <div class="win-ico">⭐</div>
+            <div>
+              <div class="win-title">Cascade Health Systems — Onboarding 10/10</div>
+              <div class="win-sub">Rated new Dedicated Fiber installation 10/10 yesterday. Primary contact Dr. Patel expressed interest in expanding to 3 more clinics.</div>
+              <div class="win-action" onclick="toast('Email drafted to Dr. Patel re: case study &amp; referral opportunity.','ok')">→ Request Case Study</div>
+            </div>
+          </div>
+          <div class="win-item">
+            <div class="win-ico">🔄</div>
+            <div>
+              <div class="win-title">NovaTech Corp — 3-Year Contract Renewed</div>
+              <div class="win-sub">Signed 3-year mobility renewal (+$2,200/mo). CFO specifically cited "reliability and proactive support" as key factors.</div>
+              <div class="win-action" onclick="toast('QBR meeting invite drafted for NovaTech Corp — Q3 check-in.','ok')">→ Schedule QBR</div>
+            </div>
+          </div>
+          <div class="win-item" style="border-bottom:none">
+            <div class="win-ico">⚡</div>
+            <div>
+              <div class="win-title">Metro Foods Inc. — New Branch Live in 24hrs</div>
+              <div class="win-sub">Branch connectivity activated 24 hours ahead of schedule. GM called to express gratitude — strong sentiment signal detected.</div>
+              <div class="win-action" onclick="toast('LTE Failover cross-sell NBA queued for Metro Foods.','ok')">→ Cross-sell LTE Backup</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /view-portfolio -->
+
+  </div><!-- /view-area -->
+</div><!-- /main -->
+
+<!-- ── CITATION MODAL ── -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeCitation(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-head">
+      <div class="modal-title" id="modal-title">Source Citation</div>
+      <button class="modal-close" onclick="closeCitation()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-meta" id="modal-meta"></div>
+      <div class="modal-text" id="modal-text"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── TOAST CONTAINER ── -->
+<div class="toast-wrap" id="toast-wrap"></div>
+
+<script>
+// ─────────────────────────────────────────
+// Account list data
+// ─────────────────────────────────────────
+const accountList = [
+  { id:'a-westpac',  name:'WestPac Logistics',      tier:'Gold',     industry:'Manufacturing', region:'BC',       sev:91, sevCls:'r', tcv:7000,  health:'r', lastContact:'32 days ago', contactCls:'overdue', nba:'Critical network outage — escalate to P1 now',          nbaDot:'#d32f2f' },
+  { id:'a-apex',     name:'Apex Pharma',             tier:'Silver',   industry:'Healthcare',    region:'Alberta',  sev:83, sevCls:'r', tcv:5800,  health:'r', lastContact:'14 days ago', contactCls:'',        nba:'SLA breach risk — 2 open tickets unresolved >48h',       nbaDot:'#d32f2f' },
+  { id:'a-skyview',  name:'SkyView Media',           tier:'Silver',   industry:'Technology',    region:'Ontario',  sev:77, sevCls:'r', tcv:3100,  health:'r', lastContact:'5 days ago',  contactCls:'',        nba:'Competitor (Bell) mentioned in last email thread',       nbaDot:'#d32f2f' },
+  { id:'a-techcorp', name:'TechCorp Global Inc.',    tier:'Platinum', industry:'Technology',    region:'Ontario',  sev:72, sevCls:'a', tcv:8400,  health:'a', lastContact:'22 days ago', contactCls:'overdue', nba:'Contract renewal in 65 days + 2 invoices past due',      nbaDot:'#f5a623' },
+  { id:'a-pacific',  name:'Pacific Retail Group',    tier:'Gold',     industry:'Retail',        region:'BC',       sev:58, sevCls:'a', tcv:5500,  health:'a', lastContact:'11 days ago', contactCls:'',        nba:'Bandwidth at 94% — upsell Dedicated Fiber (81% NBO)',    nbaDot:'#f5a623' },
+  { id:'a-horizon',  name:'Horizon Group',           tier:'Silver',   industry:'Finance',       region:'Prairies', sev:45, sevCls:'a', tcv:4200,  health:'a', lastContact:'41 days ago', contactCls:'overdue', nba:'Relationship atrophy — no meaningful contact in 41 days', nbaDot:'#f5a623' },
+  { id:'a-cascade',  name:'Cascade Health Systems',  tier:'Platinum', industry:'Healthcare',    region:'BC',       sev:12, sevCls:'g', tcv:18000, health:'g', lastContact:'3 days ago',  contactCls:'',        nba:'Upsell: Advanced Security Suite (88% NBO)',              nbaDot:'#248700' },
+  { id:'a-novatech', name:'NovaTech Corp',            tier:'Gold',     industry:'Technology',    region:'Ontario',  sev:18, sevCls:'g', tcv:14000, health:'g', lastContact:'7 days ago',  contactCls:'',        nba:'Contract renewed — request case study / referral',       nbaDot:'#248700' },
+  { id:'a-northern', name:'Northern Star Mining',    tier:'Gold',     industry:'Mining',        region:'Alberta',  sev:15, sevCls:'g', tcv:6200,  health:'g', lastContact:'9 days ago',  contactCls:'',        nba:'Upsell: SD-WAN Enterprise (92% NBO) — new Fiber live',  nbaDot:'#248700' },
+  { id:'a-metro',    name:'Metro Foods Inc.',         tier:'Silver',   industry:'Retail',        region:'Ontario',  sev:8,  sevCls:'g', tcv:3800,  health:'g', lastContact:'1 day ago',   contactCls:'',        nba:'Cross-sell: LTE Failover Backup (71% NBO)',              nbaDot:'#248700' },
+];
+
+let portfolioHealthFilter = null;
+
+function goToAccountsFiltered(health) {
+  portfolioHealthFilter = health;
+  showView('accounts-list');
+  renderAccountList();
+  const labels = { g:'Healthy (Green)', a:'At Risk (Amber)', r:'Critical (Red)' };
+  const sub = document.getElementById('al-filter-sub');
+  if (sub) sub.textContent = health ? `Filtered: ${labels[health]}` : 'All accounts';
+}
+
+function renderAccountList() {
+  const list = portfolioHealthFilter
+    ? accountList.filter(a => a.health === portfolioHealthFilter)
+    : accountList;
+  const container = document.getElementById('al-rows');
+  container.innerHTML = list.map(a => `
+    <div class="al-row" onclick="openAccount('${a.id}','${a.name}')">
+      <div class="al-health-bar ${a.health}"></div>
+      <div>
+        <div class="al-name">${a.name}</div>
+        <div class="al-meta">${a.tier} · ${a.industry}</div>
+      </div>
+      <div class="al-region">${a.region}</div>
+      <div><span class="al-industry">${a.industry}</span></div>
+      <div class="al-sev">
+        <div class="al-sev-num ${a.sevCls}">${a.sev}</div>
+        <div class="al-sev-bar"><div class="al-sev-fill ${a.sevCls}" style="width:${a.sev}%"></div></div>
+      </div>
+      <div>
+        <div class="al-tcv">$${(a.tcv/1000).toFixed(1)}K</div>
+        <div class="al-tcv-sub">/month</div>
+      </div>
+      <div class="al-contact ${a.contactCls}">${a.lastContact}</div>
+      <div class="al-nba"><span class="al-nba-tag" style="background:${a.nbaDot}"></span>${a.nba}</div>
+      <div><button class="al-action-btn" onclick="event.stopPropagation();openAccount('${a.id}','${a.name}')">View →</button></div>
+    </div>
+  `).join('');
+}
+
+// ─────────────────────────────────────────
+// Global Search Bar
+// ─────────────────────────────────────────
+const searchInput = document.getElementById('search-input');
+const searchDropdown = document.getElementById('search-dropdown');
+const searchContainer = document.getElementById('tb-search-container');
+let searchIndex = -1;
+
+function closeSearch() {
+  searchDropdown.classList.remove('open');
+  searchIndex = -1;
+}
+
+searchInput.addEventListener('input', (e) => {
+  const val = e.target.value.toLowerCase().trim();
+  if (!val) {
+    closeSearch();
+    return;
+  }
+  const hits = accountList.filter(a => a.name.toLowerCase().includes(val));
+  if (hits.length === 0) {
+    searchDropdown.innerHTML = '<div style="padding:10px 14px;font-size:12px;color:var(--faint)">No accounts found.</div>';
+  } else {
+    searchDropdown.innerHTML = hits.map((a, i) => `
+      <div class="search-item" data-index="${i}" onclick="searchSelect('${a.id}', '${a.name}')">
+        <div class="search-item-name">${a.name}</div>
+        <div class="search-item-impact ${a.sevCls}">Impact Score ${a.sev}</div>
+      </div>
+    `).join('');
+  }
+  searchDropdown.classList.add('open');
+  searchIndex = -1;
+});
+
+searchInput.addEventListener('keydown', (e) => {
+  if (!searchDropdown.classList.contains('open')) return;
+  const items = searchDropdown.querySelectorAll('.search-item');
+  if (items.length === 0) return;
+  
+  if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    searchIndex = (searchIndex + 1) % items.length;
+    updateSearchHighlight(items);
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    searchIndex = (searchIndex - 1 + items.length) % items.length;
+    updateSearchHighlight(items);
+  } else if (e.key === 'Enter') {
+    e.preventDefault();
+    if (searchIndex >= 0) {
+      items[searchIndex].click();
+    } else {
+      items[0].click(); // default to first
+    }
+  } else if (e.key === 'Escape') {
+    closeSearch();
+  }
+});
+
+function updateSearchHighlight(items) {
+  items.forEach(el => el.classList.remove('highlighted'));
+  if (searchIndex >= 0) {
+    const active = items[searchIndex];
+    active.classList.add('highlighted');
+    active.scrollIntoView({ block: 'nearest' });
+  }
+}
+
+function searchSelect(id, name) {
+  searchInput.value = '';
+  closeSearch();
+  openAccount(id, name);
+}
+
+document.addEventListener('click', (e) => {
+  if (!searchContainer.contains(e.target)) {
+    closeSearch();
+  }
+});
+
+// ─────────────────────────────────────────
+// View switching
+// ─────────────────────────────────────────
+const viewModules = {
+  'accounts-list': 'Account Cockpit',
+  account:  'My Accounts',
+  growth:   'Account Cockpit',
+  portfolio:'Account Cockpit',
+};
+const viewTitles = {
+  'accounts-list': 'My Accounts',
+  account:  '',           // set dynamically by openAccount()
+  growth:   'Growth & Whitespace Explorer',
+  portfolio:'Portfolio — Weekly Summary',
+};
+
+function showView(id) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.sb-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('view-' + id).classList.add('active');
+  // sidebar badge lives on nav-account; keep it active for both account views
+  const navId = (id === 'account' || id === 'accounts-list') ? 'nav-account' : 'nav-' + id;
+  document.getElementById(navId).classList.add('active');
+  if (viewTitles[id]) document.getElementById('topbar-title').textContent = viewTitles[id];
+  document.getElementById('topbar-module').textContent = viewModules[id] || 'Account Cockpit';
+
+  // back button + severity pill visibility
+  const isDetail = id === 'account';
+  document.getElementById('tb-back').style.display = isDetail ? 'flex' : 'none';
+  document.querySelector('.severity-pill').classList.toggle('hidden', !isDetail);
+}
+
+function openAccount(accountId, accountName) {
+  document.getElementById('topbar-title').textContent = accountName;
+  showView('account');
+}
+
+function backToList() {
+  showView('accounts-list');
+}
+
+// Init list on load
+renderAccountList();
+
+// ─────────────────────────────────────────
+// Dismiss dropdown
+// ─────────────────────────────────────────
+function toggleDD(id) {
+  const menu = document.getElementById(id);
+  const isOpen = menu.classList.contains('open');
+  document.querySelectorAll('.dd-menu').forEach(m => m.classList.remove('open'));
+  if (!isOpen) menu.classList.add('open');
+}
+document.addEventListener('click', e => {
+  if (!e.target.closest('.dd-wrap')) {
+    document.querySelectorAll('.dd-menu').forEach(m => m.classList.remove('open'));
+  }
+});
+
+// ─────────────────────────────────────────
+// Dismiss NBA card
+// ─────────────────────────────────────────
+function dismiss(cardId, ddId, reason) {
+  const card = document.getElementById(cardId);
+  const nbaCount = document.getElementById('view-account').querySelectorAll('.nba:not(.dismissing)').length;
+  card.style.maxHeight = card.offsetHeight + 'px';
+  void card.offsetHeight;
+  card.classList.add('dismissing');
+  document.getElementById(ddId).classList.remove('open');
+  toast('✓ Dismissed — ' + reason + '. Feedback sent to AI model.', 'ok');
+  setTimeout(() => {
+    card.style.display = 'none';
+    const remaining = document.getElementById('view-account').querySelectorAll('.nba:not([style*="display: none"])').length;
+    document.querySelector('.sb-badge').textContent = remaining;
+    if (remaining === 0) document.querySelector('.sb-badge').style.display = 'none';
+  }, 380);
+}
+
+// ─────────────────────────────────────────
+// HITL feedback buttons
+// ─────────────────────────────────────────
+function hitl(btn, type) {
+  const parent = btn.closest('.hitl');
+  parent.querySelectorAll('.hitl-btn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on', type);
+  const msg = type === 'up'
+    ? '👍 Positive feedback sent — model reinforced.'
+    : '👎 Negative feedback sent — flagged for retraining.';
+  toast(msg, type === 'up' ? 'ok' : '');
+}
+
+// ─────────────────────────────────────────
+// Citation data
+// ─────────────────────────────────────────
+const citations = {
+  c1: {
+    title: 'Salesforce CRM — Contract Record',
+    meta: ['Source: Salesforce CRM', 'Contract #CTR-2026-0041', 'Ingested: Apr 25, 2026'],
+    text: 'Contract details for TechCorp Global Inc. — Mobility Fleet Plan (120 lines). <span class="hl">Contract start: April 14, 2023. Contract end: June 29, 2026. Renewal window: 90 days prior (i.e., March 31, 2026 — OVERDUE for renewal discussion).</span> Total Contract Value: $8,400/month. Account Manager: Sarah Jenkins.'
+  },
+  c2: {
+    title: 'Email Thread — David Lim (CTO) · Apr 18, 2026',
+    meta: ['Source: Microsoft Exchange', 'Thread ID: email_0882', 'Sentiment: Frustrated'],
+    text: 'From: david.lim@techcorpglobal.com\nSubject: Re: April Invoice — International Charges\n\n"Sarah, this is the third month in a row the international data charges have been higher than expected. My European team has been flagging this since January. <span class="hl">I had a call with a Rogers account rep last week who said they could bundle international roaming into our existing plan at no extra cost. I\'m not trying to be difficult, but I need to see a concrete solution before our next renewal conversation.</span> Can we get on a call this week?"'
+  },
+  c3: {
+    title: 'Webinar Attendance Log — Enterprise Events',
+    meta: ['Source: Enterprise Events Platform', 'Event: Enterprise Cybersecurity Webinar', 'Date: Apr 10, 2026'],
+    text: 'Attendee record: <span class="hl">David Lim, CTO — TechCorp Global Inc. — Registered and attended full session (89 of 90 minutes). Post-webinar survey submitted. Interest flagged: "Endpoint Security" and "Zero-Trust Network Architecture." Rating: 4.5/5.</span> Engagement score: High. Recommended next action: Personal follow-up within 5 business days.'
+  },
+  c4: {
+    title: 'Amdocs Billing System — Invoice Records',
+    meta: ['Source: Amdocs Billing API', 'Account: TC-00419', 'Retrieved: Real-time'],
+    text: 'Outstanding invoice report for TechCorp Global Inc. (Account TC-00419):\n\n<span class="hl">Invoice #INV-2026-0812 — Amount: $1,120.00 — Due: March 11, 2026 — Status: OVERDUE (45 days)\nInvoice #INV-2026-0901 — Amount: $1,120.00 — Due: April 11, 2026 — Status: OVERDUE (14 days)</span>\n\nTotal outstanding: $2,240.00. Auto-reminder sent on April 1 and April 15. No response received. Escalation threshold met.'
+  },
+  c5: {
+    title: 'Salesforce CRM — Account Activity Log',
+    meta: ['Source: Salesforce CRM', 'Activity type: Account update', 'Date: Feb 3, 2026'],
+    text: 'Account update logged by Operations team:\n\n"TechCorp Global confirmed expansion to two new locations:\n<span class="hl">1. Calgary, AB — 4500 Macleod Trail SW, Suite 200. Operational Q1 2026. Headcount: 45 staff.\n2. Mississauga, ON — 1235 Hurontario St, Floor 3. Operational Q2 2026. Headcount: 30 staff.</span>\nBoth sites require connectivity provisioning. Current contracts do not cover new addresses. Flagged for AM review."'
+  }
+};
+
+function showCitation(id) {
+  const c = citations[id];
+  if (!c) return;
+  document.getElementById('modal-title').textContent = c.title;
+  document.getElementById('modal-meta').innerHTML = c.meta.map(m => `<span class="meta-chip">${m}</span>`).join('');
+  document.getElementById('modal-text').innerHTML = c.text.replace(/\n/g,'<br>');
+  document.getElementById('modal-overlay').classList.add('open');
+}
+function closeCitation(e) {
+  if (!e || e.target === document.getElementById('modal-overlay')) {
+    document.getElementById('modal-overlay').classList.remove('open');
+  }
+}
+
+// ─────────────────────────────────────────
+// Growth Explorer — whitespace matrix data
+// ─────────────────────────────────────────
+const whitespaceData = {
+  g1: {
+    name: 'Northern Star Mining',
+    health: 'green',
+    serviceability: { ttrClass:'green', ttrLabel:'On-Net · All 3 Sites', locs:[{label:'Yellowknife, X1A 2L9, NT',zone:'green',badge:'g'},{label:'Fort McMurray, T9H 1S1, AB',zone:'green',badge:'g'},{label:'Edmonton, T5J 0N3, AB',zone:'green',badge:'g'}] },
+    owned: [
+      { icon:'📱', name:'Mobility Fleet (85 lines)', status:'Active — 100% utilized' },
+      { icon:'📞', name:'VoIP Business', status:'Active — 12 seats' },
+      { icon:'🌐', name:'Internet (Copper)', status:'Active — 100 Mbps' },
+    ],
+    gaps: [
+      { icon:'🔀', name:'SD-WAN Enterprise', nbo:'92%', type:'hot', reason:'New Fiber — all 3 sites' },
+      { icon:'🔒', name:'Advanced Security Suite', nbo:'48%', type:'warm', reason:'Growing headcount' },
+      { icon:'📡', name:'Dedicated Fiber', nbo:'67%', type:'warm', reason:'Fiber now available' },
+      { icon:'🌍', name:'IoT Connectivity', nbo:'19%', type:'cold', reason:'' },
+    ]
+  },
+  g2: {
+    name: 'Cascade Health Systems',
+    health: 'green',
+    serviceability: { ttrClass:'green', ttrLabel:'On-Net · 4 of 5 Sites', locs:[{label:'Vancouver, V6B 1G1, BC',zone:'green',badge:'g'},{label:'Burnaby, V5H 4M2, BC',zone:'green',badge:'g'},{label:'Surrey, V3T 5X3, BC',zone:'green',badge:'g'},{label:'Richmond, V6X 3Z6, BC',zone:'green',badge:'g'},{label:'Langley, V3A 4H4, BC',zone:'amber',badge:'a'}] },
+    owned: [
+      { icon:'📱', name:'Mobility Fleet (200 lines)', status:'Active' },
+      { icon:'📡', name:'Dedicated Fiber', status:'Active — 1 Gbps' },
+      { icon:'📞', name:'VoIP & UC', status:'Active' },
+      { icon:'🌐', name:'SD-WAN (2 sites)', status:'Active' },
+    ],
+    gaps: [
+      { icon:'🔒', name:'Advanced Security Suite', nbo:'88%', type:'hot', reason:'Portal intent ×5 this week' },
+      { icon:'🛡️', name:'Endpoint Detection (EDR)', nbo:'74%', type:'hot', reason:'Healthcare compliance' },
+      { icon:'📦', name:'Cloud Backup & DR', nbo:'45%', type:'warm', reason:'Expanding patient records' },
+    ]
+  },
+  g3: {
+    name: 'Pacific Retail Group',
+    health: 'amber',
+    serviceability: { ttrClass:'amber', ttrLabel:'Near-Net · Flagship Only', locs:[{label:'Victoria, V8W 1M8, BC',zone:'amber',badge:'a'},{label:'Nanaimo, V9R 2H9, BC',zone:'red',badge:'r'},{label:'Kelowna, V1Y 6H5, BC',zone:'red',badge:'r'}] },
+    owned: [
+      { icon:'🌐', name:'Shared Internet (250 Mbps)', status:'At 94% utilization — at limit' },
+      { icon:'📱', name:'Mobility Fleet (30 lines)', status:'Active' },
+    ],
+    gaps: [
+      { icon:'📡', name:'Dedicated Fiber (1 Gbps)', nbo:'81%', type:'hot', reason:'Bandwidth critically high' },
+      { icon:'🔀', name:'SD-WAN', nbo:'62%', type:'warm', reason:'3 retail locations' },
+      { icon:'🔒', name:'Security Suite', nbo:'38%', type:'cold', reason:'' },
+      { icon:'📞', name:'VoIP', nbo:'28%', type:'cold', reason:'' },
+    ]
+  },
+  g4: {
+    name: 'TechCorp Global Inc.',
+    health: 'amber',
+    serviceability: { ttrClass:'green', ttrLabel:'On-Net · HQ · ~2 wks', locs:[{label:'Vancouver, V6B 2W3, BC',zone:'green',badge:'g'},{label:'Calgary, T2P 1J9, AB',zone:'amber',badge:'a'},{label:'Mississauga, L5B 3A1, ON',zone:'red',badge:'r'}] },
+    salesHold: true,
+    holdReason: '2 outstanding invoices ($2,240) and open billing dispute.',
+    owned: [
+      { icon:'📱', name:'Mobility Fleet (120 lines)', status:'Active — Platinum' },
+      { icon:'🌐', name:'Business Internet (500 Mbps)', status:'Active — 68% utilization' },
+      { icon:'📞', name:'VoIP (20 seats)', status:'Active' },
+    ],
+    gaps: [
+      { icon:'🔀', name:'SD-WAN Enterprise', nbo:'84%', type:'hot', reason:'2 new branches opened Q1' },
+      { icon:'🔒', name:'Advanced Security Suite', nbo:'71%', type:'hot', reason:'CTO attended security webinar' },
+      { icon:'📡', name:'Dedicated Fiber Upgrade', nbo:'55%', type:'warm', reason:'Fiber active at HQ' },
+      { icon:'🌍', name:'IoT / Device Management', nbo:'22%', type:'cold', reason:'' },
+    ]
+  },
+  g5: {
+    name: 'Metro Foods Inc.',
+    health: 'green',
+    serviceability: { ttrClass:'amber', ttrLabel:'Near-Net · New Branch', locs:[{label:'Calgary, T2G 0P3, AB',zone:'green',badge:'g'},{label:'Red Deer, T4N 1G9, AB',zone:'amber',badge:'a'}] },
+    owned: [
+      { icon:'🌐', name:'Business Internet', status:'Active — 100 Mbps' },
+      { icon:'📱', name:'Mobility (12 lines)', status:'Active' },
+    ],
+    gaps: [
+      { icon:'📶', name:'LTE Failover Backup', nbo:'71%', type:'hot', reason:'New branch — single point of failure' },
+      { icon:'📞', name:'VoIP', nbo:'44%', type:'warm', reason:'Growing team' },
+      { icon:'🔒', name:'Security Suite', nbo:'25%', type:'cold', reason:'' },
+    ]
+  }
+};
+
+function selectGrowth(row, id) {
+  document.querySelectorAll('.g-row').forEach(r => r.classList.remove('sel'));
+  row.classList.add('sel');
+  const d = whitespaceData[id];
+  document.getElementById('wm-title').innerHTML = `
+    <svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:var(--purple);fill:none;stroke-width:2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+    ${d.name}`;
+  let html = '';
+  if (d.salesHold) {
+    html += `<div class="sales-hold show">🛑 <b>Sales Hold:</b>&nbsp;${d.holdReason} Resolve account health before pitching.</div>`;
+  }
+  html += `<div class="wm-sec-lbl">✅ Currently Owns</div>`;
+  d.owned.forEach(p => {
+    html += `<div class="product-row owned"><div class="pr-icon">${p.icon}</div><div><div class="pr-name">${p.name}</div><div class="pr-status">${p.status}</div></div></div>`;
+  });
+  html += `<div class="wm-sec-lbl">◻ Whitespace Gaps — AI Ranked</div>`;
+  d.gaps.forEach(p => {
+    const typeClass = p.type === 'hot' ? 'hot' : p.type === 'warm' ? 'warm' : 'gap';
+    const nboClass = p.type;
+    const reasonText = p.reason ? `<div class="pr-status">${p.reason}</div>` : '';
+    html += `<div class="product-row ${typeClass}">
+      <div class="pr-icon">${p.icon}</div>
+      <div style="flex:1"><div class="pr-name">${p.name}</div>${reasonText}</div>
+      <span class="pr-nbo ${nboClass}">${p.nbo} NBO</span>
+    </div>`;
+  });
+  // Per-location mini serviceability gauges
+  const s = d.serviceability;
+  const zoneBadgeColor = { green:'background:var(--green-bg);color:var(--green)', amber:'background:var(--amber-bg);color:#b57800', red:'background:var(--red-bg);color:var(--red)' };
+  const zoneLabel = { green:'On-Net', amber:'Near-Net', red:'Off-Net' };
+  const locGauges = s.locs.map((loc, i) => `
+    <div style="margin-bottom:${i < s.locs.length-1 ? '10px' : '0'}">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:3px">
+        <span style="font-size:10px;font-weight:700;color:var(--text)">Loc ${i+1}: ${loc.label}</span>
+        <span style="font-size:9px;font-weight:700;padding:1px 7px;border-radius:9999px;${zoneBadgeColor[loc.zone]}">${zoneLabel[loc.zone]}</span>
+      </div>
+      <div class="gauge-mini-track" style="cursor:pointer" onclick="toast('📍 Map opened — ${loc.label}','')">
+        <div style="background:var(--green);width:30%;height:100%"></div>
+        <div style="background:var(--amber);width:28%;height:100%"></div>
+        <div style="background:#c75c2e;width:27%;height:100%"></div>
+        <div style="background:#8a8f99;width:15%;height:100%"></div>
+      </div>
+    </div>`).join('');
+  html += `
+    <div class="gauge-mini-wrap">
+      <div class="gauge-mini-lbl">Serviceability — Per Location</div>
+      ${locGauges}
+      <span class="gauge-ttr-badge ${s.ttrClass}" style="margin-top:10px">⚡ ${s.ttrLabel}</span>
+    </div>`;
+  if (!d.salesHold) {
+    html += `<button class="btn btn-p" style="width:100%;margin-top:14px;justify-content:center" onclick="toast('📋 Bulk quote generated for ${d.name} — top 2 recommendations.','ok')">Generate Quote →</button>`;
+  }
+  document.getElementById('wm-body').innerHTML = html;
+}
+
+// ─────────────────────────────────────────
+// Growth filter chips
+// ─────────────────────────────────────────
+function filterGrowth(el, filter) {
+  document.querySelectorAll('.filter-bar .chip').forEach(c => c.classList.remove('on'));
+  el.classList.add('on');
+  toast('Filter: ' + el.textContent.trim(), '');
+}
+
+// ─────────────────────────────────────────
+// Global filter panel
+// ─────────────────────────────────────────
+const filterState = { region: new Set(), industry: new Set(), tier: new Set(), status: new Set() };
+// Mock account counts per filter combo (simulated)
+const filterCounts = { BC:82, Alberta:71, Ontario:94, Prairies:55, Atlantic:28, National:17,
+  Healthcare:44, Mining:29, Retail:61, Finance:38, Technology:52, Manufacturing:47, Hospitality:22,
+  Platinum:68, Gold:142, Silver:137,
+  'At Risk':47, 'Expiring <90d':31, 'High TCV':84, 'Upsell Ready':112, 'Healthy Only':277 };
+
+function toggleFilters() {
+  const panel = document.getElementById('gf-panel');
+  const btn   = document.getElementById('filter-toggle');
+  panel.classList.toggle('open');
+  btn.classList.toggle('active');
+}
+
+function toggleFilter(el, group, value) {
+  const chipsWrap = el.closest('.gf-chips');
+  const allChip   = chipsWrap.querySelector('[data-value="all"]');
+  if (value === 'all') {
+    chipsWrap.querySelectorAll('.gf-chip').forEach(c => c.classList.remove('on'));
+    filterState[group].clear();
+    el.classList.add('on');
+  } else {
+    allChip && allChip.classList.remove('on');
+    if (el.classList.contains('on')) {
+      el.classList.remove('on');
+      filterState[group].delete(value);
+    } else {
+      el.classList.add('on');
+      filterState[group].add(value);
+    }
+    if (filterState[group].size === 0) {
+      allChip && allChip.classList.add('on');
+    }
+  }
+  updateFilterSummary();
+}
+
+function removeFilter(group, value) {
+  filterState[group].delete(value);
+  const chip = document.querySelector(`.gf-chip[data-group="${group}"][data-value="${value}"]`);
+  chip && chip.classList.remove('on');
+  if (filterState[group].size === 0) {
+    const allChip = document.querySelector(`.gf-chip[data-group="${group}"][data-value="all"]`);
+    allChip && allChip.classList.add('on');
+  }
+  updateFilterSummary();
+}
+
+function clearFilters() {
+  Object.keys(filterState).forEach(g => filterState[g].clear());
+  document.querySelectorAll('.gf-chip').forEach(c => {
+    c.classList.remove('on');
+    if (c.dataset.value === 'all') c.classList.add('on');
+  });
+  updateFilterSummary();
+}
+
+function updateFilterSummary() {
+  const active = [];
+  Object.entries(filterState).forEach(([group, vals]) => vals.forEach(v => active.push({ group, v })));
+  const count = active.length;
+  const countEl = document.getElementById('filter-count');
+  countEl.textContent = count;
+  countEl.style.display = count > 0 ? 'flex' : 'none';
+  document.getElementById('filter-toggle').classList.toggle('active', count > 0 || document.getElementById('gf-panel').classList.contains('open'));
+
+  const row = document.getElementById('gf-active-row');
+  if (count === 0) {
+    row.innerHTML = '<span style="color:var(--faint)">No filters active — showing all 347 accounts</span>';
+    return;
+  }
+  // Estimate visible account count (rough mock)
+  const minCount = active.reduce((min, { v }) => Math.min(min, filterCounts[v] || 50), 347);
+  const chips = active.map(({ group, v }) =>
+    `<span class="gf-active-chip">${v}<span class="rm" onclick="removeFilter('${group}','${v.replace(/'/g,"\\'")}')">×</span></span>`
+  ).join('');
+  row.innerHTML = chips + `<span style="color:var(--faint);font-size:11px;margin-left:4px">→ ~${minCount} accounts match</span>`;
+}
+
+// ─────────────────────────────────────────
+// Toast helper
+// ─────────────────────────────────────────
+function toast(msg, type) {
+  const wrap = document.getElementById('toast-wrap');
+  const t = document.createElement('div');
+  t.className = 'toast' + (type === 'ok' ? ' ok' : type === 'warn' ? ' warn' : '');
+  t.textContent = msg;
+  wrap.appendChild(t);
+  setTimeout(() => { t.style.opacity = '0'; t.style.transition = 'opacity .3s'; }, 3200);
+  setTimeout(() => t.remove(), 3600);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project Management — Gomaae Philosophy — Baldwin Data Works Inc.</title>
+<meta name="robots" content="noindex, nofollow">
+<style>
+:root {
+  --purple:       #4b286d;
+  --purple-light: #6b4d8f;
+  --purple-bg:    rgba(75,40,109,0.06);
+  --teal:         #016b6a;
+  --teal-bg:      #e0f4f4;
+  --green:        #248700;
+  --green-bg:     #e8f5e3;
+  --amber:        #f5a623;
+  --amber-bg:     #fff8ed;
+  --bg:           #f2f2f6;
+  --card:         #ffffff;
+  --text:         #1a1a2e;
+  --muted:        #54595f;
+  --faint:        #8a8f99;
+  --border:       #e4e5e9;
+  --r-md: 8px; --r-lg: 12px; --r-xl: 16px; --r-pill: 9999px;
+  --sh-xs: 0 1px 4px rgba(0,0,0,0.06);
+  --sh-sm: 0 2px 8px rgba(0,0,0,0.09);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;padding:32px 36px 60px}
+
+.pm-hero{display:flex;align-items:center;gap:20px;margin-bottom:28px;flex-wrap:wrap}
+.pm-hero img{width:64px;height:64px;flex-shrink:0}
+.pm-hero-text h1{font-size:26px;font-weight:800;color:var(--purple);display:flex;align-items:center;gap:10px}
+.pm-hero-text .jp{font-size:16px;color:var(--faint);font-weight:600}
+.pm-hero-text p{font-size:13px;color:var(--muted);margin-top:4px;max-width:640px}
+
+.pm-tag{display:inline-flex;align-items:center;gap:6px;padding:3px 12px;border-radius:var(--r-pill);font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;background:var(--purple-bg);color:var(--purple);margin-bottom:10px}
+
+.philosophy-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);box-shadow:var(--sh-xs);padding:22px 26px;margin-bottom:24px}
+.philosophy-card h2{font-size:15px;font-weight:800;color:var(--purple);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.philosophy-card p{font-size:13.5px;color:var(--muted);line-height:1.75}
+.philosophy-card p + p{margin-top:12px}
+.philosophy-card b{color:var(--text)}
+
+.houren-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:16px}
+.houren-item{background:var(--bg);border-radius:var(--r-md);padding:14px 16px;border:1px solid var(--border)}
+.houren-item .kanji{font-size:20px;font-weight:800;color:var(--purple)}
+.houren-item .rom{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--faint);margin:4px 0 6px}
+.houren-item p{font-size:12px;color:var(--muted);line-height:1.55;margin:0}
+
+.sec-title{font-size:14px;font-weight:800;color:var(--purple);text-transform:uppercase;letter-spacing:.5px;margin:32px 0 14px;display:flex;align-items:center;gap:8px}
+.sec-title-line{display:inline-block;width:24px;height:3px;background:var(--green);border-radius:2px}
+
+.feature-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.feature-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);box-shadow:var(--sh-xs);padding:16px 18px}
+.feature-card .ico{width:32px;height:32px;border-radius:var(--r-md);background:var(--teal-bg);color:var(--teal);display:flex;align-items:center;justify-content:center;font-size:15px;margin-bottom:10px}
+.feature-card h3{font-size:13px;font-weight:800;color:var(--text);margin-bottom:5px}
+.feature-card p{font-size:12px;color:var(--muted);line-height:1.55}
+
+.arch-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);box-shadow:var(--sh-xs);padding:22px 26px}
+.arch-stack{display:flex;flex-direction:column;gap:0;max-width:560px;margin:0 auto}
+.arch-box{border:1.5px solid var(--purple);border-radius:var(--r-md);padding:14px 18px;background:var(--purple-bg)}
+.arch-box.sidecar{border-color:var(--teal);background:var(--teal-bg);margin-top:28px}
+.arch-box b{display:block;font-size:13px;color:var(--text);margin-bottom:6px}
+.arch-box ul{list-style:none;padding:0;margin:0}
+.arch-box li{font-size:11.5px;color:var(--muted);padding:2px 0}
+.arch-arrow{text-align:center;font-size:11px;color:var(--faint);font-weight:700;padding:6px 0;position:relative}
+.arch-arrow::before{content:'↓ IPC (invoke / events)'}
+
+.techstack{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.tech-pill{padding:6px 14px;border-radius:var(--r-pill);background:var(--bg);border:1px solid var(--border);font-size:12px;font-weight:700;color:var(--muted)}
+
+.pm-footer{margin-top:36px;font-size:11px;color:var(--faint);text-align:center}
+.pm-footer a{color:var(--teal);font-weight:700;text-decoration:none}
+
+@media (max-width:860px){
+  .houren-grid,.feature-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+  <div class="pm-hero">
+    <img src="images/gomaae-logo.svg" alt="Gomaae logo">
+    <div class="pm-hero-text">
+      <h1>Gomaae <span class="jp">胡麻和え</span></h1>
+      <p>A desktop project-management app built around HOU REN SOU (報告・連絡・相談) — the Japanese practice of structured reporting, communication, and consultation — with AI agents acting as the sesame dressing that binds it together.</p>
+    </div>
+  </div>
+
+  <div class="philosophy-card">
+    <span class="pm-tag">Philosophy</span>
+    <h2>Why HOU REN SOU?</h2>
+    <p>
+      Most project-management tools optimize for ticket throughput. Gomaae starts from a different premise: teams
+      fail less from a lack of tools and more from a lack of <b>structured communication</b>. HOU REN SOU —
+      <b>報告</b> (report), <b>連絡</b> (inform), <b>相談</b> (consult) — is a decades-old Japanese business
+      discipline for keeping everyone aligned without constant meetings. Gomaae builds that discipline directly
+      into the software: every ticket, brainstorm, and release carries its own reporting and consultation trail,
+      with AI agents doing the busywork of summarizing, scoring, and drafting so the humans can focus on judgment
+      calls.
+    </p>
+    <div class="houren-grid">
+      <div class="houren-item">
+        <div class="kanji">報告</div>
+        <div class="rom">Houkoku — Report</div>
+        <p>Status flows upward automatically — AI-drafted release notes and initiative scores keep stakeholders
+          current without status-meeting overhead.</p>
+      </div>
+      <div class="houren-item">
+        <div class="kanji">連絡</div>
+        <div class="rom">Renraku — Inform</div>
+        <p>Everyone touching a ticket sees the same git graph, Linear sync, and activity trail — no information
+          silos between engineering and product.</p>
+      </div>
+      <div class="houren-item">
+        <div class="kanji">相談</div>
+        <div class="rom">Soudan — Consult</div>
+        <p>The Brainstorm sandbox and AI initiative scoring turn "should we build this?" into a structured
+          conversation instead of a gut call.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec-title">What It Does <span class="sec-title-line"></span></div>
+  <div class="feature-grid">
+    <div class="feature-card">
+      <div class="ico">🗂️</div>
+      <h3>Ticket Hierarchy</h3>
+      <p>Epics → Stories → Tasks → Tests, with Kanban and Gantt views over the same underlying data.</p>
+    </div>
+    <div class="feature-card">
+      <div class="ico">🎯</div>
+      <h3>Initiative Scoring</h3>
+      <p>AI-evaluated strategy across 11 product pillars — Vision, Market, UX, Technology, Business Model, Data,
+        Team, Compliance, Go-to-Market, Impact, Execution Risk.</p>
+    </div>
+    <div class="feature-card">
+      <div class="ico">💡</div>
+      <h3>Brainstorm Sandbox</h3>
+      <p>Napkin-sketch ideas that automatically flow into the Epic backlog once they clear initiative scoring.</p>
+    </div>
+    <div class="feature-card">
+      <div class="ico">🚀</div>
+      <h3>Release Management</h3>
+      <p>AI-written release notes, structured feedback collection, and auto-created bug/feature tickets from user
+        reports.</p>
+    </div>
+    <div class="feature-card">
+      <div class="ico">🌿</div>
+      <h3>Branch Activity</h3>
+      <p>A live git graph for the linked repository, so implementation status is never a guess.</p>
+    </div>
+    <div class="feature-card">
+      <div class="ico">🔄</div>
+      <h3>Linear Sync</h3>
+      <p>Bi-directional ticket sync via a dual-id model — local <code>id</code> and Linear <code>external_id</code>
+        stay in lockstep.</p>
+    </div>
+  </div>
+
+  <div class="sec-title">Architecture <span class="sec-title-line"></span></div>
+  <div class="arch-card">
+    <div class="arch-stack">
+      <div class="arch-box">
+        <b>Tauri shell (Rust)</b>
+        <ul>
+          <li>Window management, system menu, auto-updater</li>
+          <li>Spawns the Node sidecar on launch</li>
+        </ul>
+      </div>
+      <div class="arch-arrow"></div>
+      <div class="arch-box sidecar">
+        <b>Next.js standalone server (Node sidecar)</b>
+        <ul>
+          <li>All app UI and API routes</li>
+          <li>SQLite via better-sqlite3 (per-workspace DB)</li>
+          <li>Linear sync, AI scoring, git graph</li>
+        </ul>
+      </div>
+    </div>
+    <p style="text-align:center;margin-top:20px;font-size:11.5px;color:var(--faint)">
+      Database: SQLite at <code>&lt;workspace&gt;/Tickets/project.db</code> · Config: <code>config.yaml</code> at <code>sidecar-dist/</code>
+    </p>
+    <div class="techstack">
+      <span class="tech-pill">Tauri v2</span>
+      <span class="tech-pill">Next.js</span>
+      <span class="tech-pill">better-sqlite3</span>
+      <span class="tech-pill">Anthropic Claude</span>
+    </div>
+  </div>
+
+  <div class="pm-footer">
+    Built and designed from scratch by Will Baldwin — part of the R&amp;D portfolio at
+    <a href="/">Baldwin Data Works Inc.</a>
+  </div>
+
+</body>
+</html>
