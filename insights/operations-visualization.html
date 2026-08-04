@@ -310,6 +310,7 @@ html, body {
 .node-kind-badge { font-size: 9px; fill: var(--text-muted); text-anchor: middle; pointer-events: none; letter-spacing: 0.03em; }
 .node-icon { font-size: 14px; pointer-events: none; }
 .node-icon.container-icon { font-size: 13px; }
+.node-icon-img { pointer-events: none; }
 .node-count { font-size: 9.5px; fill: var(--text-secondary); text-anchor: middle; pointer-events: none; font-variant-numeric: tabular-nums; }
 
 .node-group.active .node-rect { filter: drop-shadow(0 0 6px color-mix(in srgb, var(--status-good) 70%, transparent)); }
@@ -1024,48 +1025,75 @@ const DATASETS = {
   }
 
   // ---------- Cloud service icons ----------
+  // Real provider logos served from Iconify (api.iconify.design), which mirrors
+  // AWS's official Architecture Icons ("logos" set) and Google's official Cloud
+  // Icons ("gcp" set) for use in architecture diagrams. Nodes with no official
+  // service icon (human actors, internal code handlers) fall back to an emoji.
 
-  const KIND_ICON = { service: "☁️", datastore: "🗄️", actor: "👤", infra: "🧱", pipeline: "🔀" };
-  const ICON_RULES = [
-    [/cloudfront/, "🌐"],
-    [/\balb\b|load.?balanc/, "⚖️"],
-    [/ecs|fargate|\bcluster\b/, "🐳"],
-    [/aurora|\brds\b|writerinstance|readerinstance|datastorestack/, "🗄️"],
-    [/redis|memorystore|cache/, "🧠"],
-    [/guardduty/, "🛡️"],
-    [/securityhub/, "🔐"],
-    [/\biam\b/, "🔑"],
-    [/config/, "⚙️"],
-    [/ssm|remediation/, "🤖"],
-    [/\bsns\b|alarm|notif/, "📣"],
-    [/cloudformation|\bstack\b/, "📐"],
-    [/codepipeline|deploystage|deploystep|^pipeline$/, "🔀"],
-    [/codebuild|synthstep|buildstep|skaffold|^build/, "🔨"],
-    [/canary|synthetics/, "🕵️"],
-    [/cloudtrail|s3trail|\bs3\b/, "🧾"],
-    [/gke|kubernetes|k8s/, "☸️"],
-    [/terraform/, "🌍"],
-    [/vertexai|gemini/, "✨"],
-    [/gcloudcreds|credential/, "🔏"],
-    [/enableapis/, "🔌"],
-    [/router|handler/, "🖥️"],
-    [/frontend/, "🖥️"],
-    [/cart/, "🛒"],
-    [/payment|charge/, "💳"],
-    [/shipping/, "📦"],
-    [/email/, "✉️"],
-    [/currency/, "💱"],
-    [/catalog|product/, "📚"],
-    [/recommendation/, "🧭"],
-    [/adservice|^ad\b/, "📢"],
-    [/assistant|bot|chat/, "💬"],
-    [/user|shopper|developer|opsengineer|apicall|gitpush|terraformcli/, "👤"],
-  ];
+  const ICONIFY = (set, name) => `https://api.iconify.design/${set}/${name}.svg`;
+  const svc = name => ({ img: ICONIFY("logos", name) });
+  const gcp = name => ({ img: ICONIFY("gcp", name) });
+  const em = char => ({ emoji: char });
+
+  const ID_ICON = {
+    // BLEA — AWS
+    user: em("👤"), canaryBot: em("🤖"), guestApp: svc("aws"), cloudfront: svc("aws-cloudfront"),
+    alb: svc("aws-elb"), ecsService: svc("aws-ecs"), aurora: svc("aws-aurora"), developer: em("🧑‍💻"),
+    codepipeline: svc("aws-codepipeline"), synthStep: svc("aws-codebuild"), deployStage: svc("aws-codepipeline"),
+    cloudformation: svc("aws-cloudformation"), govBase: svc("aws"), apiCall: svc("aws"),
+    cloudtrail: svc("aws-cloudtrail"), s3Trail: svc("aws-s3"), guardduty: svc("aws-shield"),
+    securityhub: svc("aws-shield"), iamRoles: svc("aws-iam"), awsConfig: svc("aws-config"),
+    ssmRemediation: svc("aws-systems-manager"), snsAlarm: svc("aws-sns"), opsEngineer: em("🧑‍🔧"),
+    // BLEA subgraphs
+    cluster: svc("aws-ecs"), appSg: svc("aws-vpc"), taskDefinition: svc("aws-fargate"), service: svc("aws-fargate"),
+    auroraCluster: svc("aws-aurora"), writerInstance: svc("aws-rds"), readerInstance: svc("aws-rds"), eventSubsc: svc("aws-rds"),
+    configRecorder: svc("aws-config"), deliveryChannel: svc("aws-config"), defaultSgRule: svc("aws-config"), remediationConfig: svc("aws-systems-manager"),
+    stage: svc("aws-codepipeline"), networkingStack: svc("aws-cloudformation"), datastoreStack: svc("aws-cloudformation"),
+    ecsappStack: svc("aws-cloudformation"), frontendStack: svc("aws-cloudformation"), monitoringStack: svc("aws-cloudformation"),
+    iamRoot: svc("aws-iam"), sysAdminRole: svc("aws-iam"), iamAdminRole: svc("aws-iam"), instanceOpsRole: svc("aws-iam"), readOnlyAdminRole: svc("aws-iam"),
+
+    // Online Boutique — GCP
+    shopper: em("🛍️"), frontend: svc("google-cloud"), productcatalogservice: em("📚"), cartservice: em("🛒"),
+    recommendationservice: em("🧭"), adservice: em("📢"), currencyservice: em("💱"), shippingservice: em("📦"),
+    checkoutservice: em("🧾"), paymentservice: em("💳"), emailservice: em("✉️"), shoppingassistantservice: em("💬"),
+    productjson: em("📄"), redis: gcp("memorystore"), vertexai: gcp("vertexai"), gke: gcp("google-kubernetes-engine"),
+    gitpush: svc("git"), cloudbuild: gcp("cloud-build"), buildstep: gcp("cloud-build"), deploystep: gcp("cloud-deploy"),
+    terraformcli: svc("terraform"),
+    // Boutique subgraphs
+    router: em("🔗"), homeHandler: em("🏠"), productHandler: em("📦"), addToCartHandler: em("🛒"),
+    viewCartHandler: em("👀"), emptyCartHandler: em("🗑️"), setCurrencyHandler: em("💱"), placeOrderHandler: em("✅"), chatBotHandler: em("💬"),
+    enableApis: gcp("cloud-apis"), redisInstance: gcp("memorystore"), gcloudCreds: gcp("identity-and-access-management"), applyDeploy: gcp("cloud-deploy"),
+    redisGetCart: gcp("memorystore"), redisAddItem: gcp("memorystore"), redisEmptyCart: gcp("memorystore"), redisNode: gcp("memorystore"),
+    skaffoldBuild: gcp("cloud-build"), "build-frontend": gcp("cloud-build"), "build-cart": gcp("cloud-build"),
+    "build-productcatalog": gcp("cloud-build"), "build-checkout": gcp("cloud-build"), "build-currency": gcp("cloud-build"),
+    "build-shipping": gcp("cloud-build"), "build-payment": gcp("cloud-build"), "build-email": gcp("cloud-build"),
+    "build-recommendation": gcp("cloud-build"), "build-ad": gcp("cloud-build"), "build-shoppingassistant": gcp("cloud-build"),
+  };
+
+  const KIND_ICON = { service: em("☁️"), datastore: em("🗄️"), actor: em("👤"), infra: em("🧱"), pipeline: em("🔀") };
 
   function iconFor(n) {
-    const hay = (String(n.id) + " " + String(n.label || "")).toLowerCase();
-    for (const [re, icon] of ICON_RULES) if (re.test(hay)) return icon;
-    return KIND_ICON[n.kind] || "🔹";
+    return ID_ICON[n.id] || KIND_ICON[n.kind] || em("🔹");
+  }
+
+  function makeIconEl(icon, x, y, size, extraClass) {
+    if (icon.img) {
+      const image = document.createElementNS(SVG_NS, "image");
+      image.setAttribute("x", x);
+      image.setAttribute("y", y);
+      image.setAttribute("width", size);
+      image.setAttribute("height", size);
+      image.setAttribute("href", icon.img);
+      image.setAttribute("class", ("node-icon-img " + extraClass).trim());
+      return image;
+    }
+    const text = document.createElementNS(SVG_NS, "text");
+    text.setAttribute("x", x);
+    text.setAttribute("y", y + size * 0.82);
+    text.setAttribute("class", ("node-icon " + extraClass).trim());
+    text.setAttribute("text-anchor", "start");
+    text.textContent = icon.emoji;
+    return text;
   }
 
   function drawNode(n, maxNodeUsage, isContainer) {
@@ -1101,24 +1129,12 @@ const DATASETS = {
 
     const icon = iconFor(n);
     if (isContainer) {
-      const cicon = document.createElementNS(SVG_NS, "text");
-      cicon.setAttribute("x", n.x + 14);
-      cicon.setAttribute("y", n.y + 22);
-      cicon.setAttribute("class", "node-icon container-icon");
-      cicon.setAttribute("text-anchor", "start");
-      cicon.textContent = icon;
-      g.appendChild(cicon);
+      g.appendChild(makeIconEl(icon, n.x + 12, n.y + 9, 15, "container-icon"));
     } else {
-      const nicon = document.createElementNS(SVG_NS, "text");
-      nicon.setAttribute("x", n.x + 10);
-      nicon.setAttribute("y", n.y + 16);
-      nicon.setAttribute("class", "node-icon");
-      nicon.setAttribute("text-anchor", "start");
-      nicon.textContent = icon;
-      g.appendChild(nicon);
+      g.appendChild(makeIconEl(icon, n.x + 6, n.y + 4, 16, ""));
     }
 
-    const labelX = isContainer ? n.x + 32 : n.x + n.w / 2;
+    const labelX = isContainer ? n.x + 36 : n.x + n.w / 2;
     const labelY = isContainer ? n.y + 22 : n.y + n.h / 2 - (String(n.label).includes("\n") ? 6 : 0);
     const lines = String(n.label).split("\n");
     const text = document.createElementNS(SVG_NS, "text");
