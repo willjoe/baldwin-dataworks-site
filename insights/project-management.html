@@ -106,6 +106,33 @@ body{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;background:var(--bg
 .pillar-chip .bar-fill{position:absolute;left:0;right:0;bottom:0;border-radius:2px}
 .pillar-chip .lbl{font-size:8px;color:var(--faint);margin-top:4px;font-weight:700;line-height:1.2}
 
+/* ── Gantt ── */
+.gantt-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);box-shadow:var(--sh-xs);overflow:hidden}
+.gantt-grid{display:grid;grid-template-columns:280px 1fr}
+.gantt-head-lbl{padding:10px 16px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--faint);border-bottom:1px solid var(--border);background:var(--bg);display:flex;align-items:center}
+.gantt-head-weeks{display:grid;border-bottom:1px solid var(--border);background:var(--bg);position:relative}
+.gantt-head-week{font-size:9.5px;font-weight:800;color:var(--faint);text-align:center;padding:10px 0;border-left:1px solid var(--border)}
+.gantt-row-lbl{padding:9px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:7px;min-width:0}
+.gantt-row-lbl .indent{flex-shrink:0}
+.gantt-row-lbl .type-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.gantt-row-lbl .type-dot.epic{background:var(--plum)}
+.gantt-row-lbl .type-dot.story{background:var(--teal)}
+.gantt-row-lbl .type-dot.task{background:var(--purple)}
+.gantt-row-lbl .type-dot.test{background:var(--amber)}
+.gantt-row-lbl .name{font-size:12px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gantt-row-lbl.epic-row .name{font-weight:800}
+.gantt-row-track{position:relative;border-bottom:1px solid var(--border);min-height:38px}
+.gantt-row-track .gridlines{position:absolute;inset:0;display:grid}
+.gantt-row-track .gridlines div{border-left:1px solid var(--border)}
+.gantt-bar{position:absolute;top:8px;height:22px;border-radius:5px;display:flex;align-items:center;overflow:hidden;box-shadow:var(--sh-xs)}
+.gantt-bar-progress{position:absolute;left:0;top:0;bottom:0;background:rgba(255,255,255,0.35);border-radius:5px 0 0 5px}
+.gantt-bar-label{position:relative;font-size:10px;font-weight:800;color:#fff;padding:0 8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gantt-today{position:absolute;top:0;bottom:0;width:2px;background:var(--red);z-index:2}
+.gantt-today.labeled::after{content:'Today';position:absolute;top:2px;left:5px;font-size:9px;font-weight:800;color:var(--red);white-space:nowrap;background:var(--card);padding:0 3px;border-radius:2px}
+.gantt-legend{display:flex;gap:16px;padding:10px 16px;border-top:1px solid var(--border);font-size:10.5px;color:var(--muted)}
+.gantt-legend span{display:flex;align-items:center;gap:5px}
+.gantt-legend .sw{display:inline-block;width:9px;height:9px;border-radius:50%}
+
 /* ── Releases ── */
 .rel-list{display:flex;flex-direction:column;gap:12px}
 .rel-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);box-shadow:var(--sh-xs);padding:16px 20px;display:flex;gap:16px}
@@ -152,6 +179,10 @@ body{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;background:var(--bg
     <div class="sb-item active" data-view="board" onclick="showView('board', this)">
       <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="18" rx="1"/><rect x="12" y="3" width="4" height="10" rx="1"/><rect x="18" y="3" width="4" height="14" rx="1"/></svg>
       Board
+    </div>
+    <div class="sb-item" data-view="gantt" onclick="showView('gantt', this)">
+      <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="13" y2="6"/><line x1="3" y1="12" x2="19" y2="12"/><line x1="3" y1="18" x2="10" y2="18"/></svg>
+      Gantt
     </div>
     <div class="sb-item" data-view="initiatives" onclick="showView('initiatives', this)">
       <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18"/></svg>
@@ -289,6 +320,24 @@ body{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;background:var(--bg
       <div class="brainstorm">
         💡 <input type="text" placeholder="Drop a napkin-sketch idea — it'll flow into the backlog once it clears initiative scoring…">
         <button class="btn btn-p" style="padding:6px 14px">Add</button>
+      </div>
+    </div>
+
+    <!-- GANTT -->
+    <div class="view" id="view-gantt">
+      <div class="sec-head">
+        <div class="sec-title">Timeline <span class="sec-title-line"></span></div>
+        <div class="sec-sub">Same ticket hierarchy as the Board — Epics → Stories → Tasks → Tests</div>
+      </div>
+      <div class="gantt-card">
+        <div class="gantt-grid" id="gantt-grid"></div>
+        <div class="gantt-legend">
+          <span><span class="sw" style="background:var(--plum)"></span>Epic</span>
+          <span><span class="sw" style="background:var(--teal)"></span>Story</span>
+          <span><span class="sw" style="background:var(--purple)"></span>Task</span>
+          <span><span class="sw" style="background:var(--amber)"></span>Test</span>
+          <span style="margin-left:auto"><span class="sw" style="background:var(--red);border-radius:2px;width:2px;height:12px"></span>Today</span>
+        </div>
       </div>
     </div>
 
@@ -448,7 +497,61 @@ function renderLog(){
   `).join('');
 }
 
-const titles = { board: ['Delivery','Board'], initiatives: ['Delivery','Initiative Scoring'], releases: ['Delivery','Releases'], activity: ['Delivery','Branch Activity'] };
+const TOTAL_WEEKS = 10;
+const TODAY_WEEK = 5;
+const TYPE_COLOR = {
+  epic: { solid:'#7c1366', faded:'rgba(124,19,102,0.22)' },
+  story:{ solid:'#016b6a', faded:'rgba(1,107,106,0.20)' },
+  task: { solid:'#4b286d', faded:'rgba(75,40,109,0.20)' },
+  test: { solid:'#b5790a', faded:'rgba(245,166,35,0.26)' },
+};
+
+const GANTT_ROWS = [
+  { id:'PRJ-071', type:'epic',  name:'Auto-updater with background checks',        start:1,   end:2,   progress:100 },
+  { id:'PRJ-088', type:'story', name:'Kanban ⇄ Gantt view toggle',                 start:1,   end:1.5, progress:100, indent:1 },
+  { id:'PRJ-091', type:'task',  name:'Per-workspace local database migration',      start:1.5, end:2,   progress:100, indent:1 },
+  { id:'PRJ-102', type:'story', name:'Bi-directional ticket sync — dual-id model',  start:2,   end:4.5, progress:90 },
+  { id:'PRJ-098', type:'task',  name:'Git graph — collapse merged branches',        start:3.5, end:4.5, progress:85, indent:1 },
+  { id:'PRJ-109', type:'story', name:'SSO login flow — enterprise tier',            start:4,   end:7,   progress:55 },
+  { id:'PRJ-110', type:'task',  name:'Wire SAML metadata exchange',                 start:4,   end:6,   progress:65, indent:1 },
+  { id:'PRJ-131', type:'task',  name:'Rate-limit the AI scoring endpoint',          start:5.5, end:7,   progress:30, indent:1 },
+  { id:'PRJ-101', type:'epic',  name:'Offline mode for mobile clients',             start:5,   end:10,  progress:20 },
+  { id:'PRJ-118', type:'story', name:'Cache last-known state to local storage',     start:5,   end:6.5, progress:35, indent:1 },
+  { id:'PRJ-122', type:'task',  name:'Spike: conflict resolution strategy',         start:6,   end:7.5, progress:10, indent:1 },
+  { id:'PRJ-124', type:'test',  name:'Regression suite for sync edge cases',        start:8.5, end:10,  progress:0,  indent:1 },
+];
+
+function renderGantt(){
+  const wrap = document.getElementById('gantt-grid');
+  const todayPct = (TODAY_WEEK / TOTAL_WEEKS) * 100;
+  let html = `<div class="gantt-head-lbl">Ticket</div>`;
+  html += `<div class="gantt-head-weeks" style="grid-template-columns:repeat(${TOTAL_WEEKS},1fr)">`;
+  for (let w = 1; w <= TOTAL_WEEKS; w++) html += `<div class="gantt-head-week">Wk ${w}</div>`;
+  html += `<div class="gantt-today labeled" style="left:${todayPct}%"></div>`;
+  html += `</div>`;
+
+  GANTT_ROWS.forEach(row => {
+    const leftPct = (row.start / TOTAL_WEEKS) * 100;
+    const widthPct = ((row.end - row.start) / TOTAL_WEEKS) * 100;
+    const c = TYPE_COLOR[row.type];
+    html += `<div class="gantt-row-lbl${row.type === 'epic' ? ' epic-row' : ''}">
+      <span class="indent" style="width:${(row.indent || 0) * 16}px"></span>
+      <span class="type-dot ${row.type}"></span>
+      <span class="name">${row.id} · ${row.name}</span>
+    </div>`;
+    html += `<div class="gantt-row-track">
+      <div class="gridlines" style="grid-template-columns:repeat(${TOTAL_WEEKS},1fr)">${'<div></div>'.repeat(TOTAL_WEEKS)}</div>
+      <div class="gantt-today" style="left:${todayPct}%"></div>
+      <div class="gantt-bar" style="left:${leftPct}%;width:${widthPct}%;background:${c.faded}">
+        <div class="gantt-bar-progress" style="width:${row.progress}%;background:${c.solid}"></div>
+        <span class="gantt-bar-label" style="color:${row.progress >= 40 ? '#fff' : 'var(--text)'}">${row.progress}%</span>
+      </div>
+    </div>`;
+  });
+  wrap.innerHTML = html;
+}
+
+const titles = { board: ['Delivery','Board'], gantt: ['Delivery','Timeline'], initiatives: ['Delivery','Initiative Scoring'], releases: ['Delivery','Releases'], activity: ['Delivery','Branch Activity'] };
 
 function showView(id, el){
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
@@ -461,6 +564,7 @@ function showView(id, el){
 
 renderInitiatives();
 renderLog();
+renderGantt();
 </script>
 </body>
 </html>

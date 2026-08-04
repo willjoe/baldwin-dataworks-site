@@ -338,7 +338,96 @@ html, body {
 .modal-body ul { margin: 0; padding-left: 18px; }
 .modal-body li { margin-bottom: 4px; }
 
+/* ---------- Surveillance views (Alerts / Metrics / Logs) ---------- */
+
+.mode-view { display: none; }
+.mode-view.active { display: block; }
+main.layout.active { display: grid; }
+.surv-view.active { height: calc(100vh - 90px); overflow-y: auto; padding: 20px 26px; background: var(--surface-2); }
+
+.surv-card {
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-top: 18px;
+}
+.surv-card-head { padding: 14px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.surv-card-head h2 { font-size: 14px; margin: 0; }
+.surv-card-head .muted { font-size: 12px; }
+
+/* Alert stat strip */
+.stat-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+.stat-card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; position: relative; overflow: hidden; }
+.stat-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; }
+.stat-card.crit::before { background: var(--kind-infra); }
+.stat-card.warn::before { background: var(--kind-pipeline); }
+.stat-card.info::before { background: var(--kind-service); }
+.stat-card.ok::before { background: var(--status-good); }
+.stat-card .lbl { font-size: 10.5px; text-transform: uppercase; letter-spacing: .05em; color: var(--text-muted); font-weight: 700; margin-bottom: 6px; }
+.stat-card .num { font-size: 26px; font-weight: 800; }
+.stat-card .sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+/* Alert table */
+.alert-table { display: flex; flex-direction: column; }
+.alert-row { display: grid; grid-template-columns: 90px 1fr 150px 130px 100px; gap: 12px; align-items: center; padding: 11px 18px; border-bottom: 1px solid var(--border); font-size: 12.5px; }
+.alert-row:last-child { border-bottom: none; }
+.alert-row.head { font-size: 10.5px; text-transform: uppercase; letter-spacing: .05em; color: var(--text-muted); font-weight: 700; background: var(--surface-3); }
+.sev-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .03em; padding: 3px 9px; border-radius: 999px; }
+.sev-badge.crit { background: color-mix(in srgb, var(--kind-infra) 18%, transparent); color: var(--kind-infra); }
+.sev-badge.warn { background: color-mix(in srgb, var(--kind-pipeline) 20%, transparent); color: var(--kind-pipeline); }
+.sev-badge.info { background: color-mix(in srgb, var(--kind-service) 16%, transparent); color: var(--kind-service); }
+.alert-msg { font-weight: 600; color: var(--text-primary); }
+.alert-msg .svc { font-family: monospace; font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+.status-pill { display: inline-block; font-size: 10.5px; font-weight: 700; padding: 3px 9px; border-radius: 999px; }
+.status-pill.firing { background: color-mix(in srgb, var(--kind-infra) 18%, transparent); color: var(--kind-infra); }
+.status-pill.ack { background: color-mix(in srgb, var(--kind-pipeline) 20%, transparent); color: var(--kind-pipeline); }
+.status-pill.resolved { background: color-mix(in srgb, var(--status-good) 18%, transparent); color: var(--status-good); }
+
+/* Metric cards */
+.metric-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+.metric-card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; }
+.metric-card .lbl { font-size: 10.5px; text-transform: uppercase; letter-spacing: .05em; color: var(--text-muted); font-weight: 700; }
+.metric-card .val-row { display: flex; align-items: baseline; justify-content: space-between; margin: 6px 0 8px; }
+.metric-card .val { font-size: 22px; font-weight: 800; }
+.metric-card .delta { font-size: 11px; font-weight: 700; }
+.metric-card .delta.up.good { color: var(--status-good); }
+.metric-card .delta.up.bad { color: var(--kind-infra); }
+.metric-card .delta.down.good { color: var(--status-good); }
+.metric-card .delta.down.bad { color: var(--kind-infra); }
+.metric-card svg { width: 100%; height: 34px; display: block; }
+
+/* Service health grid */
+.health-grid { display: flex; flex-direction: column; }
+.health-row { display: grid; grid-template-columns: 20px 1.4fr .8fr .8fr 1fr; gap: 12px; align-items: center; padding: 10px 18px; border-bottom: 1px solid var(--border); font-size: 12.5px; }
+.health-row:last-child { border-bottom: none; }
+.health-row.head { font-size: 10.5px; text-transform: uppercase; letter-spacing: .05em; color: var(--text-muted); font-weight: 700; background: var(--surface-3); }
+.health-dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; }
+.health-dot.healthy { background: var(--status-good); }
+.health-dot.degraded { background: var(--kind-pipeline); }
+.health-dot.down { background: var(--kind-infra); }
+.health-name { font-weight: 700; font-family: monospace; font-size: 12px; }
+
+/* Logs */
+.logs-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 18px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.level-chips { display: flex; gap: 6px; }
+.level-chip { font: inherit; font-size: 11.5px; font-weight: 700; padding: 5px 12px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface-2); color: var(--text-secondary); cursor: pointer; }
+.level-chip.active { background: var(--kind-service); color: #fff; border-color: transparent; }
+.logs-search input { font: inherit; font-size: 12.5px; padding: 6px 12px; border-radius: 7px; border: 1px solid var(--border); background: var(--surface-2); color: var(--text-primary); outline: none; width: 220px; }
+.log-stream { list-style: none; margin: 0; padding: 8px; max-height: 560px; overflow-y: auto; }
+.log-stream li { display: flex; gap: 10px; align-items: baseline; padding: 6px 10px; border-radius: 6px; font-family: monospace; font-size: 12px; }
+.log-stream li:hover { background: var(--surface-3); }
+.log-stream .ts { color: var(--text-muted); flex-shrink: 0; }
+.lvl-badge { flex-shrink: 0; font-size: 10px; font-weight: 800; padding: 1px 7px; border-radius: 4px; width: 42px; text-align: center; }
+.lvl-badge.INFO { background: color-mix(in srgb, var(--kind-service) 16%, transparent); color: var(--kind-service); }
+.lvl-badge.WARN { background: color-mix(in srgb, var(--kind-pipeline) 20%, transparent); color: var(--kind-pipeline); }
+.lvl-badge.ERROR { background: color-mix(in srgb, var(--kind-infra) 18%, transparent); color: var(--kind-infra); }
+.log-stream .svc-tag { flex-shrink: 0; color: var(--text-secondary); font-weight: 700; }
+.log-stream .msg { color: var(--text-primary); }
+
 @media (max-width: 860px) {
+  .stat-strip, .metric-grid { grid-template-columns: 1fr 1fr; }
+  .alert-row, .health-row { grid-template-columns: 1fr; }
   .layout { grid-template-columns: 1fr; height: auto; }
   .pane-left { border-right: none; border-bottom: 1px solid var(--border); }
   .legend { max-width: 100%; justify-content: flex-start; }
@@ -351,15 +440,16 @@ html, body {
   <div class="hero-top">
     <span class="eyebrow">Live prototype</span>
     <div class="hero-actions">
+      <div class="tabswitch" id="mode-tabswitch" role="tablist"></div>
       <div class="tabswitch" id="tabswitch" role="tablist"></div>
       <button id="reset-btn" class="btn btn-ghost"></button>
       <button id="report-btn" class="btn btn-primary"></button>
     </div>
   </div>
-  <p class="source-line">Modeled on: <a id="demo-link" href="#" target="_blank" rel="noopener"></a></p>
+  <p class="source-line" id="source-line">Modeled on: <a id="demo-link" href="#" target="_blank" rel="noopener"></a></p>
 </header>
 
-<main class="layout">
+<main class="layout mode-view active" id="view-architecture">
   <section class="pane pane-left" aria-label="Simulated actions">
     <div class="mock-app">
       <div class="mock-app-bar">
@@ -401,6 +491,45 @@ html, body {
     </div>
   </section>
 </main>
+
+<!-- ══════════ ALERTS & INCIDENTS ══════════ -->
+<section class="mode-view surv-view" id="view-alerts">
+  <div class="stat-strip" id="alert-stats"></div>
+  <div class="surv-card">
+    <div class="surv-card-head">
+      <h2>Active &amp; Recent Incidents</h2>
+      <span class="muted">Auto-triaged from GuardDuty, Config, and application error budgets</span>
+    </div>
+    <div class="alert-table" id="alert-table"></div>
+  </div>
+</section>
+
+<!-- ══════════ METRICS & HEALTH ══════════ -->
+<section class="mode-view surv-view" id="view-metrics">
+  <div class="metric-grid" id="metric-grid"></div>
+  <div class="surv-card">
+    <div class="surv-card-head">
+      <h2>Service Health</h2>
+      <span class="muted">Synthetic checks every 30s · rolling 24h window</span>
+    </div>
+    <div class="health-grid" id="health-grid"></div>
+  </div>
+</section>
+
+<!-- ══════════ LOGS ══════════ -->
+<section class="mode-view surv-view" id="view-logs">
+  <div class="surv-card">
+    <div class="surv-card-head">
+      <h2>Live Log Stream</h2>
+      <span class="muted" id="log-count-lbl"></span>
+    </div>
+    <div class="logs-toolbar">
+      <div class="level-chips" id="level-chips"></div>
+      <div class="logs-search"><input type="text" id="log-search" placeholder="Filter by service or message…"></div>
+    </div>
+    <ol class="log-stream" id="log-stream"></ol>
+  </div>
+</section>
 
 <div id="report-modal" class="modal-backdrop hidden">
   <div class="modal">
@@ -506,9 +635,15 @@ const DATASETS = {
     renderTabs();
     switchTo(activeKey);
     wireGlobalButtons();
+    renderModeTabs();
+    renderAlerts();
+    renderMetrics();
+    renderLogs();
   }
 
   function cacheEls() {
+    els.modeTabswitch = document.getElementById("mode-tabswitch");
+    els.sourceLine = document.getElementById("source-line");
     els.tabswitch = document.getElementById("tabswitch");
     els.demoLink = document.getElementById("demo-link");
     els.mockAppBarLabel = document.getElementById("mock-app-bar-label");
@@ -557,6 +692,40 @@ const DATASETS = {
   }
 
   function current() { return DATASETS[activeKey]; }
+
+  // ---------- Mode switching (Architecture / Alerts / Metrics / Logs) ----------
+
+  const MODES = [
+    { key: "architecture", label: "🏗️ Architecture" },
+    { key: "alerts",       label: "🚨 Alerts & Incidents" },
+    { key: "metrics",      label: "📈 Metrics & Health" },
+    { key: "logs",         label: "📜 Logs" },
+  ];
+  let activeMode = "architecture";
+
+  function renderModeTabs() {
+    els.modeTabswitch.innerHTML = "";
+    for (const m of MODES) {
+      const btn = document.createElement("button");
+      btn.className = "tab-btn" + (m.key === activeMode ? " active" : "");
+      btn.textContent = m.label;
+      btn.setAttribute("role", "tab");
+      btn.dataset.mode = m.key;
+      btn.addEventListener("click", () => switchMode(m.key));
+      els.modeTabswitch.appendChild(btn);
+    }
+  }
+
+  function switchMode(key) {
+    activeMode = key;
+    els.modeTabswitch.querySelectorAll(".tab-btn").forEach(b => b.classList.toggle("active", b.dataset.mode === key));
+    document.querySelectorAll(".mode-view").forEach(v => v.classList.toggle("active", v.id === "view-" + key));
+    const isArch = key === "architecture";
+    els.tabswitch.style.display = isArch ? "" : "none";
+    els.resetBtn.style.display = isArch ? "" : "none";
+    els.reportBtn.style.display = isArch ? "" : "none";
+    els.sourceLine.style.display = isArch ? "" : "none";
+  }
 
   // ---------- Tabs ----------
 
@@ -1035,6 +1204,150 @@ const DATASETS = {
       <ul>${cold.length ? cold.slice(0, 20).map(r => `<li>${r.label}</li>`).join("") : `<li>${ds.ui.reportAllExercised}</li>`}</ul>
     `;
     els.reportModal.classList.remove("hidden");
+  }
+
+  // ---------- Alerts & Incidents ----------
+
+  const ALERTS = [
+    { sev: "crit", msg: "Error budget burn rate 14x on checkout-service", svc: "checkout-service", status: "firing",    duration: "12m",  owner: "on-call: R. Singh" },
+    { sev: "crit", msg: "GuardDuty: anomalous outbound traffic from ALB security group", svc: "alb / guardduty", status: "ack", duration: "34m", owner: "R. Singh" },
+    { sev: "warn", msg: "P95 latency above 400ms threshold", svc: "cart-service", status: "firing", duration: "6m", owner: "unassigned" },
+    { sev: "warn", msg: "Config drift: security group opened to 0.0.0.0/0", svc: "aws-config", status: "ack", duration: "1h 02m", owner: "SSM auto-remediation" },
+    { sev: "info", msg: "Autoscaling group scaled 3 → 6 replicas", svc: "ecs / gke", status: "resolved", duration: "—", owner: "autoscaler" },
+    { sev: "warn", msg: "Redis Cart Store memory at 82% capacity", svc: "redis", status: "firing", duration: "21m", owner: "unassigned" },
+    { sev: "crit", msg: "Payment webhook 5xx rate above 2% for 5 consecutive minutes", svc: "payment-service", status: "resolved", duration: "8m", owner: "J. Lin" },
+    { sev: "info", msg: "Scheduled CDK deploy completed successfully", svc: "cloudformation", status: "resolved", duration: "—", owner: "ci/cd" },
+  ];
+
+  function renderAlerts() {
+    const counts = { crit: 0, warn: 0, info: 0, firing: 0 };
+    ALERTS.forEach(a => { counts[a.sev]++; if (a.status === "firing") counts.firing++; });
+
+    document.getElementById("alert-stats").innerHTML = `
+      <div class="stat-card crit"><div class="lbl">Critical</div><div class="num">${counts.crit}</div><div class="sub">requires immediate action</div></div>
+      <div class="stat-card warn"><div class="lbl">Warning</div><div class="num">${counts.warn}</div><div class="sub">degraded, not yet critical</div></div>
+      <div class="stat-card info"><div class="lbl">Info</div><div class="num">${counts.info}</div><div class="sub">automated / self-resolved</div></div>
+      <div class="stat-card ok"><div class="lbl">Currently Firing</div><div class="num">${counts.firing}</div><div class="sub">of ${ALERTS.length} total this window</div></div>
+    `;
+
+    const sevLabel = { crit: "Critical", warn: "Warning", info: "Info" };
+    const statusLabel = { firing: "Firing", ack: "Acknowledged", resolved: "Resolved" };
+    let html = `<div class="alert-row head"><div>Severity</div><div>Alert</div><div>Status</div><div>Duration</div><div>Owner</div></div>`;
+    html += ALERTS.map(a => `
+      <div class="alert-row">
+        <div><span class="sev-badge ${a.sev}">${sevLabel[a.sev]}</span></div>
+        <div class="alert-msg">${a.msg}<div class="svc">${a.svc}</div></div>
+        <div><span class="status-pill ${a.status}">${statusLabel[a.status]}</span></div>
+        <div>${a.duration}</div>
+        <div>${a.owner}</div>
+      </div>
+    `).join("");
+    document.getElementById("alert-table").innerHTML = html;
+  }
+
+  // ---------- Metrics & Health ----------
+
+  function sparkline(points, color) {
+    const w = 260, h = 34;
+    const max = Math.max(...points), min = Math.min(...points);
+    const xs = points.map((_, i) => (i / (points.length - 1)) * w);
+    const ys = points.map(p => h - ((p - min) / Math.max(1, max - min)) * (h - 4) - 2);
+    const path = xs.map((x, i) => `${i === 0 ? "M" : "L"} ${x.toFixed(1)},${ys[i].toFixed(1)}`).join(" ");
+    return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><path d="${path}" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  }
+
+  const METRICS = [
+    { lbl: "Uptime (30d)", val: "99.97%", delta: "+0.02pp", dir: "up", good: true,  points: [99.9,99.92,99.95,99.9,99.96,99.98,99.97] },
+    { lbl: "P95 Latency",  val: "142ms",  delta: "-8ms",    dir: "down", good: true, points: [168,160,155,150,158,146,142] },
+    { lbl: "Error Rate",   val: "0.34%",  delta: "+0.11pp", dir: "up", good: false, points: [0.18,0.2,0.22,0.19,0.25,0.3,0.34] },
+    { lbl: "Request Volume", val: "1.2M/day", delta: "+9%", dir: "up", good: true, points: [0.9,1.0,1.05,1.1,1.12,1.18,1.2] },
+  ];
+
+  function renderMetrics() {
+    document.getElementById("metric-grid").innerHTML = METRICS.map(m => `
+      <div class="metric-card">
+        <div class="lbl">${m.lbl}</div>
+        <div class="val-row"><span class="val">${m.val}</span><span class="delta ${m.dir} ${m.good ? "good" : "bad"}">${m.dir === "up" ? "↑" : "↓"} ${m.delta}</span></div>
+        ${sparkline(m.points, m.good ? "var(--status-good)" : "var(--kind-infra)")}
+      </div>
+    `).join("");
+
+    const SERVICES = [
+      { name: "frontend / router",        status: "healthy",  latency: "38ms",  err: "0.02%" },
+      { name: "checkout-service",         status: "degraded", latency: "410ms", err: "1.8%"  },
+      { name: "cart-service",             status: "degraded", latency: "220ms", err: "0.6%"  },
+      { name: "payment-service",          status: "healthy",  latency: "95ms",  err: "0.05%" },
+      { name: "redis / memorystore",      status: "degraded", latency: "12ms",  err: "0.0%"  },
+      { name: "aurora / cloud-sql",       status: "healthy",  latency: "6ms",   err: "0.0%"  },
+      { name: "alb / load-balancer",      status: "healthy",  latency: "4ms",   err: "0.0%"  },
+      { name: "guardduty / config",       status: "healthy",  latency: "—",     err: "—"     },
+    ];
+    const statusLabel = { healthy: "Healthy", degraded: "Degraded", down: "Down" };
+    let html = `<div class="health-row head"><div></div><div>Service</div><div>Status</div><div>P95 Latency</div><div>Error Rate</div></div>`;
+    html += SERVICES.map(s => `
+      <div class="health-row">
+        <div><span class="health-dot ${s.status}"></span></div>
+        <div class="health-name">${s.name}</div>
+        <div>${statusLabel[s.status]}</div>
+        <div>${s.latency}</div>
+        <div>${s.err}</div>
+      </div>
+    `).join("");
+    document.getElementById("health-grid").innerHTML = html;
+  }
+
+  // ---------- Logs ----------
+
+  const LOGS = [
+    { t: "14:32:08", lvl: "ERROR", svc: "checkout-service",  msg: "PlaceOrder failed: downstream payment-service timeout after 5000ms" },
+    { t: "14:32:05", lvl: "WARN",  svc: "cart-service",      msg: "GetCart latency 412ms exceeds SLO of 200ms" },
+    { t: "14:31:58", lvl: "INFO",  svc: "autoscaler",        msg: "Scaled checkout-service replica set 3 → 6" },
+    { t: "14:31:40", lvl: "ERROR", svc: "payment-service",   msg: "Charge() returned 502 from upstream processor" },
+    { t: "14:31:22", lvl: "INFO",  svc: "cloudbuild",        msg: "Deploy pipeline finished: 11/11 images built" },
+    { t: "14:30:59", lvl: "WARN",  svc: "redis",             msg: "Memory usage crossed 80% watermark" },
+    { t: "14:30:41", lvl: "INFO",  svc: "guardduty",         msg: "Threat intel feed refreshed — 0 new findings" },
+    { t: "14:30:12", lvl: "ERROR", svc: "checkout-service",  msg: "Retry exhausted (3/3) calling shipping-service.GetQuote" },
+    { t: "14:29:55", lvl: "INFO",  svc: "aws-config",        msg: "Compliance scan completed — 2 resources flagged" },
+    { t: "14:29:30", lvl: "WARN",  svc: "alb",               msg: "Target group healthy hosts dropped to 2/3" },
+    { t: "14:29:04", lvl: "INFO",  svc: "cartservice",       msg: "AddItem OK — 214 req/s" },
+    { t: "14:28:47", lvl: "ERROR", svc: "shipping-service",  msg: "GetQuote validation error: missing postal code" },
+    { t: "14:28:20", lvl: "INFO",  svc: "ssm-remediation",   msg: "Auto-corrected security group rule on alb-sg" },
+    { t: "14:27:59", lvl: "WARN",  svc: "productcatalog",    msg: "Cache miss ratio above 15% for 10 minutes" },
+    { t: "14:27:33", lvl: "INFO",  svc: "email-service",     msg: "SendOrderConfirmation delivered — 128 sent" },
+  ];
+
+  let logLevelFilter = "ALL";
+  let logToolbarWired = false;
+
+  function renderLogs() {
+    const chips = ["ALL", "INFO", "WARN", "ERROR"];
+    document.getElementById("level-chips").innerHTML = chips.map(c => `<button class="level-chip${c === logLevelFilter ? " active" : ""}" data-lvl="${c}">${c}</button>`).join("");
+    document.querySelectorAll(".level-chip").forEach(btn => btn.addEventListener("click", () => {
+      logLevelFilter = btn.dataset.lvl;
+      renderLogs();
+    }));
+    if (!logToolbarWired) {
+      document.getElementById("log-search").addEventListener("input", renderLogStream);
+      logToolbarWired = true;
+    }
+    renderLogStream();
+  }
+
+  function renderLogStream() {
+    const q = (document.getElementById("log-search").value || "").toLowerCase().trim();
+    const filtered = LOGS.filter(l =>
+      (logLevelFilter === "ALL" || l.lvl === logLevelFilter) &&
+      (!q || l.svc.toLowerCase().includes(q) || l.msg.toLowerCase().includes(q))
+    );
+    document.getElementById("log-count-lbl").textContent = `${filtered.length} of ${LOGS.length} lines`;
+    document.getElementById("log-stream").innerHTML = filtered.map(l => `
+      <li>
+        <span class="ts">${l.t}</span>
+        <span class="lvl-badge ${l.lvl}">${l.lvl}</span>
+        <span class="svc-tag">${l.svc}</span>
+        <span class="msg">${l.msg}</span>
+      </li>
+    `).join("") || `<li class="muted" style="font-family:inherit">No matching log lines.</li>`;
   }
 })();
 
