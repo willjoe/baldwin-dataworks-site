@@ -290,8 +290,17 @@ html, body {
   margin: 12px 22px;
   background-image: radial-gradient(var(--gridline) 1px, transparent 1px);
   background-size: 18px 18px;
+  position: relative;
 }
 #chart-svg { display: block; }
+
+.zoom-ctrl { position: absolute; top: 12px; right: 12px; display: flex; align-items: center; gap: 2px; background: var(--surface-1); border: 1px solid var(--border); border-radius: 9px; padding: 4px; box-shadow: 0 2px 10px rgba(0,0,0,0.16); z-index: 10; }
+.zoom-ctrl button { font: inherit; width: 26px; height: 26px; border-radius: 6px; border: none; background: transparent; color: var(--text-primary); font-size: 15px; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.zoom-ctrl button:hover { background: var(--surface-3); }
+.zoom-ctrl button:disabled { opacity: 0.35; cursor: default; }
+.zoom-ctrl button:disabled:hover { background: transparent; }
+.zoom-pct { font-size: 10.5px; font-weight: 700; color: var(--text-secondary); min-width: 36px; text-align: center; font-variant-numeric: tabular-nums; }
+.zoom-reset { font-size: 12px !important; }
 
 .node-rect { stroke-width: 1.5; cursor: default; transition: stroke-width 0.25s ease, filter 0.25s ease, fill 0.25s ease; }
 .node-rect.clickable { cursor: pointer; }
@@ -299,6 +308,8 @@ html, body {
 .node-label { font-size: 11.5px; fill: var(--text-primary); pointer-events: none; text-anchor: middle; dominant-baseline: middle; }
 .node-label tspan { fill: var(--text-primary); }
 .node-kind-badge { font-size: 9px; fill: var(--text-muted); text-anchor: middle; pointer-events: none; letter-spacing: 0.03em; }
+.node-icon { font-size: 14px; pointer-events: none; }
+.node-icon.container-icon { font-size: 13px; }
 .node-count { font-size: 9.5px; fill: var(--text-secondary); text-anchor: middle; pointer-events: none; font-variant-numeric: tabular-nums; }
 
 .node-group.active .node-rect { filter: drop-shadow(0 0 6px color-mix(in srgb, var(--status-good) 70%, transparent)); }
@@ -482,6 +493,12 @@ main.layout.active { display: grid; }
     </div>
     <div class="canvas-wrap" id="canvas-wrap">
       <svg id="chart-svg" xmlns="http://www.w3.org/2000/svg"></svg>
+      <div class="zoom-ctrl">
+        <button id="zoom-out" type="button" title="Zoom out">−</button>
+        <span class="zoom-pct" id="zoom-pct">100%</span>
+        <button id="zoom-in" type="button" title="Zoom in">+</button>
+        <button id="zoom-reset" class="zoom-reset" type="button" title="Reset zoom">⤾</button>
+      </div>
     </div>
     <div class="usage-summary">
       <div class="usage-summary-header">
@@ -663,6 +680,11 @@ const DATASETS = {
     els.breadcrumbs = document.getElementById("breadcrumbs");
     els.legend = document.getElementById("legend");
     els.svg = document.getElementById("chart-svg");
+    els.canvasWrap = document.getElementById("canvas-wrap");
+    els.zoomPct = document.getElementById("zoom-pct");
+    els.zoomIn = document.getElementById("zoom-in");
+    els.zoomOut = document.getElementById("zoom-out");
+    els.zoomReset = document.getElementById("zoom-reset");
     els.usageHeader = document.getElementById("usage-header");
     els.usageTotal = document.getElementById("usage-total");
     els.usageTable = document.getElementById("usage-table");
@@ -749,6 +771,7 @@ const DATASETS = {
 
   function switchTo(key) {
     activeKey = key;
+    zoomLevel = 1;
     document.documentElement.lang = current().lang;
     document.title = current().docTitle;
     els.tabswitch.querySelectorAll(".tab-btn").forEach(b => b.classList.toggle("active", b.dataset.key === key));
@@ -989,6 +1012,8 @@ const DATASETS = {
     els.svg.setAttribute("width", vbWidth);
     els.svg.setAttribute("height", vbHeight);
     els.svg.innerHTML = "";
+    lastVb = { w: vbWidth, h: vbHeight };
+    applyZoom();
 
     const maxNodeUsage = Math.max(1, ...level.nodes.map(n => ds.runtime.nodeUsage.get(n.id) || 0));
     const maxEdgeUsage = Math.max(1, ...level.edges.map(e => ds.runtime.edgeUsage.get(e.id) || 0));
@@ -996,6 +1021,51 @@ const DATASETS = {
     for (const n of level.nodes.filter(n => n.isContainer)) drawNode(n, maxNodeUsage, true);
     for (const e of level.edges) drawEdge(e, maxEdgeUsage);
     for (const n of level.nodes.filter(n => !n.isContainer)) drawNode(n, maxNodeUsage, false);
+  }
+
+  // ---------- Cloud service icons ----------
+
+  const KIND_ICON = { service: "☁️", datastore: "🗄️", actor: "👤", infra: "🧱", pipeline: "🔀" };
+  const ICON_RULES = [
+    [/cloudfront/, "🌐"],
+    [/\balb\b|load.?balanc/, "⚖️"],
+    [/ecs|fargate|\bcluster\b/, "🐳"],
+    [/aurora|\brds\b|writerinstance|readerinstance|datastorestack/, "🗄️"],
+    [/redis|memorystore|cache/, "🧠"],
+    [/guardduty/, "🛡️"],
+    [/securityhub/, "🔐"],
+    [/\biam\b/, "🔑"],
+    [/config/, "⚙️"],
+    [/ssm|remediation/, "🤖"],
+    [/\bsns\b|alarm|notif/, "📣"],
+    [/cloudformation|\bstack\b/, "📐"],
+    [/codepipeline|deploystage|deploystep|^pipeline$/, "🔀"],
+    [/codebuild|synthstep|buildstep|skaffold|^build/, "🔨"],
+    [/canary|synthetics/, "🕵️"],
+    [/cloudtrail|s3trail|\bs3\b/, "🧾"],
+    [/gke|kubernetes|k8s/, "☸️"],
+    [/terraform/, "🌍"],
+    [/vertexai|gemini/, "✨"],
+    [/gcloudcreds|credential/, "🔏"],
+    [/enableapis/, "🔌"],
+    [/router|handler/, "🖥️"],
+    [/frontend/, "🖥️"],
+    [/cart/, "🛒"],
+    [/payment|charge/, "💳"],
+    [/shipping/, "📦"],
+    [/email/, "✉️"],
+    [/currency/, "💱"],
+    [/catalog|product/, "📚"],
+    [/recommendation/, "🧭"],
+    [/adservice|^ad\b/, "📢"],
+    [/assistant|bot|chat/, "💬"],
+    [/user|shopper|developer|opsengineer|apicall|gitpush|terraformcli/, "👤"],
+  ];
+
+  function iconFor(n) {
+    const hay = (String(n.id) + " " + String(n.label || "")).toLowerCase();
+    for (const [re, icon] of ICON_RULES) if (re.test(hay)) return icon;
+    return KIND_ICON[n.kind] || "🔹";
   }
 
   function drawNode(n, maxNodeUsage, isContainer) {
@@ -1029,7 +1099,26 @@ const DATASETS = {
       g.addEventListener("click", () => drillInto(n));
     }
 
-    const labelX = isContainer ? n.x + 14 : n.x + n.w / 2;
+    const icon = iconFor(n);
+    if (isContainer) {
+      const cicon = document.createElementNS(SVG_NS, "text");
+      cicon.setAttribute("x", n.x + 14);
+      cicon.setAttribute("y", n.y + 22);
+      cicon.setAttribute("class", "node-icon container-icon");
+      cicon.setAttribute("text-anchor", "start");
+      cicon.textContent = icon;
+      g.appendChild(cicon);
+    } else {
+      const nicon = document.createElementNS(SVG_NS, "text");
+      nicon.setAttribute("x", n.x + 10);
+      nicon.setAttribute("y", n.y + 16);
+      nicon.setAttribute("class", "node-icon");
+      nicon.setAttribute("text-anchor", "start");
+      nicon.textContent = icon;
+      g.appendChild(nicon);
+    }
+
+    const labelX = isContainer ? n.x + 32 : n.x + n.w / 2;
     const labelY = isContainer ? n.y + 22 : n.y + n.h / 2 - (String(n.label).includes("\n") ? 6 : 0);
     const lines = String(n.label).split("\n");
     const text = document.createElementNS(SVG_NS, "text");
@@ -1190,6 +1279,38 @@ const DATASETS = {
     els.reportBtn.addEventListener("click", openReport);
     els.reportClose.addEventListener("click", () => els.reportModal.classList.add("hidden"));
     els.reportModal.addEventListener("click", (ev) => { if (ev.target === els.reportModal) els.reportModal.classList.add("hidden"); });
+
+    els.zoomIn.addEventListener("click", () => zoomBy(0.15));
+    els.zoomOut.addEventListener("click", () => zoomBy(-0.15));
+    els.zoomReset.addEventListener("click", () => setZoom(1));
+    els.canvasWrap.addEventListener("wheel", (ev) => {
+      if (!ev.ctrlKey && !ev.metaKey) return;
+      ev.preventDefault();
+      zoomBy(ev.deltaY < 0 ? 0.1 : -0.1);
+    }, { passive: false });
+  }
+
+  // ---------- Zoom ----------
+
+  const ZOOM_MIN = 0.4, ZOOM_MAX = 2.5;
+  let zoomLevel = 1;
+  let lastVb = { w: 0, h: 0 };
+
+  function setZoom(z) {
+    zoomLevel = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, +z.toFixed(2)));
+    applyZoom();
+  }
+
+  function zoomBy(delta) { setZoom(zoomLevel + delta); }
+
+  function applyZoom() {
+    if (lastVb.w) {
+      els.svg.style.width = (lastVb.w * zoomLevel) + "px";
+      els.svg.style.height = (lastVb.h * zoomLevel) + "px";
+    }
+    els.zoomPct.textContent = Math.round(zoomLevel * 100) + "%";
+    els.zoomIn.disabled = zoomLevel >= ZOOM_MAX;
+    els.zoomOut.disabled = zoomLevel <= ZOOM_MIN;
   }
 
   function openReport() {
