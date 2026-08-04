@@ -48,6 +48,11 @@ body{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;background:var(--bg
 .map-pane{flex:1;position:relative;min-width:0}
 #map{position:absolute;inset:0;background:#e5e3df}
 
+.map-loading{position:absolute;inset:0;z-index:800;background:rgba(242,242,246,.9);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;font-size:12.5px;color:var(--muted);font-weight:700}
+.map-loading .spinner{width:26px;height:26px;border-radius:50%;border:3px solid var(--border-mid);border-top-color:var(--purple);animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.map-loading.hidden{display:none}
+
 .map-legend{position:absolute;left:14px;bottom:14px;z-index:500;background:var(--card);border:1px solid var(--border);border-radius:var(--r-md);padding:10px 12px;box-shadow:var(--sh-sm);font-size:11px;color:var(--muted)}
 .map-legend .lbl{font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--faint);margin-bottom:6px}
 .map-legend .scale{display:flex;height:10px;width:180px;border-radius:3px;overflow:hidden;margin-bottom:4px}
@@ -59,17 +64,19 @@ body{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;background:var(--bg
 .card h2{font-size:11.5px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--purple);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
 .card h2 .unit{font-size:9.5px;font-weight:700;color:var(--faint);text-transform:none;letter-spacing:0}
 
-.param-row{display:flex;justify-content:space-between;align-items:baseline;padding:5px 0;border-bottom:1px dashed var(--border);font-size:12px}
+.param-row{display:flex;justify-content:space-between;align-items:baseline;padding:5px 0;border-bottom:1px dashed var(--border);font-size:12px;gap:10px}
 .param-row:last-child{border-bottom:none}
 .param-row .k{color:var(--muted)}
-.param-row .v{font-weight:800;color:var(--text);font-variant-numeric:tabular-nums}
+.param-row .v{font-weight:800;color:var(--text);font-variant-numeric:tabular-nums;text-align:right}
 .param-note{font-size:10.5px;color:var(--faint);margin-top:8px;line-height:1.55}
+.param-note a{color:var(--teal)}
 
 .res-select-row{display:flex;align-items:center;gap:8px;margin:10px 0}
 .res-select-row select{flex:1;font:inherit;font-size:12.5px;padding:6px 8px;border-radius:var(--r-md);border:1px solid var(--border-mid);background:var(--bg);color:var(--text)}
 .btn{padding:8px 14px;border-radius:var(--r-pill);border:none;font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;width:100%}
 .btn-p{background:var(--purple);color:#fff}
 .btn-p:hover{background:#3a1e56}
+.btn-p:disabled{opacity:.5;cursor:default}
 
 .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .stat-box{background:var(--bg);border-radius:var(--r-md);padding:9px 11px}
@@ -83,11 +90,12 @@ body{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;background:var(--bg
 .hex-row .id{font-family:"JetBrains Mono",monospace;font-size:10.5px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .hex-row .ct{font-weight:800;color:var(--text);font-variant-numeric:tabular-nums}
 
-.pts-table{width:100%;border-collapse:collapse;font-size:11px}
+.pts-table{width:100%;border-collapse:collapse;font-size:10.5px}
 .pts-table th{text-align:left;font-size:9.5px;text-transform:uppercase;letter-spacing:.4px;color:var(--faint);padding:4px 6px;border-bottom:1px solid var(--border)}
-.pts-table td{padding:4px 6px;border-bottom:1px solid var(--border);font-family:"JetBrains Mono",monospace;color:var(--muted)}
+.pts-table td{padding:4px 6px;border-bottom:1px solid var(--border);color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:110px}
+.pts-table td.mono{font-family:"JetBrains Mono",monospace}
 .pts-table tr:last-child td{border-bottom:none}
-.pts-scroll{max-height:180px;overflow-y:auto}
+.pts-scroll{max-height:200px;overflow-y:auto}
 
 .leaflet-popup-content{font-size:12px}
 </style>
@@ -100,7 +108,7 @@ body{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;background:var(--bg
     <div class="tb-title">H3 Density Heatmap</div>
   </div>
   <div class="tb-divider"></div>
-  <div class="tb-note">Synthetic store-visit density · Greater Vancouver</div>
+  <div class="tb-note">Real store locations (OpenStreetMap) · Greater Vancouver</div>
   <div class="tb-right">
     <span class="badge-live"><span class="dot"></span>Live prototype</span>
   </div>
@@ -109,6 +117,10 @@ body{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;background:var(--bg
 <div class="layout">
   <div class="map-pane">
     <div id="map"></div>
+    <div class="map-loading" id="map-loading">
+      <div class="spinner"></div>
+      <div>Loading real store locations…</div>
+    </div>
     <div class="map-legend">
       <div class="lbl">Points per hex</div>
       <div class="scale" id="legend-scale"></div>
@@ -119,15 +131,15 @@ body{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;background:var(--bg
   <aside class="side-pane">
     <div class="card">
       <h2>Data Pipeline</h2>
-      <div class="param-row"><span class="k">Center (Greater Vancouver)</span><span class="v" id="p-center">—</span></div>
-      <div class="param-row"><span class="k">Store count (estimate)</span><span class="v" id="p-stores">—</span></div>
+      <div class="param-row"><span class="k">Stores loaded</span><span class="v" id="p-stores">—</span></div>
       <div class="param-row"><span class="k">Multiplier</span><span class="v" id="p-mult">× 10</span></div>
       <div class="param-row"><span class="k">Generated points</span><span class="v" id="p-points">—</span></div>
       <div class="param-row"><span class="k">Position noise</span><span class="v" id="p-noise">± 100 m (lat &amp; lon)</span></div>
       <div class="param-row"><span class="k">H3 resolution</span><span class="v" id="p-res">—</span></div>
-      <div class="param-note">Store count is an approximate estimate — Statistics Canada's exact live retail-trade
-        establishment count for the Vancouver CMA sits behind an interactive data table this mock doesn't scrape.
-        Swap in a real figure by editing one constant at the top of the script.</div>
+      <div class="param-note">Stores are real shop locations from <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>
+        (queried via the Overpass API) — every one has a real street address and coordinates, not an estimated
+        centroid. Coverage is limited to shops mapped with a complete address inside the query's bounding box
+        (core Vancouver / Burnaby / Richmond / North Shore), so it undercounts the true regional total.</div>
       <div class="res-select-row">
         <select id="res-select"></select>
         <button class="btn btn-p" id="regen-btn" style="width:auto;flex-shrink:0">↻ Regenerate</button>
@@ -153,7 +165,7 @@ body{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;background:var(--bg
       <h2>Sample Raw Points<span class="unit">first 12 of N</span></h2>
       <div class="pts-scroll">
         <table class="pts-table">
-          <thead><tr><th>#</th><th>Lat</th><th>Lon</th><th>H3 Cell</th></tr></thead>
+          <thead><tr><th>#</th><th>Store</th><th>Lat</th><th>Lon</th></tr></thead>
           <tbody id="pts-body"></tbody>
         </table>
       </div>
@@ -167,10 +179,9 @@ body{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;background:var(--bg
 // ─────────────────────────────────────────────────────────────
 // Data generation parameters — tune these and hit Regenerate.
 // ─────────────────────────────────────────────────────────────
-const GREATER_VANCOUVER = { lat: 49.2827, lon: -123.1207 }; // Downtown Vancouver reference point
-const STORE_COUNT_ESTIMATE = 12000;  // approx. retail-trade establishments, Metro Vancouver (see note in UI)
+const STORE_DATA_URL = "data/vancouver-stores.json"; // real stores: {n: name, a: address, lat, lon, s: shop type}
 const POINTS_PER_STORE = 10;         // "multiply the value times 10"
-const NOISE_RADIUS_METERS = 100;     // +/- meters, applied independently to lat and lon
+const NOISE_RADIUS_METERS = 100;     // +/- meters, applied independently to lat and lon, per store
 const DEFAULT_H3_RESOLUTION = 10;    // closest default H3 size to ~100m width (edge ~75.9m, flat-to-flat ~131.4m)
 
 const METERS_PER_DEG_LAT = 111320;
@@ -179,12 +190,18 @@ function metersToDegLat(m) { return m / METERS_PER_DEG_LAT; }
 function metersToDegLon(m, atLat) { return m / (METERS_PER_DEG_LAT * Math.cos(atLat * Math.PI / 180)); }
 function randomOffsetMeters() { return (Math.random() * 2 - 1) * NOISE_RADIUS_METERS; } // uniform [-100, 100]
 
-function generatePoints(center, count) {
-  const points = new Array(count);
-  for (let i = 0; i < count; i++) {
-    const lat = center.lat + metersToDegLat(randomOffsetMeters());
-    const lon = center.lon + metersToDegLon(randomOffsetMeters(), center.lat);
-    points[i] = { lat, lon };
+function generatePoints(stores) {
+  const points = [];
+  for (const store of stores) {
+    for (let i = 0; i < POINTS_PER_STORE; i++) {
+      points.push({
+        lat: store.lat + metersToDegLat(randomOffsetMeters()),
+        lon: store.lon + metersToDegLon(randomOffsetMeters(), store.lat),
+        store: store.n,
+        address: store.a,
+        shop: store.s,
+      });
+    }
   }
   return points;
 }
@@ -199,7 +216,7 @@ function aggregateToH3(points, resolution) {
 }
 
 // Keep everything around so parameters/results can be inspected and re-tuned.
-window.GEO_DATA = { params: null, points: null, hexCounts: null };
+window.GEO_DATA = { params: null, stores: null, points: null, hexCounts: null };
 
 // ─────────────────────────────────────────────────────────────
 // Map + rendering
@@ -217,13 +234,14 @@ function colorForRatio(t) {
   return lerpColor(HEAT_STOPS[i0], HEAT_STOPS[i1], idx - i0);
 }
 
-const map = L.map("map", { zoomControl: true, attributionControl: true });
+const map = L.map("map", { zoomControl: true, attributionControl: true, preferCanvas: true });
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
   maxZoom: 19,
 }).addTo(map);
-map.setView([GREATER_VANCOUVER.lat, GREATER_VANCOUVER.lon], 17);
+map.setView([49.2606, -123.1139], 11); // Greater Vancouver overview, refined by fitBounds once data loads
 
+const canvasRenderer = L.canvas({ padding: 0.3 });
 let hexLayer = L.layerGroup().addTo(map);
 
 function renderLegendScale() {
@@ -232,7 +250,7 @@ function renderLegendScale() {
 }
 renderLegendScale();
 
-function renderHexLayer(hexCounts, resolution) {
+function renderHexLayer(hexCounts) {
   hexLayer.clearLayers();
   const counts = [...hexCounts.values()];
   const maxCount = Math.max(1, ...counts);
@@ -244,11 +262,12 @@ function renderHexLayer(hexCounts, resolution) {
     boundary.forEach(([lat, lon]) => bounds.push([lat, lon]));
     const color = colorForRatio(count / maxCount);
     L.polygon(boundary, {
+      renderer: canvasRenderer,
       color: "#7a5230",
       weight: 1,
-      opacity: 0.35,
+      opacity: 0.3,
       fillColor: color,
-      fillOpacity: 0.78,
+      fillOpacity: 0.8,
     })
       .bindTooltip(`${count} point${count === 1 ? "" : "s"}<br><span style="font-family:monospace;font-size:10px">${cell}</span>`)
       .addTo(hexLayer);
@@ -257,14 +276,13 @@ function renderHexLayer(hexCounts, resolution) {
   document.getElementById("legend-min").textContent = "0";
   document.getElementById("legend-max").textContent = maxCount.toLocaleString();
 
-  if (bounds.length) map.fitBounds(bounds, { padding: [40, 40] });
+  if (bounds.length) map.fitBounds(bounds, { padding: [30, 30] });
 
   return { maxCount, uniqueHexes: hexCounts.size, totalPoints: counts.reduce((a, b) => a + b, 0) };
 }
 
-function renderSidePanel(points, hexCounts, resolution, stats) {
-  document.getElementById("p-center").textContent = `${GREATER_VANCOUVER.lat.toFixed(4)}, ${GREATER_VANCOUVER.lon.toFixed(4)}`;
-  document.getElementById("p-stores").textContent = STORE_COUNT_ESTIMATE.toLocaleString();
+function renderSidePanel(stores, points, hexCounts, resolution, stats) {
+  document.getElementById("p-stores").textContent = stores.length.toLocaleString();
   document.getElementById("p-points").textContent = points.length.toLocaleString();
   document.getElementById("p-res").textContent = `${resolution} (~${h3.getHexagonEdgeLengthAvg(resolution, "m").toFixed(0)} m edge)`;
 
@@ -286,29 +304,29 @@ function renderSidePanel(points, hexCounts, resolution, stats) {
   document.getElementById("pts-body").innerHTML = points.slice(0, 12).map((p, i) => `
     <tr>
       <td>${i + 1}</td>
-      <td>${p.lat.toFixed(6)}</td>
-      <td>${p.lon.toFixed(6)}</td>
-      <td>${h3.latLngToCell(p.lat, p.lon, resolution)}</td>
+      <td title="${p.store} — ${p.address}">${p.store}</td>
+      <td class="mono">${p.lat.toFixed(5)}</td>
+      <td class="mono">${p.lon.toFixed(5)}</td>
     </tr>
   `).join("");
 }
 
 function runPipeline(resolution, regeneratePoints) {
-  const points = regeneratePoints
-    ? generatePoints(GREATER_VANCOUVER, STORE_COUNT_ESTIMATE * POINTS_PER_STORE)
-    : window.GEO_DATA.points;
+  const stores = window.GEO_DATA.stores;
+  const points = regeneratePoints ? generatePoints(stores) : window.GEO_DATA.points;
   const hexCounts = aggregateToH3(points, resolution);
-  const stats = renderHexLayer(hexCounts, resolution);
-  renderSidePanel(points, hexCounts, resolution, stats);
+  const stats = renderHexLayer(hexCounts);
+  renderSidePanel(stores, points, hexCounts, resolution, stats);
 
   window.GEO_DATA = {
     params: {
-      center: GREATER_VANCOUVER,
-      storeCountEstimate: STORE_COUNT_ESTIMATE,
+      storeCount: stores.length,
       pointsPerStore: POINTS_PER_STORE,
       noiseRadiusMeters: NOISE_RADIUS_METERS,
       h3Resolution: resolution,
+      source: "OpenStreetMap via Overpass API",
     },
+    stores,
     points,
     hexCounts,
   };
@@ -328,11 +346,26 @@ resSelect.innerHTML = RES_OPTIONS.map(r => {
 resSelect.addEventListener("change", () => {
   runPipeline(parseInt(resSelect.value, 10), false);
 });
-document.getElementById("regen-btn").addEventListener("click", () => {
+const regenBtn = document.getElementById("regen-btn");
+regenBtn.addEventListener("click", () => {
   runPipeline(parseInt(resSelect.value, 10), true);
 });
 
-runPipeline(DEFAULT_H3_RESOLUTION, true);
+// ─────────────────────────────────────────────────────────────
+// Boot: fetch real store data, then run the pipeline
+// ─────────────────────────────────────────────────────────────
+regenBtn.disabled = true;
+fetch(STORE_DATA_URL)
+  .then(r => r.json())
+  .then(stores => {
+    window.GEO_DATA.stores = stores;
+    runPipeline(DEFAULT_H3_RESOLUTION, true);
+    regenBtn.disabled = false;
+    document.getElementById("map-loading").classList.add("hidden");
+  })
+  .catch(err => {
+    document.getElementById("map-loading").innerHTML = `<div style="color:var(--red)">Failed to load store data: ${err.message}</div>`;
+  });
 </script>
 </body>
 </html>
