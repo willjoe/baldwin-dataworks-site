@@ -618,6 +618,14 @@ h1, h2, h3, .logo-text, .brand-top, .brand-bottom {
     align-items: center;
 }
 
+/* A phone-screenshot slideshow (see #project-simpletrumpcard) is much
+   narrower than GalaSpo's wide landscape one, so its column gets less
+   width -- otherwise a portrait image sitting in a column sized for a
+   16:9 crop leaves a huge gap of empty space beside it. */
+.project-item.has-media.media-portrait {
+    grid-template-columns: 1.6fr 0.7fr;
+}
+
 .project-media {
     position: relative;
 }
@@ -629,6 +637,12 @@ h1, h2, h3, .logo-text, .brand-top, .brand-bottom {
     overflow: hidden;
     border: 1px solid var(--border-color);
     box-shadow: 0 16px 40px rgba(15, 23, 42, 0.12);
+}
+
+.project-slideshow.is-portrait {
+    aspect-ratio: 900 / 1951;
+    max-width: 240px;
+    margin: 0 auto;
 }
 
 .project-slideshow img {
@@ -646,7 +660,8 @@ h1, h2, h3, .logo-text, .brand-top, .brand-bottom {
 }
 
 @media (max-width: 900px) {
-    .project-item.has-media {
+    .project-item.has-media,
+    .project-item.has-media.media-portrait {
         grid-template-columns: 1fr;
     }
     .project-media {
