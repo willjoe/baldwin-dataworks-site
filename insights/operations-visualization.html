@@ -136,6 +136,7 @@ html, body {
   color: var(--status-good);
 }
 .hero-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+#mode-tabswitch { display: none; }
 
 .tabswitch {
   display: flex;
@@ -639,6 +640,9 @@ const DATASETS = {
     renderAlerts();
     renderMetrics();
     renderLogs();
+
+    const initialMode = new URLSearchParams(location.search).get("view");
+    if (initialMode && MODES.some(m => m.key === initialMode)) switchMode(initialMode);
   }
 
   function cacheEls() {

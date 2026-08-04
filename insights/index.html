@@ -35,13 +35,22 @@ body{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;display:flex;backgr
 
 .sb-section-lbl{font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:rgba(255,255,255,0.35);padding:0 20px;margin-bottom:8px}
 
-.sb-nav{display:flex;flex-direction:column;gap:3px;padding:0 10px}
+.sb-nav{display:flex;flex-direction:column;gap:3px;padding:0 10px;overflow-y:auto}
+.sb-cat{border-radius:8px;overflow:hidden}
 .sb-item{display:flex;align-items:flex-start;gap:11px;padding:11px 12px;border-radius:8px;cursor:pointer;transition:background .15s;color:rgba(255,255,255,0.7)}
 .sb-item:hover{background:var(--sidebar-hover);color:#fff}
-.sb-item.active{background:var(--sidebar-active);color:#fff}
+.sb-cat.has-active > .sb-item{background:var(--sidebar-active);color:#fff}
 .sb-item .ico{font-size:17px;line-height:1;flex-shrink:0;margin-top:1px}
 .sb-item .lbl{font-size:12.5px;font-weight:700;line-height:1.3}
 .sb-item .sub{font-size:10.5px;color:rgba(255,255,255,0.45);margin-top:2px;line-height:1.4}
+.sb-chevron{margin-left:auto;flex-shrink:0;font-size:10px;color:rgba(255,255,255,0.4);transition:transform .18s;margin-top:3px}
+.sb-cat.expanded .sb-chevron{transform:rotate(90deg)}
+
+.sb-sub{max-height:0;overflow:hidden;transition:max-height .2s ease}
+.sb-cat.expanded .sb-sub{max-height:260px}
+.sb-sub-item{padding:8px 12px 8px 44px;font-size:12px;font-weight:600;color:rgba(255,255,255,0.55);cursor:pointer;border-radius:6px;transition:background .15s,color .15s}
+.sb-sub-item:hover{background:var(--sidebar-hover);color:#fff}
+.sb-sub-item.active{background:var(--purple);color:#fff}
 
 .sb-bottom{margin-top:auto;padding:14px 20px 0}
 .sb-badge{display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:700;color:rgba(255,255,255,0.5);border:1px solid rgba(255,255,255,0.15);border-radius:9999px;padding:5px 11px}
@@ -72,27 +81,58 @@ iframe{position:absolute;inset:0;width:100%;height:100%;border:none;background:v
 
     <div class="sb-section-lbl">Categories</div>
     <div class="sb-nav" id="sb-nav">
-      <div class="sb-item active" data-src="customer-management.html" data-title="Account Cockpit">
-        <span class="ico">🧭</span>
-        <div>
-          <div class="lbl">Customer Management</div>
-          <div class="sub">Account health, growth &amp; portfolio cockpit</div>
+
+      <div class="sb-cat" data-cat="customer">
+        <div class="sb-item">
+          <span class="ico">🧭</span>
+          <div>
+            <div class="lbl">Customer Management</div>
+            <div class="sub">Account health, growth &amp; portfolio cockpit</div>
+          </div>
+          <span class="sb-chevron">▶</span>
+        </div>
+        <div class="sb-sub">
+          <div class="sb-sub-item" data-src="customer-management.html" data-view="accounts-list" data-title="Account Cockpit — My Accounts">Account</div>
+          <div class="sb-sub-item" data-src="customer-management.html" data-view="growth" data-title="Account Cockpit — Growth Explorer">Growth</div>
+          <div class="sb-sub-item" data-src="customer-management.html" data-view="portfolio" data-title="Account Cockpit — Portfolio">Portfolio</div>
         </div>
       </div>
-      <div class="sb-item" data-src="operations-visualization.html" data-title="System Analytics — Live Prototype">
-        <span class="ico">🛰️</span>
-        <div>
-          <div class="lbl">Operation Surveillance</div>
-          <div class="sub">Architectural &amp; process visualization</div>
+
+      <div class="sb-cat" data-cat="ops">
+        <div class="sb-item">
+          <span class="ico">🛰️</span>
+          <div>
+            <div class="lbl">Operation Surveillance</div>
+            <div class="sub">Architectural &amp; process visualization</div>
+          </div>
+          <span class="sb-chevron">▶</span>
+        </div>
+        <div class="sb-sub">
+          <div class="sb-sub-item" data-src="operations-visualization.html" data-view="architecture" data-title="System Analytics — Architecture">Architecture</div>
+          <div class="sb-sub-item" data-src="operations-visualization.html" data-view="alerts" data-title="System Analytics — Alerts &amp; Incidents">Alerts &amp; Incidents</div>
+          <div class="sb-sub-item" data-src="operations-visualization.html" data-view="metrics" data-title="System Analytics — Metrics &amp; Health">Metrics &amp; Health</div>
+          <div class="sb-sub-item" data-src="operations-visualization.html" data-view="logs" data-title="System Analytics — Logs">Logs</div>
         </div>
       </div>
-      <div class="sb-item" data-src="project-management.html" data-title="Project Cockpit">
-        <span class="ico">🗂️</span>
-        <div>
-          <div class="lbl">Project Management</div>
-          <div class="sub">Board, initiative scoring &amp; release ops</div>
+
+      <div class="sb-cat" data-cat="project">
+        <div class="sb-item">
+          <span class="ico">🗂️</span>
+          <div>
+            <div class="lbl">Project Management</div>
+            <div class="sub">Board, initiative scoring &amp; release ops</div>
+          </div>
+          <span class="sb-chevron">▶</span>
+        </div>
+        <div class="sb-sub">
+          <div class="sb-sub-item" data-src="project-management.html" data-view="board" data-title="Project Cockpit — Board">Board</div>
+          <div class="sb-sub-item" data-src="project-management.html" data-view="gantt" data-title="Project Cockpit — Timeline">Gantt</div>
+          <div class="sb-sub-item" data-src="project-management.html" data-view="initiatives" data-title="Project Cockpit — Initiative Scoring">Initiative Scoring</div>
+          <div class="sb-sub-item" data-src="project-management.html" data-view="releases" data-title="Project Cockpit — Releases">Releases</div>
+          <div class="sb-sub-item" data-src="project-management.html" data-view="activity" data-title="Project Cockpit — Branch Activity">Activity</div>
         </div>
       </div>
+
     </div>
 
     <div class="sb-bottom">
@@ -108,19 +148,46 @@ iframe{position:absolute;inset:0;width:100%;height:100%;border:none;background:v
       <span class="crumb-title" id="crumb-title">Account Cockpit</span>
     </div>
     <div class="frame-wrap">
-      <iframe id="content-frame" src="customer-management.html" title="BI tool content"></iframe>
+      <iframe id="content-frame" src="customer-management.html?view=accounts-list" title="BI tool content"></iframe>
     </div>
   </div>
 
 <script>
+const frame = document.getElementById('content-frame');
+const crumbTitle = document.getElementById('crumb-title');
+
+function selectSubItem(subEl, { expandOnly } = {}) {
+  const cat = subEl.closest('.sb-cat');
+
+  document.querySelectorAll('.sb-cat').forEach(c => c.classList.toggle('expanded', c === cat));
+  document.querySelectorAll('.sb-cat').forEach(c => c.classList.remove('has-active'));
+  cat.classList.add('has-active');
+  document.querySelectorAll('.sb-sub-item').forEach(el => el.classList.remove('active'));
+  subEl.classList.add('active');
+
+  crumbTitle.textContent = subEl.dataset.title;
+  if (!expandOnly) frame.src = subEl.dataset.src + '?view=' + subEl.dataset.view;
+}
+
 document.getElementById('sb-nav').addEventListener('click', (e) => {
-  const item = e.target.closest('.sb-item');
-  if (!item) return;
-  document.querySelectorAll('.sb-item').forEach(el => el.classList.remove('active'));
-  item.classList.add('active');
-  document.getElementById('content-frame').src = item.dataset.src;
-  document.getElementById('crumb-title').textContent = item.dataset.title;
+  const subItem = e.target.closest('.sb-sub-item');
+  if (subItem) { selectSubItem(subItem); return; }
+
+  const catHead = e.target.closest('.sb-cat > .sb-item');
+  if (!catHead) return;
+  const cat = catHead.closest('.sb-cat');
+  const alreadyExpanded = cat.classList.contains('expanded');
+  document.querySelectorAll('.sb-cat').forEach(c => c.classList.remove('expanded'));
+  if (alreadyExpanded) return;
+  cat.classList.add('expanded');
+  if (!cat.classList.contains('has-active')) {
+    const first = cat.querySelector('.sb-sub-item');
+    if (first) selectSubItem(first);
+  }
 });
+
+// Default: expand Customer Management with Account active.
+selectSubItem(document.querySelector('.sb-sub-item[data-src="customer-management.html"][data-view="accounts-list"]'), { expandOnly: true });
 </script>
 </body>
 </html>
