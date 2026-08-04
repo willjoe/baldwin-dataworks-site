@@ -86,6 +86,22 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // Timeline "Show Earlier History" toggle: reveals the pre-2014 roles
+    // (marked [hidden] in the markup) and swaps the button's own label/icon.
+    const timelineToggle = document.getElementById('btn-timeline-toggle');
+    if (timelineToggle) {
+        const hiddenItems = document.querySelectorAll('.timeline-hidden-item');
+        const toggleLabel = timelineToggle.querySelector('span');
+        timelineToggle.addEventListener('click', () => {
+            const expanded = timelineToggle.getAttribute('aria-expanded') === 'true';
+            hiddenItems.forEach((item) => { item.hidden = expanded; });
+            timelineToggle.setAttribute('aria-expanded', String(!expanded));
+            toggleLabel.textContent = expanded
+                ? 'Show Earlier History (2004 – 2014)'
+                : 'Hide Earlier History';
+        });
+    }
+
     // Project Slideshows: cycles each .project-slideshow's <img> children
     // via a fading .is-active class (see index.css) — add/remove <img>
     // tags in the markup to change what's shown, no JS changes needed.
