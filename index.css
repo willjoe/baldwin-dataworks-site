@@ -134,9 +134,17 @@ h1, h2, h3, .logo-text, .brand-top, .brand-bottom {
 }
 
 .logo-icon {
+    display: flex;
+    align-items: center;
     font-size: 1.5rem;
     color: var(--accent-primary);
     filter: drop-shadow(0 0 8px rgba(var(--accent-primary-rgb), 0.6));
+}
+
+.logo-icon img {
+    width: 30px;
+    height: 30px;
+    display: block;
 }
 
 .logo-text {
@@ -967,8 +975,16 @@ h1, h2, h3, .logo-text, .brand-top, .brand-bottom {
 }
 
 .card-logo-icon {
+    display: flex;
+    align-items: center;
     font-size: 2rem;
     color: #111111;
+}
+
+.card-logo-icon img {
+    width: 38px;
+    height: 38px;
+    display: block;
 }
 
 .card-logo-text {
