@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Assortment Console — Baldwin Data Works Inc.</title>
+<meta name="robots" content="noindex, nofollow">
+<style>
+:root {
+  --purple:       #4b286d;
+  --purple-light: #6b4d8f;
+  --purple-bg:    rgba(75,40,109,0.06);
+  --green:        #248700;
+  --green-bg:     #e8f5e3;
+  --teal:         #016b6a;
+  --teal-bg:      #e0f4f4;
+  --blue:         #2a78d6;
+  --blue-bg:      #e8f1fc;
+  --plum:         #7c1366;
+  --plum-bg:      #fae6f4;
+  --red:          #d32f2f;
+  --red-bg:       #fdecea;
+  --amber:        #f5a623;
+  --amber-bg:     #fff8ed;
+  --bg:           #f2f2f6;
+  --card:         #ffffff;
+  --text:         #1a1a2e;
+  --muted:        #54595f;
+  --faint:        #8a8f99;
+  --border:       #e4e5e9;
+  --border-mid:   #c8ccd4;
+  --r-sm: 4px; --r-md: 8px; --r-lg: 12px; --r-pill: 9999px;
+  --sh-xs: 0 1px 4px rgba(0,0,0,0.06);
+  --sh-sm: 0 2px 8px rgba(0,0,0,0.09);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column;height:100vh;overflow:hidden;font-size:14px;line-height:1.4}
+
+.topbar{height:56px;background:var(--card);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 22px;gap:16px;flex-shrink:0;box-shadow:var(--sh-xs)}
+.tb-module{font-size:10px;color:var(--faint);text-transform:uppercase;letter-spacing:.8px;font-weight:700}
+.tb-title{font-size:17px;font-weight:800;color:var(--purple);line-height:1.1}
+.tb-divider{width:1px;height:26px;background:var(--border);flex-shrink:0}
+.tb-note{font-size:11.5px;color:var(--faint)}
+.tb-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.badge-live{display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:var(--green);background:var(--green-bg);border:1px solid rgba(36,135,0,.25);border-radius:var(--r-pill);padding:4px 11px}
+.badge-live .dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+
+.view-area{flex:1;overflow-y:auto;padding:22px 26px}
+.view{display:none}.view.active{display:block}
+.sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.sec-title{font-size:15px;font-weight:800;color:var(--purple);display:flex;align-items:center;gap:6px}
+.sec-title-line{display:inline-block;width:20px;height:3px;background:var(--green);border-radius:2px;margin-left:4px}
+.sec-sub{font-size:11px;color:var(--faint)}
+
+.btn{padding:8px 16px;border-radius:var(--r-pill);border:none;font-size:12px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.btn-p{background:var(--purple);color:#fff}
+.btn-p:hover{background:#3a1e56}
+.btn-s{background:transparent;border:1px solid var(--border-mid);color:var(--muted)}
+.btn-s:hover{background:var(--bg)}
+.pill{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:var(--r-pill);font-size:10.5px;font-weight:800}
+
+/* KPI cards */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+.kpi-card{background:var(--card);border-radius:var(--r-lg);padding:14px 18px;box-shadow:var(--sh-xs);border:1px solid var(--border);position:relative;overflow:hidden}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%}
+.kpi-card.g::before{background:var(--green)}.kpi-card.a::before{background:var(--amber)}.kpi-card.p::before{background:var(--purple)}.kpi-card.b::before{background:var(--blue)}
+.kpi-label{font-size:10px;color:var(--faint);text-transform:uppercase;letter-spacing:.6px;font-weight:700;margin-bottom:6px}
+.kpi-val{font-size:24px;font-weight:800;color:var(--text)}
+.kpi-sub{font-size:11px;color:var(--faint);margin-top:3px}
+
+/* Generic table */
+.data-table{background:var(--card);border-radius:var(--r-lg);border:1px solid var(--border);box-shadow:var(--sh-xs);overflow:hidden}
+.data-table table{width:100%;border-collapse:collapse}
+.data-table th{text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--faint);font-weight:800;padding:10px 16px;background:var(--bg);border-bottom:1px solid var(--border)}
+.data-table td{padding:11px 16px;border-bottom:1px solid var(--border);font-size:12.5px;color:var(--muted)}
+.data-table tr:last-child td{border-bottom:none}
+.data-table tr:hover td{background:rgba(75,40,109,.03)}
+.data-table td.strong{color:var(--text);font-weight:700}
+.trend{font-weight:800;font-size:11.5px}
+.trend.up{color:var(--green)}
+.trend.down{color:var(--red)}
+.trend.flat{color:var(--faint)}
+
+/* Filter panel (Price Comparison) */
+.filter-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:16px}
+.filter-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);box-shadow:var(--sh-xs);padding:12px 14px;min-height:112px;display:flex;flex-direction:column}
+.filter-card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.filter-card-head .lbl{font-size:11px;font-weight:800;color:var(--text)}
+.filter-edit{font-size:10px;font-weight:800;color:var(--teal);background:var(--teal-bg);border:none;border-radius:var(--r-sm);padding:3px 9px;cursor:pointer}
+.filter-body{font-size:11.5px;color:var(--muted);overflow-y:auto;flex:1}
+.filter-tag{display:inline-block;background:var(--purple-bg);color:var(--purple);font-size:10.5px;font-weight:700;padding:3px 8px;border-radius:var(--r-sm);margin:0 4px 4px 0}
+.filter-body .date{font-weight:700;color:var(--text)}
+.filter-empty-row{padding:4px 0;color:var(--faint)}
+
+.controls-row{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.controls-row label{font-size:11.5px;font-weight:700;color:var(--muted)}
+.controls-row select{font:inherit;font-size:12.5px;padding:7px 10px;border-radius:var(--r-md);border:1px solid var(--border-mid);background:var(--card);color:var(--text)}
+.controls-row .spacer{flex:1}
+
+.chart-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);box-shadow:var(--sh-xs);padding:16px 18px 8px;position:relative}
+.chart-card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.chart-card-head h2{font-size:12.5px;font-weight:800;color:var(--purple);text-transform:uppercase;letter-spacing:.4px}
+#price-chart{display:block;width:100%;height:auto}
+.axis-tick{font-size:10px;fill:var(--faint)}
+.axis-line{stroke:var(--border-mid);stroke-width:1}
+.grid-line{stroke:var(--border);stroke-width:1;stroke-dasharray:3 3}
+.cat-label{font-size:10.5px;fill:var(--muted);font-weight:600}
+
+.chart-legend{display:flex;flex-wrap:wrap;gap:16px;justify-content:center;padding:10px 0 14px;font-size:11.5px;color:var(--muted)}
+.chart-legend span{display:inline-flex;align-items:center;gap:6px}
+.chart-legend .sw{width:12px;height:12px;border-radius:3px;display:inline-block}
+.chart-legend .ln{width:16px;height:0;border-top:2.5px solid;display:inline-block}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div>
+    <div class="tb-module">Assortment Console</div>
+    <div class="tb-title" id="topbar-title">Overview</div>
+  </div>
+  <div class="tb-divider"></div>
+  <div class="tb-note">Product assortment &amp; competitive pricing analysis</div>
+  <div class="tb-right">
+    <span class="badge-live"><span class="dot"></span>Live prototype</span>
+  </div>
+</header>
+
+<div class="view-area">
+
+  <!-- ══════════════════════════════════════
+       VIEW: OVERVIEW
+  ══════════════════════════════════════ -->
+  <div class="view" id="view-overview">
+    <div class="sec-head">
+      <div class="sec-title">Assortment Overview <span class="sec-title-line"></span></div>
+      <div class="sec-sub">12 categories · 2,184 active SKUs · updated daily</div>
+    </div>
+
+    <div class="kpi-grid">
+      <div class="kpi-card p"><div class="kpi-label">Active SKUs</div><div class="kpi-val">2,184</div><div class="kpi-sub">across 12 categories</div></div>
+      <div class="kpi-card g"><div class="kpi-label">Sell-Through Rate</div><div class="kpi-val">71.4%</div><div class="kpi-sub">+2.1pp vs last period</div></div>
+      <div class="kpi-card a"><div class="kpi-label">Avg. Price Index</div><div class="kpi-val">114</div><div class="kpi-sub">vs. competitor (100 = parity)</div></div>
+      <div class="kpi-card b"><div class="kpi-label">Own Wallet Share</div><div class="kpi-val">19.6%</div><div class="kpi-sub">vs. 15.9% competitor</div></div>
+    </div>
+
+    <div class="data-table">
+      <table>
+        <thead><tr>
+          <th>Category</th><th>SKUs</th><th>Sales (30d)</th><th>Sell-Through</th><th>Price Index</th><th>Own Share</th><th>Trend</th>
+        </tr></thead>
+        <tbody id="overview-rows"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       VIEW: PRICE COMPARISON
+  ══════════════════════════════════════ -->
+  <div class="view" id="view-price-comparison">
+    <div class="sec-head">
+      <div class="sec-title">Competitor Price Comparison <span class="sec-title-line"></span></div>
+      <div class="sec-sub">Price distribution (min / 25th / median / 75th / max) and wallet share, own store vs. nearest competitor</div>
+    </div>
+
+    <div class="filter-grid">
+      <div class="filter-card">
+        <div class="filter-card-head"><span class="lbl">Target Store</span><button class="filter-edit">Edit</button></div>
+        <div class="filter-body">Store #014 — Fairview Market<br>Store #014 is the active comparison store.</div>
+      </div>
+      <div class="filter-card">
+        <div class="filter-card-head"><span class="lbl">Date Range</span><button class="filter-edit">Edit</button></div>
+        <div class="filter-body"><span class="date">2026-04-01 – 2026-07-31</span><br>Trailing 4 months</div>
+      </div>
+      <div class="filter-card">
+        <div class="filter-card-head"><span class="lbl">Category</span><button class="filter-edit">Edit</button></div>
+        <div class="filter-body">
+          <span class="filter-tag">Chilled Foods (511)</span><span class="filter-tag">Dairy (512)</span><span class="filter-tag">Processed Meat (513)</span><span class="filter-tag">+9 more</span>
+        </div>
+      </div>
+      <div class="filter-card">
+        <div class="filter-card-head"><span class="lbl">Segment</span><button class="filter-edit">Edit</button></div>
+        <div class="filter-body"><span class="filter-tag">Dual-income households (005)</span></div>
+      </div>
+      <div class="filter-card">
+        <div class="filter-card-head"><span class="lbl">Competitor</span><button class="filter-edit">Edit</button></div>
+        <div class="filter-body">Northgate Grocery — 0.6 mi away<br>Nearest tracked competitor to Store #014.</div>
+      </div>
+    </div>
+
+    <div class="controls-row">
+      <label for="cat-level-select">Category Level:</label>
+      <select id="cat-level-select">
+        <option>Level 2 (Department)</option>
+        <option>Level 3 (Category)</option>
+        <option>Level 4 (Sub-category)</option>
+      </select>
+      <button class="btn btn-p" id="gen-table-btn">Generate Table</button>
+      <div class="spacer"></div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-card-head">
+        <h2>Price Distribution &amp; Wallet Share by Department</h2>
+        <button class="btn btn-s" id="export-png-btn">⭳ PNG</button>
+      </div>
+      <svg id="price-chart" viewBox="0 0 1400 460" xmlns="http://www.w3.org/2000/svg"></svg>
+      <div class="chart-legend">
+        <span><span class="sw" style="background:var(--amber)"></span>Own Store</span>
+        <span><span class="sw" style="background:var(--blue)"></span>Competitor</span>
+        <span><span class="ln" style="border-color:var(--green)"></span>Own Store Wallet Share</span>
+        <span><span class="ln" style="border-color:var(--red)"></span>Competitor Wallet Share</span>
+        <span><span class="ln" style="border-color:var(--purple)"></span>Category Wallet Share</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       VIEW: SKU PERFORMANCE
+  ══════════════════════════════════════ -->
+  <div class="view" id="view-sku-performance">
+    <div class="sec-head">
+      <div class="sec-title">SKU Performance <span class="sec-title-line"></span></div>
+      <div class="sec-sub">Top and bottom movers by 30-day revenue, ranked within category</div>
+    </div>
+    <div class="data-table">
+      <table>
+        <thead><tr>
+          <th>SKU</th><th>Category</th><th>Units (30d)</th><th>Revenue (30d)</th><th>Margin</th><th>Sell-Through</th><th>Trend</th>
+        </tr></thead>
+        <tbody id="sku-rows"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const titles = {
+  overview: "Overview",
+  "price-comparison": "Price Comparison",
+  "sku-performance": "SKU Performance",
+};
+function showView(id) {
+  if (!titles[id]) return;
+  document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+  document.getElementById("view-" + id).classList.add("active");
+  document.getElementById("topbar-title").textContent = titles[id];
+  if (id === "price-comparison") renderPriceChart();
+}
+</script>
+<script src="product-assortment-data.js"></script>
+<script src="product-assortment-charts.js"></script>
+<script>
+renderOverviewTable();
+renderSkuTable();
+
+const initialView = new URLSearchParams(location.search).get("view");
+showView(initialView && titles[initialView] ? initialView : "overview");
+
+document.getElementById("gen-table-btn").addEventListener("click", renderPriceChart);
+document.getElementById("export-png-btn").addEventListener("click", exportChartPng);
+</script>
+</body>
+</html>
