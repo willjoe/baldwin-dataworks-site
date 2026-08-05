@@ -133,13 +133,17 @@ body{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;background:var(--bg
       <h2>Data Pipeline</h2>
       <div class="param-row"><span class="k">Stores loaded</span><span class="v" id="p-stores">—</span></div>
       <div class="param-row"><span class="k">Multiplier</span><span class="v" id="p-mult">× 10</span></div>
-      <div class="param-row"><span class="k">Generated points</span><span class="v" id="p-points">—</span></div>
+      <div class="param-row"><span class="k">Generated points (total)</span><span class="v" id="p-points">—</span></div>
       <div class="param-row"><span class="k">Position noise</span><span class="v" id="p-noise">± 100 m (lat &amp; lon)</span></div>
+      <div class="param-row"><span class="k">Map zoom</span><span class="v" id="p-zoom">—</span></div>
       <div class="param-row"><span class="k">H3 resolution</span><span class="v" id="p-res">—</span></div>
       <div class="param-note">Stores are real shop locations from <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>
         (queried via the Overpass API) — every one has a real street address and coordinates, not an estimated
         centroid. Coverage is limited to shops mapped with a complete address inside the query's bounding box
         (core Vancouver / Burnaby / Richmond / North Shore), so it undercounts the true regional total.</div>
+      <div class="param-note">H3 resolution follows map zoom: Res 14 fully zoomed in, down to Res 1 fully zoomed
+        out. The dropdown jumps the map to a preset resolution's zoom; scrolling/pinching free-zooms through
+        every resolution in between.</div>
       <div class="res-select-row">
         <select id="res-select"></select>
         <button class="btn btn-p" id="regen-btn" style="width:auto;flex-shrink:0">↻ Regenerate</button>
@@ -147,8 +151,9 @@ body{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;background:var(--bg
     </div>
 
     <div class="card">
-      <h2>Density Stats</h2>
+      <h2>Density Stats<span class="unit">within current view</span></h2>
       <div class="stat-grid">
+        <div class="stat-box"><div class="n" id="s-inview">—</div><div class="l">Points In View</div></div>
         <div class="stat-box"><div class="n" id="s-hexes">—</div><div class="l">Unique Hexes</div></div>
         <div class="stat-box"><div class="n" id="s-max">—</div><div class="l">Max / Hex</div></div>
         <div class="stat-box"><div class="n" id="s-avg">—</div><div class="l">Avg / Hex</div></div>
@@ -184,6 +189,18 @@ const POINTS_PER_STORE = 10;         // "multiply the value times 10"
 const NOISE_RADIUS_METERS = 100;     // +/- meters, applied independently to lat and lon, per store
 const DEFAULT_H3_RESOLUTION = 10;    // closest default H3 size to ~100m width (edge ~75.9m, flat-to-flat ~131.4m)
 
+// Map zoom <-> H3 resolution: fully zoomed in (19) = Res 14, counting down one
+// resolution per zoom level to Res 1 at zoom 6 and below.
+const ZOOM_TO_RES_OFFSET = 5;
+const MIN_H3_RESOLUTION = 1;
+const MAX_H3_RESOLUTION = 14;
+const MAX_MAP_ZOOM = MAX_H3_RESOLUTION + ZOOM_TO_RES_OFFSET; // 19
+const MIN_MAP_ZOOM = MIN_H3_RESOLUTION + ZOOM_TO_RES_OFFSET; // 6 (map can still zoom out further; resolution just clamps)
+function resolutionForZoom(zoom) {
+  return Math.max(MIN_H3_RESOLUTION, Math.min(MAX_H3_RESOLUTION, Math.round(zoom) - ZOOM_TO_RES_OFFSET));
+}
+function zoomForResolution(res) { return res + ZOOM_TO_RES_OFFSET; }
+
 const METERS_PER_DEG_LAT = 111320;
 
 function metersToDegLat(m) { return m / METERS_PER_DEG_LAT; }
@@ -215,6 +232,14 @@ function aggregateToH3(points, resolution) {
   return counts;
 }
 
+// At fine resolutions the full 60k+ point dataset would mean tens of
+// thousands of hexes off-screen; only aggregate/render what's actually
+// visible (with a little padding so hexes don't pop in right at the edge).
+function pointsInView(points) {
+  const bounds = map.getBounds().pad(0.2);
+  return points.filter(p => bounds.contains([p.lat, p.lon]));
+}
+
 // Keep everything around so parameters/results can be inspected and re-tuned.
 window.GEO_DATA = { params: null, stores: null, points: null, hexCounts: null };
 
@@ -234,12 +259,12 @@ function colorForRatio(t) {
   return lerpColor(HEAT_STOPS[i0], HEAT_STOPS[i1], idx - i0);
 }
 
-const map = L.map("map", { zoomControl: true, attributionControl: true, preferCanvas: true });
+const map = L.map("map", { zoomControl: true, attributionControl: true, preferCanvas: true, maxZoom: MAX_MAP_ZOOM });
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-  maxZoom: 19,
+  maxZoom: MAX_MAP_ZOOM,
 }).addTo(map);
-map.setView([49.2606, -123.1139], 11); // Greater Vancouver overview, refined by fitBounds once data loads
+map.setView([49.2606, -123.1139], zoomForResolution(DEFAULT_H3_RESOLUTION)); // Greater Vancouver, at the default resolution's zoom
 
 const canvasRenderer = L.canvas({ padding: 0.3 });
 let hexLayer = L.layerGroup().addTo(map);
@@ -254,12 +279,10 @@ function renderHexLayer(hexCounts) {
   hexLayer.clearLayers();
   const counts = [...hexCounts.values()];
   const maxCount = Math.max(1, ...counts);
-  const bounds = [];
 
   const sorted = [...hexCounts.entries()].sort((a, b) => b[1] - a[1]);
   for (const [cell, count] of sorted) {
     const boundary = h3.cellToBoundary(cell); // [[lat,lon], ...]
-    boundary.forEach(([lat, lon]) => bounds.push([lat, lon]));
     const color = colorForRatio(count / maxCount);
     L.polygon(boundary, {
       renderer: canvasRenderer,
@@ -276,17 +299,17 @@ function renderHexLayer(hexCounts) {
   document.getElementById("legend-min").textContent = "0";
   document.getElementById("legend-max").textContent = maxCount.toLocaleString();
 
-  if (bounds.length) map.fitBounds(bounds, { padding: [30, 30] });
-
   return { maxCount, uniqueHexes: hexCounts.size, totalPoints: counts.reduce((a, b) => a + b, 0) };
 }
 
-function renderSidePanel(stores, points, hexCounts, resolution, stats) {
+function renderSidePanel(stores, totalPoints, viewPoints, hexCounts, resolution, stats) {
   document.getElementById("p-stores").textContent = stores.length.toLocaleString();
-  document.getElementById("p-points").textContent = points.length.toLocaleString();
+  document.getElementById("p-points").textContent = totalPoints.length.toLocaleString();
+  document.getElementById("p-zoom").textContent = map.getZoom().toFixed(0);
   document.getElementById("p-res").textContent = `${resolution} (~${h3.getHexagonEdgeLengthAvg(resolution, "m").toFixed(0)} m edge)`;
 
   const avg = stats.totalPoints / Math.max(1, stats.uniqueHexes);
+  document.getElementById("s-inview").textContent = viewPoints.length.toLocaleString();
   document.getElementById("s-hexes").textContent = stats.uniqueHexes.toLocaleString();
   document.getElementById("s-max").textContent = stats.maxCount.toLocaleString();
   document.getElementById("s-avg").textContent = avg.toFixed(1);
@@ -299,9 +322,9 @@ function renderSidePanel(stores, points, hexCounts, resolution, stats) {
       <span class="id" title="${cell}">${cell}</span>
       <span class="ct">${count.toLocaleString()}</span>
     </div>
-  `).join("");
+  `).join("") || `<div style="font-size:11.5px;color:var(--faint)">Nothing in view — zoom or pan to a store cluster.</div>`;
 
-  document.getElementById("pts-body").innerHTML = points.slice(0, 12).map((p, i) => `
+  document.getElementById("pts-body").innerHTML = viewPoints.slice(0, 12).map((p, i) => `
     <tr>
       <td>${i + 1}</td>
       <td title="${p.store} — ${p.address}">${p.store}</td>
@@ -311,25 +334,30 @@ function renderSidePanel(stores, points, hexCounts, resolution, stats) {
   `).join("");
 }
 
-function runPipeline(resolution, regeneratePoints) {
+// Re-derives resolution from the current map zoom, re-aggregates whatever
+// points are currently in view, and re-renders. This is the single place
+// zoom, pan, dropdown selection, and Regenerate all funnel through.
+function refreshView() {
   const stores = window.GEO_DATA.stores;
-  const points = regeneratePoints ? generatePoints(stores) : window.GEO_DATA.points;
-  const hexCounts = aggregateToH3(points, resolution);
-  const stats = renderHexLayer(hexCounts);
-  renderSidePanel(stores, points, hexCounts, resolution, stats);
+  const totalPoints = window.GEO_DATA.points;
+  if (!stores || !totalPoints) return;
 
-  window.GEO_DATA = {
-    params: {
-      storeCount: stores.length,
-      pointsPerStore: POINTS_PER_STORE,
-      noiseRadiusMeters: NOISE_RADIUS_METERS,
-      h3Resolution: resolution,
-      source: "OpenStreetMap via Overpass API",
-    },
-    stores,
-    points,
-    hexCounts,
+  const resolution = resolutionForZoom(map.getZoom());
+  const viewPoints = pointsInView(totalPoints);
+  const hexCounts = aggregateToH3(viewPoints, resolution);
+  const stats = renderHexLayer(hexCounts);
+  renderSidePanel(stores, totalPoints, viewPoints, hexCounts, resolution, stats);
+  syncResSelect(resolution);
+
+  window.GEO_DATA.params = {
+    storeCount: stores.length,
+    pointsPerStore: POINTS_PER_STORE,
+    noiseRadiusMeters: NOISE_RADIUS_METERS,
+    h3Resolution: resolution,
+    mapZoom: map.getZoom(),
+    source: "OpenStreetMap via Overpass API",
   };
+  window.GEO_DATA.hexCounts = hexCounts;
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -343,13 +371,22 @@ resSelect.innerHTML = RES_OPTIONS.map(r => {
   return `<option value="${r}" ${r === DEFAULT_H3_RESOLUTION ? "selected" : ""}>Res ${r} — ~${label} edge</option>`;
 }).join("");
 
+function syncResSelect(resolution) {
+  resSelect.value = RES_OPTIONS.includes(resolution) ? String(resolution) : "";
+}
+
 resSelect.addEventListener("change", () => {
-  runPipeline(parseInt(resSelect.value, 10), false);
+  // Jump the map to this resolution's zoom; the 'zoomend' listener below does the actual re-render.
+  map.setZoom(zoomForResolution(parseInt(resSelect.value, 10)));
 });
+
 const regenBtn = document.getElementById("regen-btn");
 regenBtn.addEventListener("click", () => {
-  runPipeline(parseInt(resSelect.value, 10), true);
+  window.GEO_DATA.points = generatePoints(window.GEO_DATA.stores);
+  refreshView();
 });
+
+map.on("zoomend moveend", refreshView);
 
 // ─────────────────────────────────────────────────────────────
 // Boot: fetch real store data, then run the pipeline
@@ -359,7 +396,8 @@ fetch(STORE_DATA_URL)
   .then(r => r.json())
   .then(stores => {
     window.GEO_DATA.stores = stores;
-    runPipeline(DEFAULT_H3_RESOLUTION, true);
+    window.GEO_DATA.points = generatePoints(stores);
+    refreshView();
     regenBtn.disabled = false;
     document.getElementById("map-loading").classList.add("hidden");
   })
