@@ -141,9 +141,9 @@ body{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;background:var(--bg
         (queried via the Overpass API) — every one has a real street address and coordinates, not an estimated
         centroid. Coverage is limited to shops mapped with a complete address inside the query's bounding box
         (core Vancouver / Burnaby / Richmond / North Shore), so it undercounts the true regional total.</div>
-      <div class="param-note">H3 resolution follows map zoom: Res 14 fully zoomed in, down to Res 1 fully zoomed
-        out. The dropdown jumps the map to a preset resolution's zoom; scrolling/pinching free-zooms through
-        every resolution in between.</div>
+      <div class="param-note">H3 resolution follows map zoom: Res 11 fully zoomed in, each resolution held for
+        2 zoom steps while zooming out (11, 11, 10, 10, 9, 9, …) down to Res 1. The dropdown jumps the map to a
+        preset resolution's zoom.</div>
       <div class="res-select-row">
         <select id="res-select"></select>
         <button class="btn btn-p" id="regen-btn" style="width:auto;flex-shrink:0">↻ Regenerate</button>
@@ -189,17 +189,20 @@ const POINTS_PER_STORE = 10;         // "multiply the value times 10"
 const NOISE_RADIUS_METERS = 100;     // +/- meters, applied independently to lat and lon, per store
 const DEFAULT_H3_RESOLUTION = 10;    // closest default H3 size to ~100m width (edge ~75.9m, flat-to-flat ~131.4m)
 
-// Map zoom <-> H3 resolution: fully zoomed in (19) = Res 14, counting down one
-// resolution per zoom level to Res 1 at zoom 6 and below.
-const ZOOM_TO_RES_OFFSET = 5;
+// Map zoom <-> H3 resolution: fully zoomed in (19) = Res 11, held for
+// ZOOM_LEVELS_PER_RES zoom steps before counting down to the next resolution —
+// 11, 11, 10, 10, 9, 9, 8, 8, ... down to Res 1.
+const RES_AT_MAX_ZOOM = 11;
+const ZOOM_LEVELS_PER_RES = 2;
 const MIN_H3_RESOLUTION = 1;
-const MAX_H3_RESOLUTION = 14;
-const MAX_MAP_ZOOM = MAX_H3_RESOLUTION + ZOOM_TO_RES_OFFSET; // 19
-const MIN_MAP_ZOOM = MIN_H3_RESOLUTION + ZOOM_TO_RES_OFFSET; // 6 (map can still zoom out further; resolution just clamps)
+const MAX_H3_RESOLUTION = RES_AT_MAX_ZOOM;
+const MAX_MAP_ZOOM = 19; // OSM tile max
+const MIN_MAP_ZOOM = MAX_MAP_ZOOM - ZOOM_LEVELS_PER_RES * (RES_AT_MAX_ZOOM - MIN_H3_RESOLUTION); // reaches Res 1
 function resolutionForZoom(zoom) {
-  return Math.max(MIN_H3_RESOLUTION, Math.min(MAX_H3_RESOLUTION, Math.round(zoom) - ZOOM_TO_RES_OFFSET));
+  const stepsDown = Math.floor((MAX_MAP_ZOOM - Math.round(zoom)) / ZOOM_LEVELS_PER_RES);
+  return Math.max(MIN_H3_RESOLUTION, Math.min(MAX_H3_RESOLUTION, RES_AT_MAX_ZOOM - stepsDown));
 }
-function zoomForResolution(res) { return res + ZOOM_TO_RES_OFFSET; }
+function zoomForResolution(res) { return MAX_MAP_ZOOM - ZOOM_LEVELS_PER_RES * (RES_AT_MAX_ZOOM - res); }
 
 const METERS_PER_DEG_LAT = 111320;
 
@@ -259,9 +262,11 @@ function colorForRatio(t) {
   return lerpColor(HEAT_STOPS[i0], HEAT_STOPS[i1], idx - i0);
 }
 
-const map = L.map("map", { zoomControl: true, attributionControl: true, preferCanvas: true, maxZoom: MAX_MAP_ZOOM });
+const map = L.map("map", { zoomControl: true, attributionControl: true, preferCanvas: true, minZoom: MIN_MAP_ZOOM, maxZoom: MAX_MAP_ZOOM });
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+  minZoom: MIN_MAP_ZOOM,
+  minNativeZoom: 0, // OSM has no real tiles below zoom 0; Leaflet upscales them to reach Res 1's zoom
   maxZoom: MAX_MAP_ZOOM,
 }).addTo(map);
 map.setView([49.2606, -123.1139], zoomForResolution(DEFAULT_H3_RESOLUTION)); // Greater Vancouver, at the default resolution's zoom
