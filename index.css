@@ -1003,6 +1003,10 @@ h1, h2, h3, .logo-text, .brand-top, .brand-bottom {
 }
 
 .card-brand {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
     display: flex;
     align-items: center;
     gap: 1rem;
@@ -1043,11 +1047,15 @@ h1, h2, h3, .logo-text, .brand-top, .brand-bottom {
 }
 
 .card-footer {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    transform: translateY(-50%);
     z-index: 2;
     display: flex;
     align-items: center;
     gap: 0.9rem;
-    flex: 1;
 }
 
 .card-avatar {
