@@ -985,7 +985,7 @@ h1, h2, h3, .logo-text, .brand-top, .brand-bottom {
     padding: 2.2rem;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: flex-start;
     overflow: hidden;
     box-shadow: 0 15px 35px rgba(15, 23, 42, 0.15);
     background: #faf9f6; /* Premium Ivory/Off-white */
@@ -1047,6 +1047,7 @@ h1, h2, h3, .logo-text, .brand-top, .brand-bottom {
     display: flex;
     align-items: center;
     gap: 0.9rem;
+    flex: 1;
 }
 
 .card-avatar {
