@@ -1,5 +1,20 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+
+// Facade pieces are Kenney's "Modular Buildings" kit (CC0) — see
+// insights/assets/terminal-kit/SOURCE.txt. Each piece is a 2x2x2 unit
+// module meant to be tiled edge-to-edge.
+const KIT_BASE = "assets/terminal-kit/";
+const KIT_FILES = {
+  window: "building-window-large.glb",
+  doorWindow: "building-door-window.glb",
+  door: "building-door.glb",
+  awning: "roof-flat-awning-a.glb",
+  cornerWindow: "building-corner-window.glb",
+  corner: "building-corner.glb",
+};
+const MODULE_SIZE = 2; // native size of every kit piece, per-axis
 
 // ─────────────────────────────────────────────────────────────
 // Sample terminal floor plan — synthetic data, not a real airport.
@@ -98,7 +113,7 @@ const pointer = new THREE.Vector2();
 let hoveredZone = null;
 let selectedZone = null;
 
-function buildZones() {
+function buildZoneFloors() {
   for (const zone of ZONES) {
     const geo = new THREE.BoxGeometry(zone.w, ZONE_HEIGHT, zone.d);
     const mat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.85 });
@@ -113,16 +128,6 @@ function buildZones() {
     const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0x2b2b3a, linewidth: 1 }));
     line.position.copy(mesh.position);
     scene.add(line);
-
-    // low perimeter "walls" for a bit of architectural read
-    const wallH = 6;
-    const wallMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.9, transparent: true, opacity: 0.55 });
-    const wallGeo = new THREE.BoxGeometry(zone.w, wallH, 1);
-    const wN = new THREE.Mesh(wallGeo, wallMat); wN.position.set(zone.x, wallH / 2, zone.z - zone.d / 2); scene.add(wN);
-    const wS = new THREE.Mesh(wallGeo, wallMat); wS.position.set(zone.x, wallH / 2, zone.z + zone.d / 2); scene.add(wS);
-    const wallGeoSide = new THREE.BoxGeometry(1, wallH, zone.d);
-    const wW = new THREE.Mesh(wallGeoSide, wallMat); wW.position.set(zone.x - zone.w / 2, wallH / 2, zone.z); scene.add(wW);
-    const wE = new THREE.Mesh(wallGeoSide, wallMat); wE.position.set(zone.x + zone.w / 2, wallH / 2, zone.z); scene.add(wE);
   }
 
   // Gate markers along the outer (far-z) edge of each concourse
@@ -139,7 +144,81 @@ function buildZones() {
     }
   }
 }
-buildZones();
+buildZoneFloors();
+
+// ─────────────────────────────────────────────────────────────
+// Facades — real modeled glass/window/door/awning pieces tiled
+// along the terminal's main public-facing edges.
+// ─────────────────────────────────────────────────────────────
+const loader = new GLTFLoader();
+function loadKitPiece(file) {
+  return new Promise((resolve, reject) => {
+    loader.load(KIT_BASE + file, gltf => resolve(gltf.scene), undefined, reject);
+  });
+}
+
+async function loadKit() {
+  const entries = await Promise.all(
+    Object.entries(KIT_FILES).map(async ([key, file]) => [key, await loadKitPiece(file)])
+  );
+  return Object.fromEntries(entries);
+}
+
+// Tiles `count` modules of width `scale*MODULE_SIZE` centered along an edge,
+// facing outward (+facingSign on the local Z), with an awning strip on top.
+function buildFacade(kit, { centerX, edgeZ, totalWidth, scale, facingSign, doorIndices = [] }) {
+  const moduleW = MODULE_SIZE * scale;
+  const count = Math.max(1, Math.round(totalWidth / moduleW));
+  const startX = centerX - (count * moduleW) / 2 + moduleW / 2;
+  const rotY = facingSign > 0 ? 0 : Math.PI;
+
+  for (let i = 0; i < count; i++) {
+    const template = doorIndices.includes(i) ? kit.doorWindow : kit.window;
+    const piece = template.clone(true);
+    piece.scale.setScalar(scale);
+    piece.position.set(startX + i * moduleW, 0, edgeZ);
+    piece.rotation.y = rotY;
+    scene.add(piece);
+
+    const awning = kit.awning.clone(true);
+    awning.scale.set(scale, scale * 0.4, scale);
+    awning.position.set(startX + i * moduleW, MODULE_SIZE * scale, edgeZ + facingSign * MODULE_SIZE * scale * 0.15);
+    awning.rotation.y = rotY;
+    scene.add(awning);
+  }
+}
+
+async function buildKitFacades() {
+  const kit = await loadKit();
+
+  const checkin = ZONES.find(z => z.id === "checkin");
+  buildFacade(kit, {
+    centerX: checkin.x,
+    edgeZ: checkin.z - checkin.d / 2,
+    totalWidth: checkin.w,
+    scale: 3,
+    facingSign: -1,
+    doorIndices: [4, 5],
+  });
+
+  const domestic = ZONES.find(z => z.id === "domestic");
+  buildFacade(kit, {
+    centerX: domestic.x,
+    edgeZ: domestic.z + domestic.d / 2,
+    totalWidth: domestic.w,
+    scale: 3,
+    facingSign: 1,
+  });
+
+  const intl = ZONES.find(z => z.id === "intl");
+  buildFacade(kit, {
+    centerX: intl.x,
+    edgeZ: intl.z + intl.d / 2,
+    totalWidth: intl.w,
+    scale: 3,
+    facingSign: 1,
+  });
+}
 
 function updateZoneColors() {
   for (const mesh of zoneMeshes) {
@@ -263,5 +342,14 @@ function animate() {
   renderer.render(scene, camera);
 }
 animate();
+
+buildKitFacades()
+  .then(() => {
+    document.getElementById("scene-loading").classList.add("hidden");
+  })
+  .catch(err => {
+    console.error("Failed to load terminal facade kit:", err);
+    document.getElementById("scene-loading").innerHTML = `<div style="color:var(--red)">Failed to load 3D assets: ${err.message}</div>`;
+  });
 
 document.getElementById("scene-loading").classList.add("hidden");
