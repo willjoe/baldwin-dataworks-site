@@ -1004,9 +1004,9 @@ h1, h2, h3, .logo-text, .brand-top, .brand-bottom {
 
 .card-brand {
     position: absolute;
-    top: 0.5rem;
-    left: 0.4rem;
-    right: 0;
+    top: 2.2rem;
+    left: 2.2rem;
+    right: 2.2rem;
     display: flex;
     align-items: center;
     gap: 1rem;
@@ -1052,8 +1052,8 @@ h1, h2, h3, .logo-text, .brand-top, .brand-bottom {
 .card-footer {
     position: absolute;
     top: 50%;
-    left: 0.4rem;
-    right: 0;
+    left: 2.2rem;
+    right: 2.2rem;
     transform: translateY(-50%);
     z-index: 2;
     display: flex;
