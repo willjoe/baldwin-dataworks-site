@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FMify | Internet Radio with Live DJ Narration for iOS — Baldwin Data Works Inc.</title>
+    <meta name="description" content="FMify streams music from Jamendo and Audiomack with a spoken DJ layer — title/artist, weather, and news timed to finish exactly as each track's vocals begin — built on real experience hosting live FM radio.">
+    <link rel="canonical" href="https://www.baldwin-dataworks.com/fmify/">
+    <link rel="icon" href="icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../index.css">
+    <link rel="stylesheet" href="fmify.css">
+</head>
+<body>
+    <div class="glow-bg">
+        <div class="glow-sphere sphere-1"></div>
+        <div class="glow-sphere sphere-2"></div>
+    </div>
+    <div class="grid-overlay"></div>
+
+    <header class="navbar">
+        <div class="nav-container">
+            <a href="/" class="logo">
+                <span class="logo-icon"><i class="fa-solid fa-microchip"></i></span>
+                <span class="logo-text">BALDWIN <span class="accent-text">DATA WORKS</span></span>
+            </a>
+            <nav class="nav-menu">
+                <a href="/#services" class="nav-link">Services</a>
+                <a href="/#projects" class="nav-link">R&amp;D Projects</a>
+                <a href="/#card-section" class="nav-link">Business Card</a>
+                <a href="/#contact" class="nav-link btn-contact">Get In Touch</a>
+            </nav>
+            <button class="mobile-toggle" aria-label="Toggle navigation">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+        </div>
+    </header>
+
+    <main>
+        <section class="app-subnav">
+            <div class="container">
+                <div class="app-subnav-links">
+                    <a href="index.html" class="active">Overview</a>
+                    <a href="privacy.html">Privacy Policy</a>
+                    <a href="support.html">Support</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="hero-section" style="min-height: auto; padding-top: 40px; padding-bottom: 80px;">
+            <div class="container">
+                <div class="hero-content">
+                    <div class="app-icon-tile"><img src="icon.png" alt="FMify app icon"></div>
+                    <div class="badge animate-fade-in">iOS APP &middot; IN DEVELOPMENT &middot; BY BALDWIN DATA WORKS</div>
+                    <h1 class="hero-title animate-slide-up">
+                        The DJ Instincts of a <span class="gradient-text">Real Radio Host</span>, Automated
+                    </h1>
+                    <p class="hero-subtitle animate-slide-up-delayed">
+                        FMify streams continuous, curated internet radio and weaves a spoken intro into every
+                        track &mdash; title, artist, weather, and news &mdash; timed to finish in the exact
+                        instant the vocals begin, the way an actual FM host rides a record live.
+                    </p>
+                    <div class="hero-actions animate-slide-up-delayed">
+                        <a href="support.html" class="btn btn-secondary">Get Support</a>
+                        <a href="privacy.html" class="btn btn-secondary">Privacy Policy</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="services-section" style="padding-top: 0;">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">How It Works</h2>
+                    <p class="section-subtitle">A real radio station's programming discipline, running as an on-device scheduling engine.</p>
+                </div>
+                <div class="services-grid">
+                    <div class="service-card">
+                        <div class="service-icon"><i class="fa-solid fa-sliders"></i></div>
+                        <h3>Dual-Deck Equal-Power Crossfading</h3>
+                        <p>Two independent decks blend on an equal-power curve &mdash; automatically as a track nears its end, or dragged by hand on the crossfade bar &mdash; the same smooth blend a real board operator rides between two records.</p>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-icon"><i class="fa-solid fa-wave-square"></i></div>
+                        <h3>On-Device Vocal &amp; BPM Detection</h3>
+                        <p>Lightweight signal analysis finds exactly where each track's vocals begin and end, and estimates its tempo &mdash; entirely on the phone, no server round-trip required.</p>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-icon"><i class="fa-solid fa-list-ol"></i></div>
+                        <h3>The 100-Track Plan</h3>
+                        <p>Every station builds a full 100-track queue up front against real programming rules: a target vocal/instrumental ratio, a rising-then-dipping BPM cycle every five tracks, repeat and artist cooldowns, and a guaranteed share of music the listener hasn't heard before.</p>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-icon"><i class="fa-solid fa-microphone"></i></div>
+                        <h3>DJ-Timed Track Intros</h3>
+                        <p>A spoken intro is timed to finish in the exact instant a track's own detected vocals begin &mdash; or, for a purely instrumental track, as close to 0:00 as possible &mdash; the same judgment call an FM host makes live, now computed from the track's own vocal onset.</p>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-icon"><i class="fa-solid fa-cloud-sun"></i></div>
+                        <h3>Live Weather &amp; News, Spoken</h3>
+                        <p>Apple WeatherKit forecasts and real news headlines are woven into that same intro, on whichever toggles the listener turns on &mdash; fitted to whatever time is actually available before the vocals start.</p>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-icon"><i class="fa-solid fa-record-vinyl"></i></div>
+                        <h3>Aggregated From Jamendo &amp; Audiomack</h3>
+                        <p>Stations mix results from Jamendo and Audiomack's independent/royalty-free catalogs into one continuous stream, with thumbs up/down and favorites remembered locally on the device.</p>
+                    </div>
+                </div>
+
+                <div class="requirements-note">
+                    <strong>Requirements:</strong> an iOS device, Jamendo and/or Audiomack API access for music, and (optional, for the spoken weather/news categories) an Apple Developer account with WeatherKit enabled plus a free NewsAPI.org key.
+                </div>
+            </div>
+        </section>
+
+        <section class="services-section" style="padding-top: 0;">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Built From Real Airtime</h2>
+                    <p class="section-subtitle">FMify's most distinctive feature isn't a technical trick &mdash; it's software trained on four and a half years of actually doing the job.</p>
+                </div>
+                <div class="doc-content">
+                    <p>
+                        Long before any of this was code, William Baldwin spent <strong>April 2007 to October
+                        2011</strong> on the air as a <strong>Radio Personality at FM KATCH Inc.</strong>, and
+                        concurrently, from <strong>April 2008 to September 2010</strong>, at
+                        <strong>Aichi International Broadcasting Co., Ltd.</strong> &mdash; both in Nagoya, Aichi,
+                        Japan &mdash; hosting live shows and writing his own scripts.
+                    </p>
+                    <p>
+                        That's where the instinct behind FMify's narration engine actually comes from. A real
+                        host doesn't just read a fact sheet over the intro &mdash; they time it: weather, a
+                        headline, the title and artist, landing and finishing in the exact instant the vocals
+                        come in, every single time, without a script reading long or the music getting stepped
+                        on. FMify's narration scheduler is that judgment call turned into an algorithm: it
+                        measures how long a track's own detected vocal onset actually gives it, fits as much of
+                        whatever's enabled (and due) into that window as it can, and always finishes on the
+                        title and artist right as the vocals begin &mdash; the same discipline from four and a
+                        half years of live radio, now running as Swift instead of a headphone cue.
+                    </p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-bottom">
+                <p>&copy; 2026 BALDWIN DATA WORKS INC. All rights reserved.</p>
+                <p class="legal-note">FMify aggregates content from Jamendo and Audiomack and is not affiliated with or endorsed by either service, Apple Weather, or NewsAPI.org.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="fmify.js"></script>
+    <!-- Cloudflare Web Analytics -->
+    <script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "e14f7cea50dc4699ab9a4fb280389a71"}'></script>
+    <!-- End Cloudflare Web Analytics -->
+</body>
+</html>

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FMify Support — Baldwin Data Works Inc.</title>
+    <meta name="description" content="Get help with FMify, the internet radio app with live DJ narration for iOS by Baldwin Data Works Inc.">
+    <link rel="canonical" href="https://www.baldwin-dataworks.com/fmify/support.html">
+    <link rel="icon" href="icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../index.css">
+    <link rel="stylesheet" href="fmify.css">
+</head>
+<body>
+    <div class="glow-bg">
+        <div class="glow-sphere sphere-1"></div>
+        <div class="glow-sphere sphere-2"></div>
+    </div>
+    <div class="grid-overlay"></div>
+
+    <header class="navbar">
+        <div class="nav-container">
+            <a href="/" class="logo">
+                <span class="logo-icon"><i class="fa-solid fa-microchip"></i></span>
+                <span class="logo-text">BALDWIN <span class="accent-text">DATA WORKS</span></span>
+            </a>
+            <nav class="nav-menu">
+                <a href="/#services" class="nav-link">Services</a>
+                <a href="/#projects" class="nav-link">R&amp;D Projects</a>
+                <a href="/#card-section" class="nav-link">Business Card</a>
+                <a href="/#contact" class="nav-link btn-contact">Get In Touch</a>
+            </nav>
+            <button class="mobile-toggle" aria-label="Toggle navigation">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+        </div>
+    </header>
+
+    <main>
+        <section class="app-subnav">
+            <div class="container">
+                <div class="app-subnav-links">
+                    <a href="index.html">Overview</a>
+                    <a href="privacy.html">Privacy Policy</a>
+                    <a href="support.html" class="active">Support</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="services-section" style="padding-top: 40px;">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">FMify Support</h2>
+                    <p class="section-subtitle">Answers to common questions. Still stuck? We're happy to help directly.</p>
+                </div>
+
+                <div class="faq-item">
+                    <h3>How do stations work?</h3>
+                    <p>Tap a station on the Stations tab (a genre or mood, like "Pop" or "Hip-Hop") and FMify
+                        builds a fresh queue from Jamendo and Audiomack and starts playing right away. Playback
+                        begins as soon as the first track is chosen &mdash; the rest of the queue keeps filling
+                        in behind it.</p>
+                </div>
+                <div class="faq-item">
+                    <h3>Why is FMify asking for my location?</h3>
+                    <p>Only because you turned on a narration category that needs it &mdash; "Today's
+                        Weather," "This Week's Weather," or "Local News." FMify never asks for location at
+                        launch or for any other reason; turn those toggles off and the prompt won't appear
+                        again on a fresh install.</p>
+                </div>
+                <div class="faq-item">
+                    <h3>I don't hear any weather or news narration.</h3>
+                    <p>Both categories degrade gracefully rather than erroring: weather needs Apple WeatherKit
+                        enabled for the app and location permission granted, and news needs a NewsAPI.org key
+                        configured. If either isn't set up yet, that category is simply skipped, and the rest
+                        of the narration (title/artist, or whichever categories ARE configured) still plays
+                        normally.</p>
+                </div>
+                <div class="faq-item">
+                    <h3>What do the thumbs up/down and heart icons do?</h3>
+                    <p>Thumbs up and the heart are purely a record of your preference &mdash; they don't
+                        change what plays. Thumbs down is permanent: that track is excluded from every future
+                        station load and never comes back.</p>
+                </div>
+                <div class="faq-item">
+                    <h3>How does the crossfade bar work?</h3>
+                    <p>It blends the current and next track on an equal-power curve. It moves on its own as
+                        the current track nears its end, or you can drag it by hand to blend early &mdash;
+                        release past the centre point and the transition completes on its own.</p>
+                </div>
+                <div class="faq-item">
+                    <h3>Can I change the narration voice?</h3>
+                    <p>Yes &mdash; Settings has a "Narration Voice" picker listing every voice installed on
+                        your device, plus a System Default option. Changes take effect on the very next
+                        narration drop.</p>
+                </div>
+
+                <div class="contact-cta">
+                    <p class="section-subtitle" style="margin-bottom: 1.5rem;">Didn't find what you needed?</p>
+                    <a href="mailto:will@baldwin-dataworks.com" class="btn btn-primary">
+                        <i class="fa-solid fa-envelope"></i> will@baldwin-dataworks.com
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-bottom">
+                <p>&copy; 2026 BALDWIN DATA WORKS INC. All rights reserved.</p>
+                <p class="legal-note">FMify aggregates content from Jamendo and Audiomack and is not affiliated with or endorsed by either service, Apple Weather, or NewsAPI.org.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="fmify.js"></script>
+    <!-- Cloudflare Web Analytics -->
+    <script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "e14f7cea50dc4699ab9a4fb280389a71"}'></script>
+    <!-- End Cloudflare Web Analytics -->
+</body>
+</html>
