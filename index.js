@@ -115,4 +115,46 @@ document.addEventListener('DOMContentLoaded', () => {
             slides[current].classList.add('is-active');
         }, 3500);
     });
+
+    // Hero Carousel
+    const heroCarousel = document.getElementById('main-carousel');
+    if (heroCarousel) {
+        const carouselSlides = Array.from(heroCarousel.querySelectorAll('.carousel-slide'));
+        let carouselInterval;
+        let currentIndex = 0;
+
+        const setSlide = (index) => {
+            carouselSlides.forEach(s => s.classList.remove('active'));
+            carouselSlides[index].classList.add('active');
+            
+            // Update text overlays
+            const overlays = Array.from(document.querySelectorAll('.carousel-text-overlay'));
+            overlays.forEach(o => o.classList.remove('active'));
+            if(overlays[index]) {
+                overlays[index].classList.add('active');
+            }
+
+            currentIndex = index;
+            resetInterval();
+        };
+
+        const nextSlide = () => {
+            setSlide((currentIndex + 1) % carouselSlides.length);
+        };
+
+        const resetInterval = () => {
+            clearInterval(carouselInterval);
+            carouselInterval = setInterval(nextSlide, 10000);
+        };
+
+        carouselSlides.forEach((slide, index) => {
+            slide.addEventListener('click', () => {
+                if (!slide.classList.contains('active')) {
+                    setSlide(index);
+                }
+            });
+        });
+
+        resetInterval();
+    }
 });

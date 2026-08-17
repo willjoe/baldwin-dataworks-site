@@ -1,5 +1,16 @@
 /* FMify sub-site — additions layered on top of the main site's index.css (same :root tokens) */
 
+/* Pastel palette sourced directly from the FMify app icon (the teal-blue
+   background behind the robot, the orange of the vintage radio) -- loaded
+   after index.css, so this overrides the site's global accent tokens on
+   FMify's own pages only, leaving every other project page untouched. */
+:root {
+    --accent-primary: #76a9b6;
+    --accent-primary-rgb: 118, 169, 182;
+    --accent-secondary: #eabd74;
+    --accent-secondary-rgb: 234, 189, 116;
+}
+
 .app-subnav {
     padding-top: 140px;
     padding-bottom: 1rem;

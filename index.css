@@ -202,10 +202,10 @@ h1, h2, h3, .logo-text, .brand-top, .brand-bottom {
 
 /* Hero Section */
 .hero-section {
-    padding-top: 180px;
+    padding-top: 100px;
     padding-bottom: 120px;
     text-align: center;
-    min-height: 100vh;
+    min-height: auto;
     display: flex;
     align-items: center;
 }
@@ -674,6 +674,17 @@ h1, h2, h3, .logo-text, .brand-top, .brand-bottom {
 
 .project-links .project-link {
     margin-top: 0;
+}
+
+/* FMify's own project card gets the pastel palette sourced from its app
+   icon (teal-blue background, orange radio) instead of the site's global
+   accent -- scoped to this one card via CSS custom-property inheritance,
+   so every other project card is untouched. */
+#project-fmify {
+    --accent-primary: #76a9b6;
+    --accent-primary-rgb: 118, 169, 182;
+    --accent-secondary: #eabd74;
+    --accent-secondary-rgb: 234, 189, 116;
 }
 
 .project-item.has-media {
@@ -1373,4 +1384,181 @@ footer {
     .card-job, .contact-row {
         color: #333 !important;
     }
+}
+
+/* Image Carousel */
+.hero-carousel {
+    width: 100%;
+    height: 70vh;
+    min-height: 400px;
+    max-height: 800px;
+    margin-top: 80px; 
+    overflow: hidden; 
+    position: relative;
+    background: #9AB3BA;
+}
+
+.carousel-container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+.carousel-slide {
+    width: 12vw;
+    flex: none;
+    height: 100%;
+    overflow: hidden;
+    cursor: pointer;
+    transition: width 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+    position: relative;
+    transform: skewX(-10deg);
+    border-right: 2px solid #9AB3BA;
+    border-left: 2px solid #9AB3BA;
+}
+
+.carousel-slide.active {
+    width: min(65vh, 80vw);
+    cursor: default;
+}
+
+/* First slide floating edge */
+.carousel-slide:first-child {
+    border-left: 2px solid #9AB3BA;
+}
+
+/* Last slide floating edge */
+.carousel-slide:last-child {
+    border-right: 2px solid #9AB3BA;
+}
+
+/* Background image inner */
+.carousel-slide-inner {
+    position: absolute;
+    top: 0;
+    /* Use a fixed viewport width so the container size never changes during flex animations. This prevents the image from zooming in/out. */
+    left: 50%;
+    width: calc(100vw + 400px);
+    height: 100%;
+    transform: translateX(-50%) skewX(10deg); /* unskew */
+    background-size: cover;
+    background-position: center;
+}
+
+/* Glass blur layer to soften the cropped background and fill the slanted edges */
+.carousel-slide-inner::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.6); /* Darken to make the crisp image pop */
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    z-index: 1;
+}
+
+/* Crisp, full-height foreground image */
+.carousel-slide-inner::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    background-image: inherit; /* Copies the inline style from the parent */
+    background-size: contain; /* Forces the image to show its full height without cropping */
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+/* Use CSS brightness filter to darken inactive slides instead of a duplicate pseudo-element */
+.carousel-slide-inner {
+    filter: brightness(0.4);
+    transition: filter 0.6s ease;
+}
+
+.carousel-slide.active .carousel-slide-inner {
+    filter: brightness(0.8);
+}
+
+/* Global Text Overlays */
+.carousel-text-overlays {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    padding-bottom: 5%;
+    pointer-events: none; /* Let clicks pass through to the slides */
+    z-index: 10;
+}
+
+.carousel-text-overlay {
+    position: absolute;
+    width: 100%;
+    max-width: 600px;
+    display: flex;
+    justify-content: center;
+    pointer-events: none; /* Prevent clicks when hidden */
+}
+
+.carousel-text-overlay.active {
+    pointer-events: auto; /* Allow clicks when active */
+}
+
+/* Text Content styling */
+.carousel-content {
+    position: relative;
+    text-align: center;
+    color: #fff;
+    width: 100%;
+    padding: 2rem;
+    pointer-events: auto;
+}
+
+/* Isolate the glass background to a pseudo-element so we can animate it without triggering Safari's blur drop bug */
+.carousel-content::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    z-index: -1;
+    opacity: 0;
+    transform: translate3d(0, 0, 0); /* Force hardware acceleration */
+    transition: opacity 1s ease;
+}
+
+.carousel-text-overlay.active .carousel-content::before {
+    opacity: 1;
+    transition-delay: 0.3s;
+}
+
+/* Animate the text and transforms directly, so the glass layer remains static and un-transformed */
+.carousel-content h2,
+.carousel-content p {
+    position: relative;
+    z-index: 1;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 1s ease, transform 1s ease;
+}
+
+.carousel-content h2 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+}
+
+.carousel-content p {
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.carousel-text-overlay.active .carousel-content h2,
+.carousel-text-overlay.active .carousel-content p {
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: 0.3s;
 }

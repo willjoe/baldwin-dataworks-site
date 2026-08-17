@@ -45,21 +45,62 @@
     </header>
 
     <main>
-        <!-- Hero Section -->
-        <section id="hero" class="hero-section">
-            <div class="container">
-                <div class="hero-content">
-                    <div class="badge animate-fade-in">SOLO FOUNDER &middot; 15+ YEARS IN PRODUCTION</div>
-                    <h1 class="hero-title animate-slide-up">
-                        I Build Enterprise Data Systems That <span class="gradient-text">Actually Ship</span>
-                    </h1>
-                    <p class="hero-subtitle animate-slide-up-delayed">
-                        Cloud-native pipelines, agentic AI tooling, and high-integrity data architecture, drawing on 15+ years running production systems at Rakuten, NTT Docomo, and beyond.
-                    </p>
-                    <div class="hero-actions animate-slide-up-delayed">
-                        <a href="#card-section" class="btn btn-primary" id="cta-explore-card">Interactive Business Card</a>
-                        <a href="#services" class="btn btn-secondary">Our Capabilities</a>
+        <!-- Hero Carousel -->
+        <section id="hero" class="hero-carousel">
+            <div class="carousel-container" id="main-carousel">
+                <!-- Slide 1 -->
+                <div class="carousel-slide active" data-index="0">
+                    <div class="carousel-slide-inner" style="background-image: url('images/carousel-1.jpg');"></div>
+                </div>
+                <!-- Slide 2 -->
+                <div class="carousel-slide" data-index="1">
+                    <div class="carousel-slide-inner" style="background-image: url('images/carousel-2.jpg');"></div>
+                </div>
+                <!-- Slide 3 -->
+                <div class="carousel-slide" data-index="2">
+                    <div class="carousel-slide-inner" style="background-image: url('images/carousel-3.jpg');"></div>
+                </div>
+                <!-- Slide 4 -->
+                <div class="carousel-slide" data-index="3">
+                    <div class="carousel-slide-inner" style="background-image: url('images/carousel-4.jpg');"></div>
+                </div>
+            </div>
+
+            <!-- Global Text Overlays -->
+            <div class="carousel-text-overlays">
+                <div class="carousel-text-overlay active">
+                    <div class="carousel-content">
+                        <h2>Instinct-Driven Solutions</h2>
+                        <p>Solving real-life challenges by putting data wherever you need it. We build interfaces designed around your natural instincts, bringing powerful solutions closer to you than ever before.</p>
                     </div>
+                </div>
+                <div class="carousel-text-overlay">
+                    <div class="carousel-content">
+                        <h2>Agentic AI Tooling</h2>
+                        <p>Orchestrating autonomous workflows and intelligent AI agents to reduce operational friction and drive rapid business insights.</p>
+                    </div>
+                </div>
+                <div class="carousel-text-overlay">
+                    <div class="carousel-content">
+                        <h2>High-Integrity Data Architecture</h2>
+                        <p>Building resilient, cloud-native pipelines with security-first engineering that protects your enterprise telemetry.</p>
+                    </div>
+                </div>
+                <div class="carousel-text-overlay">
+                    <div class="carousel-content">
+                        <h2>Enterprise Data Systems That Ship</h2>
+                        <p>Solo Founder &middot; 15+ years of building and running production systems at scale for industry giants like Rakuten and NTT Docomo.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Call to Action Buttons -->
+        <section class="hero-actions-section">
+            <div class="container" style="text-align: center; padding: 3rem 0;">
+                <div class="hero-actions animate-fade-in" style="justify-content: center;">
+                    <a href="#card-section" class="btn btn-primary" id="cta-explore-card">Interactive Business Card</a>
+                    <a href="#services" class="btn btn-secondary">Our Capabilities</a>
                 </div>
             </div>
         </section>
@@ -201,95 +242,6 @@
             </div>
         </section>
 
-        <!-- Services Section -->
-        <section id="services" class="services-section">
-            <div class="container">
-                <div class="section-header">
-                    <h2 class="section-title">Core Services</h2>
-                    <p class="section-subtitle">Empowering organizations with next-generation agent architectures and data infrastructure.</p>
-                </div>
-                <div class="services-grid">
-                    <div class="service-card" id="service-data">
-                        <div class="service-icon"><i class="fa-solid fa-database"></i></div>
-                        <h3>Data Engineering &amp; Integration</h3>
-                        <p>Designing high-throughput ETL/ELT pipelines, structured warehousing layers, and database migrations that establish a clean, production-ready data foundation.</p>
-                        <p class="service-grounding">This is direct, not theoretical: it's the same discipline that migrated Rakuten's telemetry from 40M+ monthly active users to BigQuery, moved Nippon TV's Factly platform off Treasure Data, and structured nationwide mobile network telemetry at NTT Docomo.</p>
-                    </div>
-                    <div class="service-card" id="service-datascience">
-                        <div class="service-icon"><i class="fa-solid fa-chart-line"></i></div>
-                        <h3>Data Science &amp; Analytics</h3>
-                        <p>Insights and statistics can now be visualized in ways that were simply unimaginable a few years ago, powered by AI systems running on LLMs. Outputs that used to need a dedicated engineering team and months of work can now be built as a tailored, purpose-built application in under an hour.</p>
-                        <p>We treat apps the way you'd treat a disposable ziplock bag from here on: built for one use, then thrown away, not maintained forever as a permanent product. We can lead your team into that same workflow.</p>
-                        <p class="service-grounding">The same instinct behind shipping TelegraTalk and Simple Trump Card in days, not months, and the statistical modelling behind predictive systems at NTT Docomo, Sompo, and Rakuten's Marketing View Premium dashboard.</p>
-                    </div>
-                    <div class="service-card" id="service-agentic">
-                        <div class="service-icon"><i class="fa-solid fa-brain"></i></div>
-                        <h3>Agentic AI Integration</h3>
-                        <p>Orchestrating autonomous workflows and multi-agent loops that run asynchronously to handle enterprise project planning, code synthesis, and analytics.</p>
-                        <p class="service-grounding">Grounded in building Model Context Protocol client tools at Jitera and Rakuten, both bridging LLMs to real, governed enterprise data rather than a demo sandbox.</p>
-                    </div>
-                    <div class="service-card" id="service-cloud">
-                        <div class="service-icon"><i class="fa-solid fa-cloud"></i></div>
-                        <h3>Cloud-Native Architecture</h3>
-                        <p>High-integrity serverless and containerized environments built on GCP and AWS. Engineered to manage ingestion pipelines, real-time telemetry, and microservices.</p>
-                        <p class="service-grounding">Proven at Rakuten's full GCP migration and at P&amp;I Information Engineering, where a legacy Java/C estate was rebuilt on modern PHP and Terraform-managed AWS infrastructure.</p>
-                    </div>
-                </div>
-
-                <div class="security-spotlight">
-                    <img src="images/data-security-samurai.jpg" alt="A samurai deflecting a strike from a giant skull composed of corrupted binary and kanji data, representing data security and protection." class="security-spotlight-image">
-                    <div class="security-spotlight-content">
-                        <span class="project-badge">Security-First Engineering</span>
-                        <h3>Data Security &amp; Protection</h3>
-                        <p class="project-desc">
-                            With over 15 years defending enterprise data in production, security isn't bolted on after the fact &mdash; it's engineered in from day one. From encrypted pipelines processing transaction telemetry from 40M+ monthly active users at Rakuten to the IAM-hardened auth gateway built for GalaSpo's own streaming platform, every dataset we touch is treated as a live threat surface, not just plumbing.
-                        </p>
-                        <div class="skills-mini-list">
-                            <span class="skill-tag">15+ Years in Data Security</span>
-                            <span class="skill-tag">IAM &amp; Auth Gateways</span>
-                            <span class="skill-tag">Encrypted Pipelines</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Philosophy Section -->
-        <section id="philosophy" class="philosophy-section">
-            <div class="container">
-                <div class="section-header">
-                    <h2 class="section-title">My Philosophy</h2>
-                    <p class="section-subtitle">Three principles, each one earned on the job, not written in a boardroom.</p>
-                </div>
-                <div class="philosophy-stack">
-                    <div class="philosophy-card">
-                        <img src="images/systemization-mad-scientist.jpg" alt="A mad scientist throwing a high-voltage lever to bring a mechanical robot to life, representing pushing automation to its limit." class="philosophy-image">
-                        <div class="philosophy-content">
-                            <span class="phi-num">01</span>
-                            <h3>Extreme Systemization</h3>
-                            <p>I've been building database-managed systems since I was a teenager, and I put that instinct to work in my very first job at Canada @ Home. It was my years at <strong>P&amp;I Information Engineering</strong>, though, that really polished it into an architectural discipline, one I carried straight into Gruff, Rakuten, and Jitera: automate the routine, systematize the complex, and push operational efficiency to its limit.</p>
-                        </div>
-                    </div>
-                    <div class="philosophy-card">
-                        <img src="images/agentic-ai-schrodinger.jpg" alt="A scientist cautiously opening a box to check on a cat inside, representing verifying outcomes before trusting the result." class="philosophy-image">
-                        <div class="philosophy-content">
-                            <span class="phi-num">02</span>
-                            <h3>Intentional Engineering</h3>
-                            <p>At <strong>Gruff</strong>, I was leading four different projects across four different client organizations at once. Systemization was already my default way of solving problems, and running that many engagements in parallel is what turned disciplined ticket and task management into the system that actually keeps it all in harmony. Every line of code, and every ticket, still has to answer the <em>Why, What, and How</em> before I touch it.</p>
-                        </div>
-                    </div>
-                    <div class="philosophy-card">
-                        <img src="images/culture-first-detective.jpg" alt="A film-noir style detective examining documents with a magnifying glass and a modern laptop, representing human creativity paired with automated tooling." class="philosophy-image">
-                        <div class="philosophy-content">
-                            <span class="phi-num">03</span>
-                            <h3>A Culture-First Future</h3>
-                            <p>Long before ChatGPT's breakthrough, a colleague and I used to spend our downtime debating the 2045 singularity. I still believe AI will take over most of our tasks, but that doesn't mean people are left with nothing to do. What's left narrows down to culture, and I think that's the prime motivator in life, right behind money.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
         <!-- IP & Projects Section -->
         <section id="projects" class="projects-section">
             <div class="container">
@@ -382,7 +334,7 @@
                                 <li>Speech Framework</li>
                                 <li>Apple Intelligence</li>
                             </ul>
-                            <a href="/telegratalk/" class="project-link">Learn More &rarr;</a>
+                            <a href="telegratalk/index.html" class="project-link">Learn More &rarr;</a>
                         </div>
                         <div class="project-media">
                             <div class="project-slideshow is-portrait" aria-label="Screenshots of TelegraTalk listening to and reading aloud a Telegram conversation hands-free">
@@ -446,17 +398,12 @@
                                 <li>WeatherKit</li>
                                 <li>NewsAPI.org</li>
                             </ul>
-                            <a href="/fmify/" class="project-link">Learn More &rarr;</a>
+                            <a href="fmify/index.html" class="project-link">Learn More &rarr;</a>
                         </div>
                     </div>
                 </div>
-            </div>
-        </section>
-
-        <!-- Insights / BI Tool Suite Section -->
-        <section id="insights" class="insights-teaser-section">
-            <div class="container">
-                <div class="insights-teaser-card">
+                <!-- Insights / BI Tool Suite Section -->
+                <div class="insights-teaser-card" style="margin-top: 4rem;">
                     <div class="badge">DATA &amp; BI ENGINEERING &middot; LIVE PROTOTYPE</div>
                     <h2>BI Tool Suite</h2>
                     <p>
@@ -464,7 +411,96 @@
                         pricing analysis, architecture &amp; operations surveillance, and a project delivery cockpit
                         &mdash; all live, interactive, and running entirely client-side.
                     </p>
-                    <a href="insights/" class="btn btn-primary">Explore the BI Tool Suite <i class="fa-solid fa-arrow-right"></i></a>
+                    <a href="insights/index.html" class="btn btn-primary">Explore the BI Tool Suite <i class="fa-solid fa-arrow-right"></i></a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Services Section -->
+        <section id="services" class="services-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Core Services</h2>
+                    <p class="section-subtitle">Empowering organizations with next-generation agent architectures and data infrastructure.</p>
+                </div>
+                <div class="services-grid">
+                    <div class="service-card" id="service-data">
+                        <div class="service-icon"><i class="fa-solid fa-database"></i></div>
+                        <h3>Data Engineering &amp; Integration</h3>
+                        <p>Designing high-throughput ETL/ELT pipelines, structured warehousing layers, and database migrations that establish a clean, production-ready data foundation.</p>
+                        <p class="service-grounding">This is direct, not theoretical: it's the same discipline that migrated Rakuten's telemetry from 40M+ monthly active users to BigQuery, moved Nippon TV's Factly platform off Treasure Data, and structured nationwide mobile network telemetry at NTT Docomo.</p>
+                    </div>
+                    <div class="service-card" id="service-datascience">
+                        <div class="service-icon"><i class="fa-solid fa-chart-line"></i></div>
+                        <h3>Data Science &amp; Analytics</h3>
+                        <p>Insights and statistics can now be visualized in ways that were simply unimaginable a few years ago, powered by AI systems running on LLMs. Outputs that used to need a dedicated engineering team and months of work can now be built as a tailored, purpose-built application in under an hour.</p>
+                        <p>We treat apps the way you'd treat a disposable ziplock bag from here on: built for one use, then thrown away, not maintained forever as a permanent product. We can lead your team into that same workflow.</p>
+                        <p class="service-grounding">The same instinct behind shipping TelegraTalk and Simple Trump Card in days, not months, and the statistical modelling behind predictive systems at NTT Docomo, Sompo, and Rakuten's Marketing View Premium dashboard.</p>
+                    </div>
+                    <div class="service-card" id="service-agentic">
+                        <div class="service-icon"><i class="fa-solid fa-brain"></i></div>
+                        <h3>Agentic AI Integration</h3>
+                        <p>Orchestrating autonomous workflows and multi-agent loops that run asynchronously to handle enterprise project planning, code synthesis, and analytics.</p>
+                        <p class="service-grounding">Grounded in building Model Context Protocol client tools at Jitera and Rakuten, both bridging LLMs to real, governed enterprise data rather than a demo sandbox.</p>
+                    </div>
+                    <div class="service-card" id="service-cloud">
+                        <div class="service-icon"><i class="fa-solid fa-cloud"></i></div>
+                        <h3>Cloud-Native Architecture</h3>
+                        <p>High-integrity serverless and containerized environments built on GCP and AWS. Engineered to manage ingestion pipelines, real-time telemetry, and microservices.</p>
+                        <p class="service-grounding">Proven at Rakuten's full GCP migration and at P&amp;I Information Engineering, where a legacy Java/C estate was rebuilt on modern PHP and Terraform-managed AWS infrastructure.</p>
+                    </div>
+                </div>
+
+                <div class="security-spotlight">
+                    <img src="images/data-security-samurai.jpg" alt="A samurai deflecting a strike from a giant skull composed of corrupted binary and kanji data, representing data security and protection." class="security-spotlight-image">
+                    <div class="security-spotlight-content">
+                        <span class="project-badge">Security-First Engineering</span>
+                        <h3>Data Security &amp; Protection</h3>
+                        <p class="project-desc">
+                            With over 15 years defending enterprise data in production, security isn't bolted on after the fact &mdash; it's engineered in from day one. From encrypted pipelines processing transaction telemetry from 40M+ monthly active users at Rakuten to the IAM-hardened auth gateway built for GalaSpo's own streaming platform, every dataset we touch is treated as a live threat surface, not just plumbing.
+                        </p>
+                        <div class="skills-mini-list">
+                            <span class="skill-tag">15+ Years in Data Security</span>
+                            <span class="skill-tag">IAM &amp; Auth Gateways</span>
+                            <span class="skill-tag">Encrypted Pipelines</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Philosophy Section -->
+        <section id="philosophy" class="philosophy-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">My Philosophy</h2>
+                    <p class="section-subtitle">Three principles, each one earned on the job, not written in a boardroom.</p>
+                </div>
+                <div class="philosophy-stack">
+                    <div class="philosophy-card">
+                        <img src="images/systemization-mad-scientist.jpg" alt="A mad scientist throwing a high-voltage lever to bring a mechanical robot to life, representing pushing automation to its limit." class="philosophy-image">
+                        <div class="philosophy-content">
+                            <span class="phi-num">01</span>
+                            <h3>Extreme Systemization</h3>
+                            <p>I've been building database-managed systems since I was a teenager, and I put that instinct to work in my very first job at Canada @ Home. It was my years at <strong>P&amp;I Information Engineering</strong>, though, that really polished it into an architectural discipline, one I carried straight into Gruff, Rakuten, and Jitera: automate the routine, systematize the complex, and push operational efficiency to its limit.</p>
+                        </div>
+                    </div>
+                    <div class="philosophy-card">
+                        <img src="images/agentic-ai-schrodinger.jpg" alt="A scientist cautiously opening a box to check on a cat inside, representing verifying outcomes before trusting the result." class="philosophy-image">
+                        <div class="philosophy-content">
+                            <span class="phi-num">02</span>
+                            <h3>Intentional Engineering</h3>
+                            <p>At <strong>Gruff</strong>, I was leading four different projects across four different client organizations at once. Systemization was already my default way of solving problems, and running that many engagements in parallel is what turned disciplined ticket and task management into the system that actually keeps it all in harmony. Every line of code, and every ticket, still has to answer the <em>Why, What, and How</em> before I touch it.</p>
+                        </div>
+                    </div>
+                    <div class="philosophy-card">
+                        <img src="images/culture-first-detective.jpg" alt="A film-noir style detective examining documents with a magnifying glass and a modern laptop, representing human creativity paired with automated tooling." class="philosophy-image">
+                        <div class="philosophy-content">
+                            <span class="phi-num">03</span>
+                            <h3>A Culture-First Future</h3>
+                            <p>Long before ChatGPT's breakthrough, a colleague and I used to spend our downtime debating the 2045 singularity. I still believe AI will take over most of our tasks, but that doesn't mean people are left with nothing to do. What's left narrows down to culture, and I think that's the prime motivator in life, right behind money.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -506,6 +542,7 @@
                                 <div class="details-header">
                                     <h3>BALDWIN DATA WORKS INC.</h3>
                                     <p>Incorporation Number: BC1552899</p>
+                                    <p style="color: #059669; font-weight: 600; font-size: 0.85rem; margin-top: 0.5rem; letter-spacing: 0.5px;"><i class="fa-solid fa-circle-dot" style="font-size: 0.7rem; vertical-align: middle; margin-right: 4px; animation: pulse 2s infinite;"></i> OPEN TO OPPORTUNITIES</p>
                                 </div>
                                 <div class="contact-rows">
                                     <div class="contact-row">
@@ -545,6 +582,10 @@
                     <div class="contact-info">
                         <h2>Build with Us</h2>
                         <p>Discuss C2C partnerships, scalable cloud-native architectures, or high-performance Agentic systems.</p>
+                        <div style="margin-top: 2rem; padding: 1rem; background: rgba(5, 150, 105, 0.05); border: 1px solid rgba(5, 150, 105, 0.2); border-radius: 8px; color: #059669;">
+                            <h4 style="margin: 0 0 0.25rem 0; font-size: 1rem;"><i class="fa-solid fa-handshake"></i> Currently Open to Opportunities</h4>
+                            <p style="margin: 0; font-size: 0.9rem; color: var(--text-secondary);">Actively seeking new partnerships, contract roles, and impactful projects.</p>
+                        </div>
                     </div>
                     <form class="contact-form" id="consultation-form" onsubmit="event.preventDefault(); alert('Message simulation sent successfully.');">
                         <div class="form-group">
