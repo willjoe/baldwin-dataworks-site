@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TelegraTalk Feedback — Baldwin Data Works Inc.</title>
+    <meta name="description" content="Report a bug or request a feature for TelegraTalk, the hands-free voice-only Telegram client for iOS by Baldwin Data Works Inc.">
+    <link rel="canonical" href="https://www.baldwin-dataworks.com/telegratalk/feedback.html">
+    <link rel="icon" href="icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../index.css">
+    <link rel="stylesheet" href="telegratalk.css">
+</head>
+<body>
+    <div class="glow-bg">
+        <div class="glow-sphere sphere-1"></div>
+        <div class="glow-sphere sphere-2"></div>
+    </div>
+    <div class="grid-overlay"></div>
+
+    <header class="navbar">
+        <div class="nav-container">
+            <a href="../index.html" class="logo">
+                <span class="logo-icon"><i class="fa-solid fa-microchip"></i></span>
+                <span class="logo-text">BALDWIN <span class="accent-text">DATA WORKS</span></span>
+            </a>
+            <nav class="nav-menu">
+                <a href="../index.html#services" class="nav-link">Services</a>
+                <a href="../index.html#projects" class="nav-link">R&amp;D Projects</a>
+                <a href="../index.html#card-section" class="nav-link">Business Card</a>
+                <a href="../index.html#contact" class="nav-link btn-contact">Get In Touch</a>
+            </nav>
+            <button class="mobile-toggle" aria-label="Toggle navigation">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+        </div>
+    </header>
+
+    <main>
+        <section class="tt-subnav">
+            <div class="container">
+                <div class="tt-subnav-links">
+                    <a href="index.html">Overview</a>
+                    <a href="privacy.html">Privacy Policy</a>
+                    <a href="support.html">Support</a>
+                    <a href="content-rating.html">Age Rating</a>
+                    <a href="feedback.html" class="active">Feedback</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="services-section" style="padding-top: 40px;">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Report a Bug or Request a Feature</h2>
+                    <p class="section-subtitle">Submissions are filed directly as tickets on our tracker so we can triage them.</p>
+                </div>
+
+                <form class="contact-form" id="feedback-form" style="max-width: 640px; margin: 0 auto;">
+                    <div class="form-group">
+                        <label for="type">Type</label>
+                        <select id="type" name="type" required style="background: rgba(15, 23, 42, 0.02); border: 1px solid rgba(15, 23, 42, 0.12); border-radius: 8px; padding: 0.8rem 1rem; color: var(--text-primary); font-family: inherit; font-size: 0.95rem;">
+                            <option value="bug">Bug report</option>
+                            <option value="feature">Feature request</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="title">Title</label>
+                        <input type="text" id="title" name="title" placeholder="Short summary" maxlength="120">
+                    </div>
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <textarea id="description" name="description" rows="6" placeholder="What happened, what you expected, and steps to reproduce (if a bug)" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block" id="feedback-submit">
+                        <i class="fa-solid fa-paper-plane"></i> Submit
+                    </button>
+                    <p id="feedback-status" style="text-align: center; margin: 0;"></p>
+                </form>
+
+                <div class="contact-cta">
+                    <p class="section-subtitle" style="margin-bottom: 1.5rem;">Prefer email instead?</p>
+                    <a href="mailto:will@baldwin-dataworks.com" class="btn btn-secondary">
+                        <i class="fa-solid fa-envelope"></i> will@baldwin-dataworks.com
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-bottom">
+                <p>&copy; 2026 BALDWIN DATA WORKS INC. All rights reserved.</p>
+                <p class="legal-note">TelegraTalk is an independent client and is not affiliated with or endorsed by Telegram.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="telegratalk.js"></script>
+    <script>
+        const form = document.getElementById('feedback-form');
+        const status = document.getElementById('feedback-status');
+        const submitBtn = document.getElementById('feedback-submit');
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            submitBtn.disabled = true;
+            status.textContent = 'Sending…';
+            try {
+                const res = await fetch('https://feedback-worker.will-3c6.workers.dev/telegratalk', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        type: document.getElementById('type').value,
+                        title: document.getElementById('title').value,
+                        description: document.getElementById('description').value,
+                    }),
+                });
+                const data = await res.json();
+                if (data.success) {
+                    status.textContent = `Thanks — filed as ticket #${data.issueNumber}.`;
+                    form.reset();
+                } else {
+                    status.textContent = data.error || 'Something went wrong. Please try email instead.';
+                }
+            } catch {
+                status.textContent = 'Something went wrong. Please try email instead.';
+            } finally {
+                submitBtn.disabled = false;
+            }
+        });
+    </script>
+    <!-- Cloudflare Web Analytics -->
+    <script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "e9de240d783d444f954d757cc3978a48"}'></script>
+    <!-- End Cloudflare Web Analytics -->
+</body>
+</html>
